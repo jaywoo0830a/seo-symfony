@@ -66,7 +66,7 @@ class ContentNodeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Live nodes for sitemap.xml generation, ordered by depth.
+     * Live nodes for sitemap.xml generation.
      *
      * @return list<ContentNode>
      */
@@ -77,8 +77,8 @@ class ContentNodeRepository extends ServiceEntityRepository
             ->addSelect('r')
             ->where('n.status = :status')
             ->setParameter('status', ContentStatus::Live)
-            ->addOrderBy('COALESCE(r.depth, 0)', 'ASC')
-            ->addOrderBy('n.theme', 'ASC')
+            ->orderBy('n.theme', 'ASC')
+            ->addOrderBy('r.depth', 'ASC')
             ->getQuery()
             ->getResult();
     }

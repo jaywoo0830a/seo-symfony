@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{% endblock %}">
+    {% block canonical %}{% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+</head>
+<body class="public">
+    <header class="site-header">
+        <div class="site-header__container">
+            <a class="site-header__brand" href="{{ path('public_home') }}">SEO 사이트</a>
+            <nav class="site-header__nav">
+                {% for theme in top_themes() %}
+                    <a class="site-header__nav-link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
+                {% endfor %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <div class="site-main__container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__container">
+            <span>© SEO 사이트 · <a href="{{ path('public_sitemap') }}">sitemap</a></span>
+        </div>
+    </footer>
+</body>
+</html>

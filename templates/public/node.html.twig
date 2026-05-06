@@ -1,0 +1,139 @@
+{% extends 'public/layout.html.twig' %}
+
+{% set abs_url = absolute_url(url) %}
+{% set tpl = template.value %}
+
+{% block title %}{{ h1 }} | SEO 사이트{% endblock %}
+{% block description %}{{ node.introText|default('')|striptags|slice(0, 160) }}{% endblock %}
+{% block canonical %}<link rel="canonical" href="{{ abs_url }}">{% endblock %}
+
+{% block content %}
+    <article class="article article--{{ tpl }}">
+        <header class="article__header">
+            <h1 class="article__title">{{ h1 }}</h1>
+            {% if node.introText %}
+                <p class="article__lede">{{ node.introText }}</p>
+            {% endif %}
+            <p class="article__meta">
+                {% if node.author %}
+                    <span>글: {{ node.author.realName }}</span>
+                {% endif %}
+                {% if node.lastReviewAt %}
+                    <span>최근 검토: {{ node.lastReviewAt|date('Y-m-d') }}</span>
+                {% elseif node.firstPublishedAt %}
+                    <span>발행: {{ node.firstPublishedAt|date('Y-m-d') }}</span>
+                {% endif %}
+            </p>
+        </header>
+
+        {# §3 Quantitative — primary signal for sigungu/dong, supplementary for sido/hub #}
+        {% if byKind.quantitative is not empty %}
+            <section class="article__section">
+                <h2 class="article__section-title">주요 수치</h2>
+                <dl class="data-list">
+                    {% for dp in byKind.quantitative %}
+                        <dt class="data-list__term">{{ dp.title }}</dt>
+                        <dd class="data-list__def">{{ include('public/_value.html.twig', {value: dp.value}) }}</dd>
+                    {% endfor %}
+                </dl>
+            </section>
+        {% endif %}
+
+        {# §4 Qualitative — primary signal for sigungu, secondary for sido/dong #}
+        {% if byKind.qualitative is not empty %}
+            <section class="article__section">
+                <h2 class="article__section-title">상세 정보</h2>
+                <dl class="data-list">
+                    {% for dp in byKind.qualitative %}
+                        <dt class="data-list__term">{{ dp.title }}</dt>
+                        <dd class="data-list__def">{{ include('public/_value.html.twig', {value: dp.value}) }}</dd>
+                    {% endfor %}
+                </dl>
+            </section>
+        {% endif %}
+
+        {# §5 Comparison — heavily emphasised on dong, also on sigungu #}
+        {% if byKind.comparison is not empty %}
+            <section class="article__section article__section--comparison">
+                <h2 class="article__section-title">{{ tpl == 'dong' ? '인근 지역과의 차이' : '비교' }}</h2>
+                <ul class="comparison-list">
+                    {% for dp in byKind.comparison %}
+                        <li class="comparison-list__item">
+                            <strong>{{ dp.title }}</strong>:
+                            {{ include('public/_value.html.twig', {value: dp.value}) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {# §6 Cases — practical examples #}
+        {% if byKind.case is not empty %}
+            <section class="article__section">
+                <h2 class="article__section-title">사례</h2>
+                <ul class="case-list">
+                    {% for dp in byKind.case %}
+                        <li class="case-list__item">
+                            <h3 class="case-list__title">{{ dp.title }}</h3>
+                            <div class="case-list__body">{{ include('public/_value.html.twig', {value: dp.value}) }}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {# §7 FAQ — heavy on hub, present everywhere #}
+        {% if byKind.faq is not empty %}
+            <section class="article__section">
+                <h2 class="article__section-title">자주 묻는 질문</h2>
+                <ul class="faq-list">
+                    {% for dp in byKind.faq %}
+                        <li class="faq-list__item">
+                            <h3 class="faq-list__q">{{ dp.title }}</h3>
+                            <div class="faq-list__a">{{ include('public/_value.html.twig', {value: dp.value}) }}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {# Children list — emphasised on hub/sido #}
+        {% if children is not empty and tpl in ['hub', 'sido'] %}
+            <section class="article__section">
+                <h2 class="article__section-title">하위 지역</h2>
+                <ul class="link-list">
+                    {% for child in children %}
+                        {% if child.status.value == 'live' %}
+                            <li><a href="{{ urls.build(child) }}">{{ child.region.name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {# §8 Sibling links — heavy on dong, present on sigungu #}
+        {% if siblings is not empty and tpl in ['dong', 'sigungu'] %}
+            <section class="article__section">
+                <h2 class="article__section-title">인근 지역</h2>
+                <ul class="link-list">
+                    {% for sibling in siblings %}
+                        <li><a href="{{ urls.build(sibling) }}">{{ sibling.region.name }} {{ node.theme.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {# §9 Parent link — always present except hub #}
+        {% if parent and parent.status.value == 'live' %}
+            <nav class="article__upbreadcrumb">
+                <a href="{{ urls.build(parent) }}">←
+                    {% if parent.region %}{{ parent.region.name }}{% else %}{{ parent.theme.name }}{% endif %}
+                    전체 보기
+                </a>
+            </nav>
+        {% endif %}
+
+        {# §10 JSON-LD (built server-side; not executable JS) #}
+        <script type="application/ld+json">{{ json_ld|raw }}</script>
+    </article>
+{% endblock %}

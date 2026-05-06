@@ -1,0 +1,26 @@
+{# Render a DataPoint.value (decoded JSONB → mixed PHP type). #}
+{%- if value is iterable -%}
+    {%- if value|length == 0 -%}
+        <span class="data-list__empty">—</span>
+    {%- else -%}
+        {%- set first_key = value|keys|first -%}
+        {%- if first_key is same as(0) -%}
+            {# list #}
+            <ul class="data-list__items">
+                {%- for v in value -%}
+                    <li>{{ v is iterable ? v|json_encode|raw : v }}</li>
+                {%- endfor -%}
+            </ul>
+        {%- else -%}
+            {# associative array (object) #}
+            <dl class="data-list__nested">
+                {%- for k, v in value -%}
+                    <dt>{{ k }}</dt>
+                    <dd>{{ v is iterable ? v|join(', ') : v }}</dd>
+                {%- endfor -%}
+            </dl>
+        {%- endif -%}
+    {%- endif -%}
+{%- else -%}
+    {{ value }}
+{%- endif -%}

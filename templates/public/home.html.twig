@@ -1,0 +1,29 @@
+{% extends 'public/layout.html.twig' %}
+
+{% block title %}SEO 사이트{% endblock %}
+{% block description %}지역별 교육 서비스 정보 허브.{% endblock %}
+{% block canonical %}<link rel="canonical" href="{{ url('public_home') }}">{% endblock %}
+
+{% block content %}
+    <article class="article">
+        <header class="article__header">
+            <h1 class="article__title">SEO 사이트</h1>
+            <p class="article__lede">지역별 교육 서비스 허브. 테마를 선택하세요.</p>
+        </header>
+
+        <section class="article__section">
+            <ul class="theme-grid">
+                {% for theme in themes %}
+                    <li>
+                        <a class="theme-grid__card" href="/{{ theme.slug }}/">
+                            <span class="theme-grid__name">{{ theme.name }}</span>
+                            {% if theme.description %}
+                                <span class="theme-grid__desc">{{ theme.description }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </article>
+{% endblock %}
