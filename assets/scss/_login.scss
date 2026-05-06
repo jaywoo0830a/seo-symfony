@@ -1,0 +1,35 @@
+// =============================================================================
+// Block: login
+// 단일 페이지 로그인
+// =============================================================================
+
+.login {
+    max-width: 24rem;
+    margin: var(--space-96) auto var(--space-48);
+    padding-inline: var(--space-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        text-align: center;
+    }
+
+    &__title {
+        font-size: var(--text-24);
+        font-weight: var(--weight-bold);
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: var(--color-ink);
+    }
+
+    &__subtitle {
+        font-size: var(--text-12);
+        color: var(--color-faint);
+        font-weight: var(--weight-medium);
+        margin: 0;
+    }
+}

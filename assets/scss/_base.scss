@@ -1,6 +1,6 @@
-/* =============================================================================
-   Reset / Base
-   ============================================================================= */
+// =============================================================================
+// Reset / Base
+// =============================================================================
 
 *,
 *::before,
@@ -10,6 +10,7 @@
 
 html {
     font-size: 1rem;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -23,9 +24,11 @@ body {
     letter-spacing: -0.01em;
     word-break: keep-all;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, p, ul, ol {
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, dl, dd, figure {
     margin: 0;
 }
 
@@ -39,8 +42,23 @@ a {
     text-decoration: none;
 }
 
+img, svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
 }
 
+button {
+    font: inherit;
+    color: inherit;
+}
+
+::selection {
+    background-color: var(--brand-100);
+    color: var(--brand-800);
+}

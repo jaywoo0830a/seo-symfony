@@ -1,96 +1,130 @@
-/* =============================================================================
-   Block: dashboard
-   ============================================================================= */
+// =============================================================================
+// Blocks: dashboard / toolbar / phase-meter
+// 관리자 페이지 wrapper, 인덱스 툴바, Phase 진행 표시기
+// =============================================================================
+
+@use 'mixins';
+
+// -----------------------------------------------------------------------------
+// dashboard — admin 페이지 컨텐츠 wrapper
+// -----------------------------------------------------------------------------
 
 .dashboard {
     display: flex;
     flex-direction: column;
     gap: var(--space-48);
-}
 
-.dashboard__header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-    border-bottom: var(--rule);
-    padding-bottom: var(--space-24);
-}
+    &__header {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-8);
+        padding-bottom: var(--space-24);
+        border-bottom: var(--rule);
+    }
 
-.dashboard__back {
-    font-size: var(--text-12);
-    color: var(--color-soft);
-    letter-spacing: 0.04em;
-    margin-bottom: var(--space-4);
-}
+    &__back {
+        font-size: var(--text-12);
+        font-weight: var(--weight-medium);
+        color: var(--color-soft);
+        margin-bottom: var(--space-4);
+        @include mixins.transition(color);
 
-.dashboard__back:hover {
-    color: var(--color-ink);
-}
+        &:hover {
+            color: var(--color-mark);
+        }
+    }
 
-.dashboard__title {
-    font-size: var(--text-32);
-    font-weight: var(--weight-bold);
-    letter-spacing: -0.02em;
-    line-height: var(--line-tight);
-}
+    &__title {
+        font-size: var(--text-32);
+        font-weight: var(--weight-semibold);
+        letter-spacing: -0.025em;
+        line-height: var(--line-tight);
+        color: var(--color-ink);
+    }
 
-.dashboard__subtitle {
-    font-size: var(--text-16);
-    color: var(--color-soft);
-    max-width: 60ch;
-}
+    &__subtitle {
+        font-size: var(--text-16);
+        color: var(--color-soft);
+        max-width: 60ch;
+        line-height: var(--line-base);
+    }
 
-.dashboard__section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-16);
-}
+    &__section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-16);
+    }
 
-.dashboard__section-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-16);
-    border-bottom: var(--rule);
-    padding-bottom: var(--space-8);
-}
+    &__section-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-16);
+        padding-bottom: var(--space-8);
+        border-bottom: var(--rule);
+    }
 
-.dashboard__section-title {
-    font-size: var(--text-20);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.01em;
-}
+    &__section-title {
+        font-size: var(--text-20);
+        font-weight: var(--weight-semibold);
+        letter-spacing: -0.015em;
+        color: var(--color-ink);
+    }
 
-.dashboard__section-meta {
-    font-size: var(--text-12);
-    color: var(--color-faint);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
+    &__section-meta {
+        @include mixins.label-caps;
+    }
 
-.dashboard__grid {
-    display: grid;
-    gap: var(--space-16);
-}
+    &__grid {
+        display: grid;
+        gap: var(--space-16);
 
-.dashboard__grid--stats {
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-}
+        &--stats {
+            grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        }
 
-.dashboard__grid--two-col {
-    grid-template-columns: 1fr 1fr;
-}
+        &--two-col {
+            grid-template-columns: 1fr 1fr;
 
-@media (max-width: 60rem) {
-    .dashboard__grid--two-col {
-        grid-template-columns: 1fr;
+            @media (max-width: 60rem) {
+                grid-template-columns: 1fr;
+            }
+        }
     }
 }
 
+// -----------------------------------------------------------------------------
+// toolbar — 인덱스 페이지 상단 (제목 + 액션 버튼)
+// -----------------------------------------------------------------------------
 
-/* =============================================================================
-   Block: phase-meter
-   ============================================================================= */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-16);
+    padding-bottom: var(--space-16);
+    border-bottom: var(--rule);
+    flex-wrap: wrap;
+
+    &__title {
+        font-size: var(--text-32);
+        font-weight: var(--weight-semibold);
+        letter-spacing: -0.025em;
+        line-height: var(--line-tight);
+        color: var(--color-ink);
+        margin: 0;
+    }
+
+    &__actions {
+        display: flex;
+        gap: var(--space-8);
+        flex-wrap: wrap;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// phase-meter — 단계별 진행 표시기
+// -----------------------------------------------------------------------------
 
 .phase-meter {
     display: flex;
@@ -99,74 +133,51 @@
     padding: var(--space-24);
     background-color: var(--color-surface);
     border: var(--rule);
+    border-radius: var(--radius-lg);
+
+    &__steps {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--space-8);
+
+        @media (max-width: 50rem) {
+            grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        }
+    }
+
+    &__step {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        padding-top: var(--space-8);
+        border-top: 2px solid var(--color-rule);
+        color: var(--color-faint);
+
+        &--current {
+            color: var(--color-mark);
+            border-top-color: var(--color-mark);
+        }
+
+        &--done {
+            color: var(--color-soft);
+            border-top-color: var(--color-rule-strong);
+        }
+    }
+
+    &__step-label {
+        font-size: var(--text-12);
+        font-weight: var(--weight-semibold);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    &__step-name {
+        font-size: var(--text-14);
+        line-height: var(--line-snug);
+    }
+
+    &__caption {
+        font-size: var(--text-14);
+        color: var(--color-soft);
+    }
 }
-
-.phase-meter__steps {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: var(--space-8);
-}
-
-.phase-meter__step {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    padding-top: var(--space-8);
-    border-top: var(--space-2) solid var(--color-rule);
-    color: var(--color-faint);
-}
-
-.phase-meter__step--current {
-    color: var(--color-ink);
-    border-top-color: var(--color-ink);
-}
-
-.phase-meter__step--done {
-    color: var(--color-soft);
-    border-top-color: var(--color-soft);
-}
-
-.phase-meter__step-label {
-    font-size: var(--text-12);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    font-weight: var(--weight-semibold);
-}
-
-.phase-meter__step-name {
-    font-size: var(--text-14);
-    line-height: var(--line-snug);
-}
-
-.phase-meter__caption {
-    font-size: var(--text-14);
-    color: var(--color-soft);
-}
-
-
-/* =============================================================================
-   Block: toolbar
-   ============================================================================= */
-
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-16);
-    border-bottom: var(--rule);
-    padding-bottom: var(--space-16);
-}
-
-.toolbar__title {
-    font-size: var(--text-32);
-    font-weight: var(--weight-bold);
-    letter-spacing: -0.02em;
-    line-height: var(--line-tight);
-    margin: 0;
-}
-
-.toolbar__actions {
-    display: flex;
-    gap: var(--space-8);
-}
-

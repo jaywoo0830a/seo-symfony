@@ -1,0 +1,110 @@
+// =============================================================================
+// Block: button
+// 3계층 강조도 (primary / secondary / tertiary) + 보조 변형 (ghost / danger)
+// =============================================================================
+
+@use 'mixins';
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    padding: var(--space-8) var(--space-16);
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    text-decoration: none;
+    user-select: none;
+    @include mixins.transition(background-color, border-color, color, box-shadow);
+    @include mixins.focus-visible;
+
+    &:disabled,
+    &[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    // -------------------------------------------------------------------------
+    // Primary — 가장 강한 강조. 페이지의 main action 한 개에만.
+    // -------------------------------------------------------------------------
+    &--primary {
+        background-color: var(--color-mark);
+        color: var(--color-on-mark);
+        border-color: var(--color-mark);
+
+        &:hover {
+            background-color: var(--color-mark-hover);
+            border-color: var(--color-mark-hover);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Secondary — 중간 강조. 외곽선만 브랜드 컬러.
+    // -------------------------------------------------------------------------
+    &--secondary {
+        background-color: var(--color-surface);
+        color: var(--color-mark);
+        border-color: var(--color-mark);
+
+        &:hover {
+            background-color: var(--color-mark-soft);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Tertiary — 약한 강조. 텍스트 링크처럼 가볍게.
+    // -------------------------------------------------------------------------
+    &--tertiary {
+        color: var(--color-mark);
+
+        &:hover {
+            background-color: var(--color-mark-soft);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Ghost — 중립 외곽선. 취소/뒤로 등 비주류 액션.
+    // -------------------------------------------------------------------------
+    &--ghost {
+        background-color: var(--color-surface);
+        color: var(--color-soft);
+        border-color: var(--color-rule);
+
+        &:hover {
+            color: var(--color-ink);
+            border-color: var(--color-rule-strong);
+            background-color: var(--color-tint);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Danger — 파괴적 액션 (삭제 등).
+    // -------------------------------------------------------------------------
+    &--danger {
+        background-color: var(--color-surface);
+        color: var(--color-danger);
+        border-color: var(--color-rule);
+
+        &:hover {
+            background-color: var(--color-danger);
+            color: var(--color-on-mark);
+            border-color: var(--color-danger);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Sizes
+    // -------------------------------------------------------------------------
+    &--sm {
+        padding: var(--space-4) var(--space-12);
+        font-size: var(--text-12);
+    }
+}

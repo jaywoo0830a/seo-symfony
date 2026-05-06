@@ -1,181 +1,199 @@
-/* =============================================================================
-   Block: stat
-   ============================================================================= */
+// =============================================================================
+// 재사용 가능한 BEM 블록들
+// stat / panel / tree / list / badge / empty / chip / link-card / author-card
+// =============================================================================
+
+@use 'mixins';
+
+// -----------------------------------------------------------------------------
+// stat — 큰 숫자 표시 카드
+// -----------------------------------------------------------------------------
 
 .stat {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    padding: var(--space-20);
-    background-color: var(--color-surface);
-    border: var(--rule);
+    padding: var(--space-20) var(--space-24);
+    @include mixins.surface-card;
+
+    &__label {
+        @include mixins.label-caps;
+    }
+
+    &__value {
+        font-size: var(--text-32);
+        font-weight: var(--weight-semibold);
+        line-height: var(--line-tight);
+        letter-spacing: -0.025em;
+        color: var(--color-ink);
+    }
+
+    &__hint {
+        font-size: var(--text-12);
+        color: var(--color-soft);
+    }
+
+    &--accent {
+        background-color: var(--color-mark);
+        color: var(--color-on-mark);
+        border-color: var(--color-mark);
+
+        .stat__label,
+        .stat__hint {
+            color: var(--color-on-mark);
+            opacity: 0.8;
+        }
+
+        .stat__value {
+            color: var(--color-on-mark);
+        }
+    }
 }
 
-.stat__label {
-    font-size: var(--text-12);
-    color: var(--color-faint);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: var(--weight-semibold);
-}
-
-.stat__value {
-    font-size: var(--text-32);
-    font-weight: var(--weight-bold);
-    line-height: var(--line-tight);
-    letter-spacing: -0.02em;
-}
-
-.stat__hint {
-    font-size: var(--text-12);
-    color: var(--color-soft);
-}
-
-.stat--accent {
-    background-color: var(--color-ink);
-    color: var(--color-on-mark);
-    border-color: var(--color-ink);
-}
-
-.stat--accent .stat__label,
-.stat--accent .stat__hint {
-    color: var(--color-on-mark);
-    opacity: 0.7;
-}
-
-
-/* =============================================================================
-   Block: panel
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// panel — 일반 카드 (헤더 + 본문)
+// -----------------------------------------------------------------------------
 
 .panel {
     display: flex;
     flex-direction: column;
     gap: var(--space-16);
     padding: var(--space-24);
-    background-color: var(--color-surface);
-    border: var(--rule);
+    @include mixins.surface-card;
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-12);
+    }
+
+    &__title {
+        font-size: var(--text-16);
+        font-weight: var(--weight-semibold);
+        color: var(--color-ink);
+    }
+
+    &__meta {
+        @include mixins.label-caps;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-12);
+    }
+
+    &__action {
+        font-size: var(--text-12);
+        font-weight: var(--weight-semibold);
+        color: var(--color-mark);
+        @include mixins.transition(color);
+
+        &:hover {
+            color: var(--color-mark-hover);
+            text-decoration: underline;
+        }
+    }
 }
 
-.panel__header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-12);
-}
-
-.panel__title {
-    font-size: var(--text-16);
-    font-weight: var(--weight-semibold);
-}
-
-.panel__meta {
-    font-size: var(--text-12);
-    color: var(--color-faint);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.panel__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-12);
-}
-
-.panel__action {
-    font-size: var(--text-12);
-    font-weight: var(--weight-semibold);
-    color: var(--color-soft);
-    letter-spacing: 0.04em;
-}
-
-.panel__action:hover {
-    color: var(--color-ink);
-}
-
-
-/* =============================================================================
-   Block: tree
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// tree — 계층/항목 리스트
+// -----------------------------------------------------------------------------
 
 .tree {
     display: flex;
     flex-direction: column;
+
+    &__item {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-16);
+        padding-block: var(--space-12);
+        border-bottom: var(--rule);
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    &__label {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-8);
+        font-size: var(--text-14);
+    }
+
+    &__name {
+        font-weight: var(--weight-medium);
+        color: var(--color-ink);
+    }
+
+    // .tree__name이 <a>일 때 링크 스타일 적용
+    a.tree__name {
+        color: var(--color-mark);
+        @include mixins.transition(color);
+
+        &:hover {
+            color: var(--color-mark-hover);
+            text-decoration: underline;
+        }
+    }
+
+    &__slug {
+        font-family: "Asta Sans", monospace;
+        font-size: var(--text-12);
+        color: var(--color-faint);
+    }
+
+    &__meta {
+        font-size: var(--text-12);
+        color: var(--color-soft);
+        display: flex;
+        align-items: center;
+        gap: var(--space-8);
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
 }
 
-.tree__item {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-16);
-    padding-block: var(--space-8);
-    border-bottom: var(--rule);
-}
-
-.tree__item:last-child {
-    border-bottom: 0;
-}
-
-.tree__label {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-8);
-    font-size: var(--text-14);
-}
-
-.tree__name {
-    font-weight: var(--weight-semibold);
-}
-
-.tree__slug {
-    font-family: "Asta Sans", monospace;
-    font-size: var(--text-12);
-    color: var(--color-faint);
-    letter-spacing: 0;
-}
-
-.tree__meta {
-    font-size: var(--text-12);
-    color: var(--color-soft);
-}
-
-
-/* =============================================================================
-   Block: list (key-value)
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// list — key-value 목록
+// -----------------------------------------------------------------------------
 
 .list {
     display: flex;
     flex-direction: column;
+
+    &__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--space-16);
+        padding-block: var(--space-12);
+        border-bottom: var(--rule);
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    &__label {
+        font-size: var(--text-14);
+        color: var(--color-soft);
+    }
+
+    &__value {
+        font-size: var(--text-14);
+        font-weight: var(--weight-medium);
+        color: var(--color-ink);
+    }
 }
 
-.list__row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-16);
-    padding-block: var(--space-8);
-    border-bottom: var(--rule);
-}
-
-.list__row:last-child {
-    border-bottom: 0;
-}
-
-.list__label {
-    font-size: var(--text-14);
-    color: var(--color-soft);
-}
-
-.list__value {
-    font-size: var(--text-14);
-    font-weight: var(--weight-semibold);
-}
-
-
-/* =============================================================================
-   Block: badge
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// badge — 작은 상태 라벨
+// -----------------------------------------------------------------------------
 
 .badge {
     display: inline-flex;
@@ -183,37 +201,51 @@
     padding: var(--space-2) var(--space-8);
     font-size: var(--text-12);
     font-weight: var(--weight-semibold);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    line-height: 1.6;
+    letter-spacing: 0;
+    border-radius: var(--radius-sm);
     background-color: var(--color-tint);
     color: var(--color-soft);
+    border: 1px solid transparent;
+
+    &--live,
+    &--verified {
+        background-color: var(--color-mark-soft);
+        color: var(--color-mark);
+    }
+
+    &--draft {
+        background-color: var(--color-tint);
+        color: var(--color-soft);
+    }
+
+    &--noindex {
+        background-color: var(--color-surface);
+        color: var(--color-ink);
+        border-color: var(--color-rule-strong);
+    }
+
+    &--dead {
+        background-color: var(--color-surface);
+        color: var(--color-faint);
+        text-decoration: line-through;
+    }
+
+    &--unverified {
+        background-color: var(--color-surface);
+        color: var(--color-faint);
+        border-color: var(--color-rule);
+    }
+
+    &--empty {
+        background-color: var(--color-surface);
+        color: var(--color-faint);
+    }
 }
 
-.badge--live {
-    background-color: var(--color-mark);
-    color: var(--color-on-mark);
-}
-
-.badge--draft {
-    background-color: var(--color-tint);
-    color: var(--color-soft);
-}
-
-.badge--verified {
-    background-color: var(--color-mark);
-    color: var(--color-on-mark);
-}
-
-.badge--unverified {
-    background-color: var(--color-surface);
-    color: var(--color-faint);
-    box-shadow: inset 0 0 0 var(--space-2) var(--color-rule);
-}
-
-
-/* =============================================================================
-   Block: empty
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// empty — 빈 상태 표시
+// -----------------------------------------------------------------------------
 
 .empty {
     display: flex;
@@ -222,25 +254,25 @@
     padding: var(--space-32) var(--space-16);
     text-align: center;
     color: var(--color-soft);
+
+    &__title {
+        font-size: var(--text-14);
+        font-weight: var(--weight-medium);
+        color: var(--color-ink);
+    }
+
+    &__hint {
+        font-size: var(--text-12);
+        color: var(--color-faint);
+        max-width: 40ch;
+        margin-inline: auto;
+        line-height: var(--line-snug);
+    }
 }
 
-.empty__title {
-    font-size: var(--text-14);
-    font-weight: var(--weight-semibold);
-    color: var(--color-ink);
-}
-
-.empty__hint {
-    font-size: var(--text-12);
-    color: var(--color-faint);
-    max-width: 40ch;
-    margin-inline: auto;
-}
-
-
-/* =============================================================================
-   Block: chip-grid + chip
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// chip-grid + chip — 작은 박스 그리드 (시도, 시군구 등)
+// -----------------------------------------------------------------------------
 
 .chip-grid {
     display: grid;
@@ -255,67 +287,78 @@
     padding: var(--space-12);
     background-color: var(--color-surface);
     border: var(--rule);
+    border-radius: var(--radius-md);
     font-size: var(--text-14);
+    @include mixins.transition(border-color, background-color);
+
+    &__name {
+        font-weight: var(--weight-medium);
+        color: var(--color-ink);
+    }
+
+    &__code {
+        font-size: var(--text-12);
+        color: var(--color-faint);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &--link:hover {
+        border-color: var(--color-mark);
+        background-color: var(--color-mark-soft);
+
+        .chip__name {
+            color: var(--color-mark);
+        }
+    }
 }
 
-.chip__name {
-    font-weight: var(--weight-semibold);
-}
-
-.chip__code {
-    font-size: var(--text-12);
-    color: var(--color-faint);
-    letter-spacing: 0.04em;
-}
-
-.chip--link:hover {
-    border-color: var(--color-ink);
-    color: var(--color-ink);
-}
-
-.chip--link:hover .chip__code {
-    color: var(--color-soft);
-}
-
-
-/* =============================================================================
-   Block: link-card
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// link-card — 큰 클릭 가능 카드
+// -----------------------------------------------------------------------------
 
 .link-card {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
     padding: var(--space-20) var(--space-24);
-    background-color: var(--color-surface);
-    border: var(--rule);
+    @include mixins.surface-card;
+    @include mixins.transition(border-color, background-color, box-shadow);
+
+    &:hover {
+        border-color: var(--color-mark);
+        box-shadow: var(--shadow-sm);
+    }
+
+    &__title {
+        font-size: var(--text-18);
+        font-weight: var(--weight-semibold);
+        letter-spacing: -0.015em;
+        color: var(--color-ink);
+    }
+
+    &__hint {
+        font-size: var(--text-12);
+        color: var(--color-soft);
+    }
+
+    &--alert {
+        border-color: var(--color-warning);
+        background-color: var(--color-warning-soft);
+
+        .link-card__title {
+            color: var(--neutral-900);
+        }
+
+        .link-card__hint {
+            color: var(--neutral-700);
+            font-weight: var(--weight-medium);
+        }
+    }
 }
 
-.link-card:hover {
-    border-color: var(--color-ink);
-}
-
-.link-card--alert {
-    border-color: var(--color-ink);
-    background-color: var(--color-tint);
-}
-
-.link-card__title {
-    font-size: var(--text-18);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.01em;
-}
-
-.link-card__hint {
-    font-size: var(--text-12);
-    color: var(--color-soft);
-    letter-spacing: 0.04em;
-}
-
-
-/* =============================================================================
-   Block: author-card
-   ============================================================================= */
+// -----------------------------------------------------------------------------
+// author-card — 작성자 카드
+// -----------------------------------------------------------------------------
 
 .author-card {
     display: flex;
@@ -323,28 +366,27 @@
     gap: var(--space-4);
     padding-block: var(--space-12);
     border-bottom: var(--rule);
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    &__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-8);
+    }
+
+    &__name {
+        font-size: var(--text-16);
+        font-weight: var(--weight-semibold);
+        color: var(--color-ink);
+    }
+
+    &__meta {
+        font-size: var(--text-12);
+        color: var(--color-soft);
+        line-height: var(--line-snug);
+    }
 }
-
-.author-card:last-child {
-    border-bottom: 0;
-}
-
-.author-card__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-8);
-}
-
-.author-card__name {
-    font-size: var(--text-16);
-    font-weight: var(--weight-semibold);
-}
-
-.author-card__meta {
-    font-size: var(--text-12);
-    color: var(--color-soft);
-    line-height: var(--line-snug);
-}
-
-

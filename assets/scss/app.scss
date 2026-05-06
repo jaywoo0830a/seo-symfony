@@ -1,15 +1,34 @@
 // =============================================================================
-// SEO 운영 대시보드 — SCSS entry
+// SEO 운영 대시보드 — SCSS 엔트리
 //
-// Build:    sass assets/scss/app.scss assets/styles/app.css --no-source-map
-// Watch:    sass --watch assets/scss/app.scss:assets/styles/app.css --no-source-map
+// Build:  npm run build       (또는 sass assets/scss/app.scss assets/styles/app.css)
+// Watch:  npm run watch
 // =============================================================================
 
+// 1. 토큰 (sass 맵 + CSS 커스텀 프로퍼티 출력)
 @use 'tokens';
+
+// 2. 베이스 (reset + body)
 @use 'base';
+
+// 3. 레이아웃 (admin chrome / login)
 @use 'layout';
+@use 'login';
+
+// 4. 페이지 (admin: dashboard / toolbar / phase-meter)
 @use 'dashboard';
+
+// 5. 재사용 컴포넌트
 @use 'components';
-@use 'forms';
+
+// 6. 폼 시스템
+@use 'button';
+@use 'form-controls';
+@use 'flash';
+@use 'data-table';
+
+// 7. 대시보드 위젯 (admin 전용 복합 블록)
 @use 'widgets';
+
+// 8. 공개 사이트
 @use 'public';

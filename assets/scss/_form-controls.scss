@@ -1,0 +1,124 @@
+// =============================================================================
+// Block: form
+// 재사용 가능한 폼 컨트롤 (label, input, textarea, select, help, errors)
+// =============================================================================
+
+@use 'mixins';
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-20);
+    background-color: var(--color-surface);
+    border: var(--rule);
+    border-radius: var(--radius-lg);
+    padding: var(--space-32);
+    max-width: 48rem;
+
+    &__row {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    &__label {
+        font-size: var(--text-14);
+        font-weight: var(--weight-medium);
+        color: var(--color-ink);
+    }
+
+    &__input,
+    &__textarea,
+    &__select {
+        display: block;
+        width: 100%;
+        font-family: inherit;
+        font-size: var(--text-14);
+        line-height: var(--line-snug);
+        color: var(--color-ink);
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-rule);
+        border-radius: var(--radius-md);
+        padding: var(--space-8) var(--space-12);
+        @include mixins.transition(border-color, box-shadow);
+
+        &::placeholder {
+            color: var(--color-faint);
+        }
+
+        &:hover {
+            border-color: var(--color-rule-strong);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--color-mark);
+            box-shadow: 0 0 0 3px var(--color-mark-soft);
+        }
+
+        &:disabled {
+            background-color: var(--color-tint);
+            color: var(--color-faint);
+            cursor: not-allowed;
+        }
+    }
+
+    &__textarea {
+        resize: vertical;
+        min-height: 6rem;
+        line-height: var(--line-base);
+    }
+
+    &__select {
+        appearance: none;
+        padding-right: var(--space-32);
+        background-image: linear-gradient(45deg, transparent 50%, var(--color-soft) 50%),
+                          linear-gradient(135deg, var(--color-soft) 50%, transparent 50%);
+        background-position: calc(100% - var(--space-16)) center,
+                             calc(100% - var(--space-12)) center;
+        background-size: var(--space-4) var(--space-4);
+        background-repeat: no-repeat;
+    }
+
+    &__help {
+        font-size: var(--text-12);
+        color: var(--color-faint);
+        line-height: var(--line-snug);
+    }
+
+    &__errors {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    &__error {
+        font-size: var(--text-12);
+        font-weight: var(--weight-medium);
+        color: var(--color-danger);
+        padding: var(--space-4) var(--space-8);
+        background-color: var(--color-danger-soft);
+        border-radius: var(--radius-sm);
+    }
+
+    &__actions {
+        display: flex;
+        gap: var(--space-8);
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    // 인라인 폼 (단일 버튼만 들어가는 작은 폼: 검증 토글, 삭제 등)
+    &__inline {
+        display: inline-flex;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        max-width: none;
+        gap: 0;
+    }
+}

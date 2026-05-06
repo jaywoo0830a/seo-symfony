@@ -1,0 +1,65 @@
+// =============================================================================
+// Block: data-table
+// 일관된 행/열 그리드. 행 호버 강조.
+// =============================================================================
+
+@use 'mixins';
+
+.data-table {
+    width: 100%;
+    background-color: var(--color-surface);
+    border: var(--rule);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-14);
+    overflow: hidden;
+
+    thead {
+        background-color: var(--color-tint);
+    }
+
+    th, td {
+        padding: var(--space-12) var(--space-16);
+        border-bottom: var(--rule);
+        text-align: left;
+        line-height: var(--line-snug);
+        vertical-align: baseline;
+    }
+
+    th {
+        @include mixins.label-caps;
+        color: var(--color-soft);
+    }
+
+    tbody tr:last-child {
+        th, td {
+            border-bottom: 0;
+        }
+    }
+
+    tbody tr {
+        @include mixins.transition(background-color);
+
+        &:hover {
+            background-color: var(--color-tint);
+        }
+    }
+
+    a {
+        color: var(--color-mark);
+        font-weight: var(--weight-medium);
+
+        &:hover {
+            color: var(--color-mark-hover);
+            text-decoration: underline;
+        }
+    }
+
+    &__cell--num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__muted {
+        color: var(--color-faint);
+    }
+}
