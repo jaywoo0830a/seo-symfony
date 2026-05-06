@@ -8,14 +8,24 @@
 // -----------------------------------------------------------------------------
 // matrix — 테마 × 지역 그리드
 // 셀 상태: live / noindex / demoted / draft / dead / empty
+//
+// 가로 스크롤: .matrix-scroll 컨테이너가 wrapper 역할.
+// 첫 컬럼(theme name)은 sticky-left로 가로 스크롤 시에도 고정.
 // -----------------------------------------------------------------------------
 
-.matrix {
-    width: 100%;
+.matrix-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
     background-color: var(--color-surface);
     border: var(--rule);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.matrix {
+    min-width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-surface);
 
     &__cell {
         padding: var(--space-12) var(--space-16);
@@ -25,6 +35,7 @@
         font-size: var(--text-14);
         line-height: var(--line-snug);
         vertical-align: middle;
+        white-space: nowrap;
 
         &:last-child {
             border-right: 0;
@@ -41,11 +52,16 @@
         color: var(--color-soft);
     }
 
+    // 첫 컬럼: 가로 스크롤 시 고정. 우측에 subtle shadow로 분리감.
     &__cell--row-head {
+        position: sticky;
+        left: 0;
+        z-index: 1;
         text-align: left;
         background-color: var(--color-tint);
         font-weight: var(--weight-semibold);
         color: var(--color-ink);
+        box-shadow: 4px 0 6px -4px rgba(0, 0, 0, 0.06);
     }
 
     &__cell--live {
@@ -112,6 +128,25 @@
     &__cell-label {
         font-size: var(--text-12);
         color: var(--color-faint);
+    }
+
+    &__head-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-4);
+        color: inherit;
+        text-decoration: none;
+        @include mixins.transition(color);
+
+        &:hover {
+            color: var(--color-mark);
+        }
+    }
+
+    &__head-drill {
+        opacity: 0.5;
+        font-size: var(--text-12);
+        font-weight: var(--weight-regular);
     }
 }
 

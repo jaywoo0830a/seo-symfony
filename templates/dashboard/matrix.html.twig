@@ -1,63 +1,136 @@
 {% extends 'dashboard/layout.html.twig' %}
 
-{% block title %}매트릭스 · {{ parent() }}{% endblock %}
+{% block title %}매트릭스{% if parent %} · {{ parent.name }}{% endif %} · {{ parent() }}{% endblock %}
 
 {% block content %}
     <div class="dashboard">
         <header class="dashboard__header">
-            <h1 class="dashboard__title">매트릭스</h1>
-            <p class="dashboard__subtitle">테마 행 × 시도 열. 셀은 좌표별 콘텐츠 노드 상태입니다.</p>
+            {% if crumbs is not empty %}
+                <nav class="crumbs">
+                    {% for crumb in crumbs %}
+                        <a class="crumbs__link" href="{{ path('admin_matrix', {path: crumb.path}) }}">{{ crumb.label }}</a>
+                        <span class="crumbs__sep">/</span>
+                    {% endfor %}
+                    <span class="crumbs__current">{{ parent.name }}</span>
+                </nav>
+            {% endif %}
+            <h1 class="dashboard__title">
+                {% if parent %}
+                    {{ parent.name }}
+                {% else %}
+                    전국 매트릭스
+                {% endif %}
+            </h1>
+            <p class="dashboard__subtitle">
+                {% if level == 'sido' %}
+                    테마 × 시도 좌표. 시도 헤더를 누르면 그 안의 시군구로 들어갑니다.
+                {% elseif level == 'sigungu' %}
+                    {{ parent.name }} 안의 시군구. 시군구 헤더를 누르면 동까지 내려갑니다.
+                {% else %}
+                    {{ parent.name }} 안의 동. 가장 좁은 좌표 슬라이스입니다.
+                {% endif %}
+            </p>
         </header>
 
-        <section class="dashboard__section">
-            <table class="matrix">
-                <thead>
-                    <tr class="matrix__row">
-                        <th class="matrix__cell matrix__cell--head matrix__cell--row-head">테마</th>
-                        {% for sido in sidos %}
-                            <th class="matrix__cell matrix__cell--head">{{ sido.name }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in matrix %}
-                        <tr class="matrix__row">
-                            <th class="matrix__cell matrix__cell--row-head">{{ row.theme.name }}</th>
-                            {% for cell in row.cells %}
-                                <td class="matrix__cell matrix__cell--{{ cell.state }}">
-                                    {% if cell.state == 'empty' %}
-                                        <span class="matrix__cell-label">·</span>
-                                    {% elseif cell.node %}
-                                        <a class="matrix__cell-link" href="{{ path('admin_nodes_show', {id: cell.node.id}) }}">
-                                            <span class="matrix__cell-figure">{{ cell.count }}</span>
-                                        </a>
-                                    {% else %}
-                                        <span class="matrix__cell-figure">{{ cell.count }}</span>
-                                    {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
+        {# 커버리지 요약 (top level만) #}
+        {% if coverage %}
+            <section class="dashboard__section">
+                <header class="dashboard__section-header">
+                    <h2 class="dashboard__section-title">테마별 커버리지</h2>
+                </header>
+                <div class="coverage">
+                    {% for row in coverage %}
+                        <div class="coverage__row">
+                            <span class="coverage__theme">{{ row.theme.name }}</span>
+                            <div class="coverage__tiers">
+                                {% for tier in ['sido', 'sigungu', 'dong'] %}
+                                    {% set t = attribute(row, tier) %}
+                                    {% set pct = t.total > 0 ? (t.live / t.total * 100)|round : 0 %}
+                                    <div class="coverage__tier" title="{{ tier }}: {{ t.live }} / {{ t.total }}">
+                                        <span class="coverage__tier-label">
+                                            {% if tier == 'sido' %}시도{% elseif tier == 'sigungu' %}시군구{% else %}동{% endif %}
+                                        </span>
+                                        <span class="coverage__tier-figure">{{ t.live }} <span class="coverage__tier-total">/ {{ t.total }}</span></span>
+                                        <span class="coverage__bar" aria-hidden="true">
+                                            <span class="coverage__bar-fill" style="width: {{ pct }}%"></span>
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     {% endfor %}
-                </tbody>
-            </table>
-            <ul class="legend">
-                <li class="legend__item">
-                    <span class="legend__swatch legend__swatch--live"></span>
-                    <span>live</span>
-                </li>
-                <li class="legend__item">
-                    <span class="legend__swatch legend__swatch--demoted"></span>
-                    <span>강등 (live → noindex)</span>
-                </li>
-                <li class="legend__item">
-                    <span class="legend__swatch legend__swatch--noindex"></span>
-                    <span>noindex</span>
-                </li>
-                <li class="legend__item">
-                    <span class="legend__swatch legend__swatch--empty"></span>
-                    <span>빈 좌표</span>
-                </li>
-            </ul>
+                </div>
+            </section>
+        {% endif %}
+
+        {# 매트릭스 #}
+        <section class="dashboard__section">
+            {% if columns is empty %}
+                <div class="panel">
+                    <div class="empty">
+                        <span class="empty__title">자식 지역이 없습니다</span>
+                        <span class="empty__hint">{{ parent.name }} 아래에 등록된 지역이 없어 더 드릴다운할 수 없습니다.</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="matrix-scroll">
+                    <table class="matrix">
+                        <thead>
+                            <tr class="matrix__row">
+                                <th class="matrix__cell matrix__cell--head matrix__cell--row-head">테마</th>
+                                {% for col in columns %}
+                                    <th class="matrix__cell matrix__cell--head">
+                                        {% if level != 'dong' %}
+                                            <a class="matrix__head-link" href="{{ path('admin_matrix', {path: parent ? parent.slug ~ '/' ~ col.slug : col.slug}) }}">
+                                                {{ col.name }}
+                                                <span class="matrix__head-drill" aria-hidden="true">→</span>
+                                            </a>
+                                        {% else %}
+                                            {{ col.name }}
+                                        {% endif %}
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in matrix %}
+                                <tr class="matrix__row">
+                                    <th class="matrix__cell matrix__cell--row-head">{{ row.theme.name }}</th>
+                                    {% for cell in row.cells %}
+                                        <td class="matrix__cell matrix__cell--{{ cell.state }}">
+                                            {% if cell.state == 'empty' %}
+                                                <span class="matrix__cell-label">·</span>
+                                            {% elseif cell.node %}
+                                                <a class="matrix__cell-link" href="{{ path('admin_nodes_show', {id: cell.node.id}) }}">
+                                                    <span class="matrix__cell-figure">{{ cell.count }}</span>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <ul class="legend">
+                    <li class="legend__item">
+                        <span class="legend__swatch legend__swatch--live"></span>
+                        <span>live</span>
+                    </li>
+                    <li class="legend__item">
+                        <span class="legend__swatch legend__swatch--demoted"></span>
+                        <span>강등 (live → noindex)</span>
+                    </li>
+                    <li class="legend__item">
+                        <span class="legend__swatch legend__swatch--noindex"></span>
+                        <span>noindex</span>
+                    </li>
+                    <li class="legend__item">
+                        <span class="legend__swatch legend__swatch--empty"></span>
+                        <span>빈 좌표</span>
+                    </li>
+                </ul>
+            {% endif %}
         </section>
     </div>
 {% endblock %}

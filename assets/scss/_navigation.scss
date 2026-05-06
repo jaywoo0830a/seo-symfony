@@ -1,0 +1,119 @@
+// =============================================================================
+// 내비게이션 보조 블록
+// crumbs (브레드크럼) / coverage (커버리지 막대)
+// =============================================================================
+
+@use 'mixins';
+
+// -----------------------------------------------------------------------------
+// crumbs — 계층 경로 (드릴다운 페이지 상단)
+// -----------------------------------------------------------------------------
+
+.crumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    font-size: var(--text-12);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+
+    &__link {
+        color: var(--color-soft);
+        font-weight: var(--weight-medium);
+        @include mixins.transition(color);
+
+        &:hover {
+            color: var(--color-mark);
+        }
+    }
+
+    &__sep {
+        color: var(--color-faint);
+    }
+
+    &__current {
+        color: var(--color-faint);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// coverage — 테마별 커버리지 막대
+// -----------------------------------------------------------------------------
+
+.coverage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+
+    &__row {
+        display: grid;
+        grid-template-columns: 8rem 1fr;
+        gap: var(--space-24);
+        align-items: center;
+        padding: var(--space-16) var(--space-20);
+        background-color: var(--color-surface);
+        border: var(--rule);
+        border-radius: var(--radius-lg);
+
+        @media (max-width: 50rem) {
+            grid-template-columns: 1fr;
+            gap: var(--space-12);
+        }
+    }
+
+    &__theme {
+        font-size: var(--text-16);
+        font-weight: var(--weight-semibold);
+        color: var(--color-ink);
+    }
+
+    &__tiers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-16);
+
+        @media (max-width: 36rem) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__tier {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    &__tier-label {
+        font-size: var(--text-12);
+        font-weight: var(--weight-medium);
+        color: var(--color-soft);
+    }
+
+    &__tier-figure {
+        font-size: var(--text-14);
+        font-weight: var(--weight-semibold);
+        color: var(--color-ink);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__tier-total {
+        color: var(--color-faint);
+        font-weight: var(--weight-regular);
+    }
+
+    &__bar {
+        display: block;
+        height: var(--space-4);
+        background-color: var(--color-tint);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+    }
+
+    &__bar-fill {
+        display: block;
+        height: 100%;
+        background-color: var(--color-mark);
+        border-radius: inherit;
+        @include mixins.transition(width);
+    }
+}

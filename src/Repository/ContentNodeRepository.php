@@ -131,4 +131,23 @@ class ContentNodeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * Count of live nodes for one theme at a specific region depth.
+     * Used by the matrix coverage summary (e.g. "tutoring · sido 12 / 17").
+     */
+    public function countLiveByThemeAndRegionDepth(\App\Entity\Theme $theme, int $regionDepth): int
+    {
+        return (int) $this->createQueryBuilder('n')
+            ->select('COUNT(n.id)')
+            ->innerJoin('n.region', 'r')
+            ->where('n.theme = :theme')
+            ->andWhere('n.status = :status')
+            ->andWhere('r.depth = :depth')
+            ->setParameter('theme', $theme)
+            ->setParameter('status', ContentStatus::Live)
+            ->setParameter('depth', $regionDepth)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

@@ -29,6 +29,7 @@
 
 // 7. 대시보드 위젯 (admin 전용 복합 블록)
 @use 'widgets';
+@use 'navigation';
 
 // 8. 공개 사이트
 @use 'public';
