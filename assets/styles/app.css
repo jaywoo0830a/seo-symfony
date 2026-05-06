@@ -180,6 +180,27 @@ table {
     cursor: default;
 }
 
+.layout__user {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-12);
+    font-size: var(--text-12);
+}
+
+.layout__user-name {
+    color: var(--color-soft);
+    letter-spacing: 0.04em;
+}
+
+.layout__user-logout {
+    color: var(--color-faint);
+    letter-spacing: 0.04em;
+}
+
+.layout__user-logout:hover {
+    color: var(--color-ink);
+}
+
 .layout__main > .layout__container {
     padding-block: var(--space-48) var(--space-64);
 }
@@ -434,6 +455,42 @@ table {
 
 .panel__action:hover {
     color: var(--color-ink);
+}
+
+/* =============================================================================
+   Block: login (full-page login screen)
+   ============================================================================= */
+
+.login {
+    max-width: 24rem;
+    margin: var(--space-96) auto var(--space-48);
+    padding-inline: var(--space-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+}
+
+.login__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    text-align: center;
+}
+
+.login__title {
+    font-size: var(--text-24);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.login__subtitle {
+    font-size: var(--text-12);
+    color: var(--color-faint);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: var(--weight-semibold);
+    margin: 0;
 }
 
 /* =============================================================================

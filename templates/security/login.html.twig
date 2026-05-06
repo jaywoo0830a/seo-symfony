@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}로그인 · SEO 대시보드{% endblock %}
+
+{% block stylesheets %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+{% endblock %}
+
+{% block javascripts %}{% endblock %}
+
+{% block body %}
+    <div class="login">
+        <header class="login__header">
+            <h1 class="login__title">SEO 대시보드</h1>
+            <p class="login__subtitle">관리자 로그인</p>
+        </header>
+
+        {% if error %}
+            <div class="flash flash--error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <form method="post" class="form">
+            <div class="form__row">
+                <label class="form__label" for="inputEmail">이메일</label>
+                <input type="email" id="inputEmail" name="_username" value="{{ last_username }}" class="form__input" required autofocus>
+            </div>
+
+            <div class="form__row">
+                <label class="form__label" for="inputPassword">비밀번호</label>
+                <input type="password" id="inputPassword" name="_password" class="form__input" required>
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="form__actions">
+                <button type="submit" class="button button--primary">로그인</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

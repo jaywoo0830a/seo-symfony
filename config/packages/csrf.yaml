@@ -1,13 +1,11 @@
 # CSRF protection.
 #
-# Forms use stateful (session-based) tokens so they work without JavaScript —
-# our admin dashboard is no-JS by design.
+# All tokens are stateful (session-based) so forms work without JavaScript —
+# the dashboard is no-JS by design and the login form is the same.
 #
-# Login/logout endpoints keep the stateless double-submit-cookie strategy
-# (the JS controller in assets/controllers/csrf_protection_controller.js
-# only runs when Stimulus is loaded; it is harmless when absent).
+# The stateless double-submit-cookie strategy ships with Symfony 8 webapp but
+# requires the JS controller in assets/controllers/csrf_protection_controller.js
+# to populate the token at submit time, which we do not load on dashboard pages.
 framework:
     csrf_protection:
-        stateless_token_ids:
-            - authenticate
-            - logout
+        stateless_token_ids: []

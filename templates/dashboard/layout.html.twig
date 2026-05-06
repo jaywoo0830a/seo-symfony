@@ -35,6 +35,12 @@
                            href="{{ path(item.route) }}">{{ item.label }}</a>
                     {% endfor %}
                 </nav>
+                {% if app.user %}
+                    <div class="layout__user">
+                        <span class="layout__user-name">{{ app.user.userIdentifier }}</span>
+                        <a class="layout__user-logout" href="{{ path('app_logout') }}">로그아웃</a>
+                    </div>
+                {% endif %}
             </div>
         </header>
 
