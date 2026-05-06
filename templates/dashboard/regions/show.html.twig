@@ -1,0 +1,79 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}{{ region.name }} · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ region.parent ? path('admin_regions_show', {id: region.parent.id}) : path('admin_regions') }}">
+                ← {{ region.parent ? region.parent.name : '지역 목록' }}
+            </a>
+            <h1 class="dashboard__title">{{ region.name }}</h1>
+            <p class="dashboard__subtitle">depth {{ region.depth }}{% if region.adminCode %} · {{ region.adminCode }}{% endif %}</p>
+        </header>
+
+        <section class="dashboard__section">
+            <div class="panel">
+                <ul class="list">
+                    <li class="list__row">
+                        <span class="list__label">슬러그</span>
+                        <span class="list__value">{{ region.slug }}</span>
+                    </li>
+                    <li class="list__row">
+                        <span class="list__label">depth</span>
+                        <span class="list__value">{{ region.depth }}</span>
+                    </li>
+                    <li class="list__row">
+                        <span class="list__label">부모</span>
+                        <span class="list__value">
+                            {% if region.parent %}
+                                <a href="{{ path('admin_regions_show', {id: region.parent.id}) }}">{{ region.parent.name }}</a>
+                            {% else %}
+                                <span class="data-table__muted">— 최상위 —</span>
+                            {% endif %}
+                        </span>
+                    </li>
+                    {% if region.lat or region.lng %}
+                        <li class="list__row">
+                            <span class="list__label">좌표</span>
+                            <span class="list__value">{{ region.lat }}, {{ region.lng }}</span>
+                        </li>
+                    {% endif %}
+                    <li class="list__row">
+                        <span class="list__label">콘텐츠 노드</span>
+                        <span class="list__value">{{ nodeCount }}</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        {% if children is not empty %}
+            <section class="dashboard__section">
+                <header class="dashboard__section-header">
+                    <h2 class="dashboard__section-title">자식 지역</h2>
+                    <span class="dashboard__section-meta">{{ children|length }}개</span>
+                </header>
+                <ul class="chip-grid">
+                    {% for child in children %}
+                        <li>
+                            <a class="chip chip--link" href="{{ path('admin_regions_show', {id: child.id}) }}">
+                                <span class="chip__name">{{ child.name }}</span>
+                                <span class="chip__code">{{ child.adminCode }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        <section class="dashboard__section">
+            <div class="form__actions">
+                <a class="button button--primary" href="{{ path('admin_regions_edit', {id: region.id}) }}">편집</a>
+                <form method="post" action="{{ path('admin_regions_delete', {id: region.id}) }}" class="form__inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-region-' ~ region.id) }}">
+                    <button type="submit" class="button button--danger">삭제</button>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock %}

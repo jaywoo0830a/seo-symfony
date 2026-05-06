@@ -1,0 +1,17 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}편집 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_regions_show', {id: region.id}) }}">← {{ region.name }}</a>
+            <h1 class="dashboard__title">편집</h1>
+        </header>
+
+        {{ include('dashboard/regions/_form.html.twig', {
+            submit_label: '저장',
+            cancel_path: path('admin_regions_show', {id: region.id})
+        }) }}
+    </div>
+{% endblock %}

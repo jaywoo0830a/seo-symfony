@@ -1,0 +1,77 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}개요 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <h1 class="dashboard__title">개요</h1>
+        </header>
+
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">현황</h2>
+            </header>
+            <div class="dashboard__grid dashboard__grid--stats">
+                <div class="stat">
+                    <span class="stat__label">테마</span>
+                    <span class="stat__value">{{ stats.themes }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">지역</span>
+                    <span class="stat__value">{{ stats.regions }}</span>
+                    <span class="stat__hint">시도 {{ stats.sidos }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">작성자</span>
+                    <span class="stat__value">{{ stats.authors }}</span>
+                    <span class="stat__hint">인증 {{ stats.authors_verified }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">콘텐츠 노드</span>
+                    <span class="stat__value">{{ stats.content_nodes }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">라이브</span>
+                    <span class="stat__value">{{ stats.content_nodes_live }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">데이터 포인트</span>
+                    <span class="stat__value">{{ stats.data_points }}</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">바로가기</h2>
+            </header>
+            <div class="dashboard__grid dashboard__grid--two-col">
+                <a class="link-card" href="{{ path('admin_matrix') }}">
+                    <span class="link-card__title">매트릭스</span>
+                    <span class="link-card__hint">테마 × 시도 좌표 전체</span>
+                </a>
+                <a class="link-card" href="{{ path('admin_queue') }}">
+                    <span class="link-card__title">갱신 큐</span>
+                    <span class="link-card__hint">90일 미갱신 {{ staleCount }}건</span>
+                </a>
+                <a class="link-card" href="{{ path('admin_silo') }}">
+                    <span class="link-card__title">무결성</span>
+                    <span class="link-card__hint">참조 카운트 점검</span>
+                </a>
+                <a class="link-card" href="{{ path('admin_themes') }}">
+                    <span class="link-card__title">테마</span>
+                    <span class="link-card__hint">{{ stats.themes }}개</span>
+                </a>
+                <a class="link-card" href="{{ path('admin_regions') }}">
+                    <span class="link-card__title">지역</span>
+                    <span class="link-card__hint">시도 {{ stats.sidos }}</span>
+                </a>
+                <a class="link-card" href="{{ path('admin_authors') }}">
+                    <span class="link-card__title">작성자</span>
+                    <span class="link-card__hint">{{ stats.authors }}명</span>
+                </a>
+            </div>
+        </section>
+    </div>
+{% endblock %}

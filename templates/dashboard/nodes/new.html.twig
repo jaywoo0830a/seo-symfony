@@ -1,0 +1,15 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}새 노드 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_nodes') }}">← 노드 목록</a>
+            <h1 class="dashboard__title">새 노드</h1>
+            <p class="dashboard__subtitle">테마와 지역 좌표를 정하고, 같은 좌표에 노드가 이미 있으면 거부됩니다.</p>
+        </header>
+
+        {{ include('dashboard/nodes/_form.html.twig', {submit_label: '생성'}) }}
+    </div>
+{% endblock %}

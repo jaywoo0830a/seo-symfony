@@ -1,0 +1,45 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}테마 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="toolbar">
+            <h1 class="toolbar__title">테마</h1>
+            <div class="toolbar__actions">
+                <a class="button button--primary" href="{{ path('admin_themes_new') }}">+ 새 테마</a>
+            </div>
+        </header>
+
+        {% if rows is empty %}
+            <div class="panel">
+                <div class="empty">
+                    <span class="empty__title">테마가 없습니다</span>
+                </div>
+            </div>
+        {% else %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>슬러그</th>
+                        <th class="data-table__cell--num">depth</th>
+                        <th class="data-table__cell--num">노드</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <td>{{ row.theme.name }}</td>
+                            <td><span class="data-table__muted">/{{ row.theme.slug }}/</span></td>
+                            <td class="data-table__cell--num">{{ row.theme.depth }}</td>
+                            <td class="data-table__cell--num">{{ row.nodeCount }}</td>
+                            <td><a href="{{ path('admin_themes_show', {id: row.theme.id}) }}">열기 →</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

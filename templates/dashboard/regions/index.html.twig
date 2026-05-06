@@ -1,0 +1,28 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}지역 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="toolbar">
+            <h1 class="toolbar__title">지역</h1>
+            <div class="toolbar__actions">
+                <a class="button button--primary" href="{{ path('admin_regions_new') }}">+ 새 지역</a>
+            </div>
+        </header>
+        <p class="dashboard__subtitle">시도 {{ rows|length }}개. 항목을 눌러 시군구로 들어가세요.</p>
+
+        <section class="dashboard__section">
+            <ul class="chip-grid">
+                {% for row in rows %}
+                    <li>
+                        <a class="chip chip--link" href="{{ path('admin_regions_show', {id: row.sido.id}) }}">
+                            <span class="chip__name">{{ row.sido.name }}</span>
+                            <span class="chip__code">{{ row.sigunguCount }}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+{% endblock %}

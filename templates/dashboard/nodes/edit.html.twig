@@ -1,0 +1,18 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}편집 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_nodes_show', {id: node.id}) }}">← 노드</a>
+            <h1 class="dashboard__title">편집</h1>
+            <p class="dashboard__subtitle">{{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% endif %}</p>
+        </header>
+
+        {{ include('dashboard/nodes/_form.html.twig', {
+            submit_label: '저장',
+            cancel_path: path('admin_nodes_show', {id: node.id})
+        }) }}
+    </div>
+{% endblock %}

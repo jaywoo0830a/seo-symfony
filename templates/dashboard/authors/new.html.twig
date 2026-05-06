@@ -1,0 +1,14 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}새 작성자 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_authors') }}">← 작성자 목록</a>
+            <h1 class="dashboard__title">새 작성자</h1>
+        </header>
+
+        {{ include('dashboard/authors/_form.html.twig', {submit_label: '생성'}) }}
+    </div>
+{% endblock %}

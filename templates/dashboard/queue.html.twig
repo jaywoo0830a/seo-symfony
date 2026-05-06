@@ -1,0 +1,72 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}갱신 큐 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <h1 class="dashboard__title">갱신 큐</h1>
+            <p class="dashboard__subtitle">마지막 검토 이후 경과한 라이브 노드 목록입니다.</p>
+        </header>
+
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">90일 초과</h2>
+                <span class="dashboard__section-meta">{{ overdue|length }}건</span>
+            </header>
+            {% if overdue is empty %}
+                <div class="panel">
+                    <div class="empty">
+                        <span class="empty__title">대상 없음</span>
+                    </div>
+                </div>
+            {% else %}
+                <ul class="tree">
+                    {% for node in overdue %}
+                        <li class="tree__item">
+                            <span class="tree__label">
+                                <span class="tree__name">{{ node.theme.name }}</span>
+                                {% if node.region %}
+                                    <span class="tree__slug">/{{ node.region.slug }}</span>
+                                {% endif %}
+                            </span>
+                            <span class="tree__meta">
+                                {{ node.lastReviewAt ? node.lastReviewAt|date('Y-m-d') : '미갱신' }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">60일 초과</h2>
+                <span class="dashboard__section-meta">{{ soon|length }}건</span>
+            </header>
+            {% if soon is empty %}
+                <div class="panel">
+                    <div class="empty">
+                        <span class="empty__title">대상 없음</span>
+                    </div>
+                </div>
+            {% else %}
+                <ul class="tree">
+                    {% for node in soon %}
+                        <li class="tree__item">
+                            <span class="tree__label">
+                                <span class="tree__name">{{ node.theme.name }}</span>
+                                {% if node.region %}
+                                    <span class="tree__slug">/{{ node.region.slug }}</span>
+                                {% endif %}
+                            </span>
+                            <span class="tree__meta">
+                                {{ node.lastReviewAt ? node.lastReviewAt|date('Y-m-d') : '미갱신' }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

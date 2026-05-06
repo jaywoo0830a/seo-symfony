@@ -1,0 +1,216 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}{{ node.theme.name }} · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_nodes') }}">← 노드 목록</a>
+            <h1 class="dashboard__title">
+                {{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% else %} · 허브{% endif %}
+            </h1>
+            <p class="dashboard__subtitle"><code>{{ url }}</code></p>
+        </header>
+
+        {# Top stat row: status, data, template, last review #}
+        <section class="dashboard__section">
+            <div class="dashboard__grid dashboard__grid--stats">
+                <div class="stat">
+                    <span class="stat__label">상태</span>
+                    <span class="stat__value"><span class="badge badge--{{ node.status.value }}">{{ node.status.value }}</span></span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">데이터 카운트</span>
+                    <span class="stat__value">{{ node.dataCount }}</span>
+                    <span class="stat__hint">발행 임계: 5</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">본문 템플릿</span>
+                    <span class="stat__value">{{ (node.bodyTemplate ?? derivedTemplate).value }}</span>
+                    <span class="stat__hint">{{ node.bodyTemplate ? '수동 지정' : '좌표 기반 자동' }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat__label">마지막 검토</span>
+                    <span class="stat__value">{{ node.lastReviewAt ? node.lastReviewAt|date('Y-m-d') : '—' }}</span>
+                </div>
+            </div>
+        </section>
+
+        {# Two-col: identity (theme/region/author) + publish gate #}
+        <section class="dashboard__section">
+            <div class="dashboard__grid dashboard__grid--two-col">
+                <div class="panel">
+                    <header class="panel__header">
+                        <span class="panel__title">좌표</span>
+                    </header>
+                    <ul class="list">
+                        <li class="list__row">
+                            <span class="list__label">테마</span>
+                            <span class="list__value">{{ node.theme.name }} <span class="data-table__muted">/{{ node.theme.slug }}/</span></span>
+                        </li>
+                        <li class="list__row">
+                            <span class="list__label">지역</span>
+                            <span class="list__value">
+                                {% if node.region %}
+                                    {{ node.region.name }} <span class="data-table__muted">depth {{ node.region.depth }}</span>
+                                {% else %}
+                                    <span class="data-table__muted">— 허브 —</span>
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="list__row">
+                            <span class="list__label">작성자</span>
+                            <span class="list__value">
+                                {% if node.author %}
+                                    {{ node.author.realName }}
+                                    {% if node.author.verified %}
+                                        <span class="badge badge--verified">인증</span>
+                                    {% else %}
+                                        <span class="badge badge--unverified">미인증</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="data-table__muted">미지정</span>
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="list__row">
+                            <span class="list__label">최초 발행</span>
+                            <span class="list__value">{{ node.firstPublishedAt ? node.firstPublishedAt|date('Y-m-d H:i') : '—' }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="panel">
+                    <header class="panel__header">
+                        <span class="panel__title">발행 게이트</span>
+                    </header>
+                    <ul class="list">
+                        {% for check in gate %}
+                            <li class="list__row">
+                                <span class="list__label">{{ check.label }}</span>
+                                <span class="list__value">
+                                    {% if check.met %}
+                                        <span class="badge badge--verified">통과</span>
+                                    {% else %}
+                                        <span class="badge badge--unverified">미달</span>
+                                    {% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        {# Intro text #}
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">인트로</h2>
+            </header>
+            <div class="panel">
+                {% if node.introText %}
+                    <p>{{ node.introText|nl2br }}</p>
+                {% else %}
+                    <div class="empty">
+                        <span class="empty__title">인트로 텍스트 없음</span>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        {# Data points by kind — CRUD #}
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">데이터 포인트</h2>
+                <span class="dashboard__section-meta">{{ node.dataPoints|length }}개 · 검증 {{ node.dataCount }}</span>
+            </header>
+            <div class="dashboard__grid dashboard__grid--two-col">
+                {% for kind, points in dataPointsByKind %}
+                    <div class="panel">
+                        <header class="panel__header">
+                            <span class="panel__title">{{ kind }}</span>
+                            <a class="panel__action" href="{{ path('admin_datapoints_new', {nodeId: node.id, kind: kind}) }}">+ 추가</a>
+                        </header>
+                        {% if points is empty %}
+                            <div class="empty">
+                                <span class="empty__title">없음</span>
+                            </div>
+                        {% else %}
+                            <ul class="dp-list">
+                                {% for dp in points %}
+                                    <li class="dp-list__item">
+                                        <div class="dp-list__head">
+                                            <span class="dp-list__title">{{ dp.title }}</span>
+                                            {% if dp.verified %}
+                                                <span class="badge badge--verified">검증</span>
+                                            {% else %}
+                                                <span class="badge badge--unverified">대기</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="dp-list__actions">
+                                            <a class="dp-list__action" href="{{ path('admin_datapoints_edit', {nodeId: node.id, id: dp.id}) }}">편집</a>
+                                            <form method="post" action="{{ path('admin_datapoints_verify', {nodeId: node.id, id: dp.id}) }}" class="form__inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('verify-dp-' ~ dp.id) }}">
+                                                <button type="submit" class="dp-list__action">{{ dp.verified ? '검증 취소' : '검증' }}</button>
+                                            </form>
+                                            <form method="post" action="{{ path('admin_datapoints_delete', {nodeId: node.id, id: dp.id}) }}" class="form__inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete-dp-' ~ dp.id) }}">
+                                                <button type="submit" class="dp-list__action dp-list__action--danger">삭제</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# Hierarchy: parent + children #}
+        {% if parent or children is not empty %}
+            <section class="dashboard__section">
+                <header class="dashboard__section-header">
+                    <h2 class="dashboard__section-title">계층</h2>
+                </header>
+                <div class="panel">
+                    <ul class="tree">
+                        {% if parent %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <span class="data-table__muted">부모</span>
+                                    <a class="tree__name" href="{{ path('admin_nodes_show', {id: parent.id}) }}">
+                                        {{ parent.theme.name }}{% if parent.region %} · {{ parent.region.name }}{% else %} · 허브{% endif %}
+                                    </a>
+                                </span>
+                                <span class="tree__meta"><span class="badge badge--{{ parent.status.value }}">{{ parent.status.value }}</span></span>
+                            </li>
+                        {% endif %}
+                        {% for child in children %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <span class="data-table__muted">자식</span>
+                                    <a class="tree__name" href="{{ path('admin_nodes_show', {id: child.id}) }}">
+                                        {{ child.region.name }}
+                                    </a>
+                                </span>
+                                <span class="tree__meta"><span class="badge badge--{{ child.status.value }}">{{ child.status.value }}</span></span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
+        {% endif %}
+
+        {# Actions #}
+        <section class="dashboard__section">
+            <div class="form__actions">
+                <a class="button button--primary" href="{{ path('admin_nodes_edit', {id: node.id}) }}">편집</a>
+                <form method="post" action="{{ path('admin_nodes_delete', {id: node.id}) }}" class="form__inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-node-' ~ node.id) }}">
+                    <button type="submit" class="button button--danger">삭제</button>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock %}

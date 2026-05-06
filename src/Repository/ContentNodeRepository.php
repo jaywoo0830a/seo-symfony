@@ -27,6 +27,45 @@ class ContentNodeRepository extends ServiceEntityRepository
     }
 
     /**
+     * Locates the parent node by walking one step toward the region tree root.
+     * Returns null for theme hubs (region IS NULL); they have no parent.
+     */
+    public function findParentOf(ContentNode $node): ?ContentNode
+    {
+        $region = $node->getRegion();
+        if ($region === null) {
+            return null;
+        }
+
+        return $this->findOneBy([
+            'theme' => $node->getTheme(),
+            'region' => $region->getParent(),
+        ]);
+    }
+
+    /**
+     * @return list<ContentNode>
+     */
+    public function findChildrenOf(ContentNode $node): array
+    {
+        $qb = $this->createQueryBuilder('n')
+            ->innerJoin('n.region', 'r')
+            ->where('n.theme = :theme')
+            ->setParameter('theme', $node->getTheme())
+            ->orderBy('r.depth', 'ASC')
+            ->addOrderBy('r.name', 'ASC');
+
+        if ($node->getRegion() === null) {
+            $qb->andWhere('r.depth = 1');
+        } else {
+            $qb->andWhere('r.parent = :parentRegion')
+                ->setParameter('parentRegion', $node->getRegion());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Live nodes for sitemap.xml generation, ordered by depth.
      *
      * @return list<ContentNode>

@@ -1,0 +1,62 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}콘텐츠 노드 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="toolbar">
+            <h1 class="toolbar__title">콘텐츠 노드</h1>
+            <div class="toolbar__actions">
+                <a class="button button--primary" href="{{ path('admin_nodes_new') }}">+ 새 노드</a>
+            </div>
+        </header>
+
+        {% if nodes is empty %}
+            <div class="panel">
+                <div class="empty">
+                    <span class="empty__title">노드가 없습니다</span>
+                    <span class="empty__hint">새 좌표(테마 × 지역)에 노드를 만들고 데이터 포인트를 채우세요.</span>
+                </div>
+            </div>
+        {% else %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>테마</th>
+                        <th>지역</th>
+                        <th>상태</th>
+                        <th class="data-table__cell--num">데이터</th>
+                        <th>작성자</th>
+                        <th>마지막 검토</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for node in nodes %}
+                        <tr>
+                            <td>{{ node.theme.name }}</td>
+                            <td>
+                                {% if node.region %}
+                                    {{ node.region.name }}
+                                {% else %}
+                                    <span class="data-table__muted">— 허브 —</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge badge--{{ node.status.value }}">{{ node.status.value }}</span></td>
+                            <td class="data-table__cell--num">{{ node.dataCount }}</td>
+                            <td>
+                                {% if node.author %}
+                                    {{ node.author.realName }}
+                                {% else %}
+                                    <span class="data-table__muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ node.lastReviewAt ? node.lastReviewAt|date('Y-m-d') : '—' }}</td>
+                            <td><a href="{{ path('admin_nodes_show', {id: node.id}) }}">열기 →</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

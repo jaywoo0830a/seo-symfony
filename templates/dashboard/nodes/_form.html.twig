@@ -1,0 +1,16 @@
+{% form_theme form 'dashboard/_form_theme.html.twig' %}
+
+{{ form_start(form, {attr: {class: 'form'}}) }}
+    {{ form_row(form.theme) }}
+    {{ form_row(form.region) }}
+    {{ form_row(form.author) }}
+    {{ form_row(form.status) }}
+    {{ form_row(form.introText) }}
+    {{ form_row(form.bodyTemplate) }}
+    {{ form_row(form.lastReviewAt) }}
+
+    <div class="form__actions">
+        <button type="submit" class="button button--primary">{{ submit_label|default('저장') }}</button>
+        <a class="button button--ghost" href="{{ cancel_path|default(path('admin_nodes')) }}">취소</a>
+    </div>
+{{ form_end(form) }}

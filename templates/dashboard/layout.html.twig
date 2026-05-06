@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SEO 대시보드{% endblock %}
+
+{% block stylesheets %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+{% endblock %}
+
+{% block javascripts %}{% endblock %}
+
+{% block body %}
+    {% set nav = [
+        { route: 'admin_dashboard', label: '개요' },
+        { route: 'admin_nodes',     label: '노드' },
+        { route: 'admin_matrix',    label: '매트릭스' },
+        { route: 'admin_queue',     label: '갱신 큐' },
+        { route: 'admin_silo',      label: '무결성' },
+        { route: 'admin_themes',    label: '테마' },
+        { route: 'admin_regions',   label: '지역' },
+        { route: 'admin_authors',   label: '작성자' }
+    ] %}
+
+    <div class="layout">
+        <header class="layout__header">
+            <div class="layout__container">
+                <a class="layout__brand" href="{{ path('admin_dashboard') }}">
+                    <span class="layout__brand-name">SEO 대시보드</span>
+                </a>
+                <nav class="layout__nav">
+                    {% for item in nav %}
+                        <a class="layout__nav-link{{ app.current_route == item.route or app.current_route starts with item.route ~ '_' ? ' layout__nav-link--current' }}"
+                           href="{{ path(item.route) }}">{{ item.label }}</a>
+                    {% endfor %}
+                </nav>
+            </div>
+        </header>
+
+        <main class="layout__main">
+            <div class="layout__container">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash flash--{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <footer class="layout__footer">
+            <div class="layout__container">
+                <span>{{ 'now'|date('Y-m-d H:i') }}</span>
+                <span>{{ app.environment }}</span>
+            </div>
+        </footer>
+    </div>
+{% endblock %}

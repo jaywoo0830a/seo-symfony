@@ -1,0 +1,49 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}작성자 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="toolbar">
+            <h1 class="toolbar__title">작성자</h1>
+            <div class="toolbar__actions">
+                <a class="button button--primary" href="{{ path('admin_authors_new') }}">+ 새 작성자</a>
+            </div>
+        </header>
+
+        {% if authors is empty %}
+            <div class="panel">
+                <div class="empty">
+                    <span class="empty__title">작성자가 없습니다</span>
+                </div>
+            </div>
+        {% else %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>슬러그</th>
+                        <th>상태</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for author in authors %}
+                        <tr>
+                            <td>{{ author.realName }}</td>
+                            <td><span class="data-table__muted">@{{ author.slug }}</span></td>
+                            <td>
+                                {% if author.verified %}
+                                    <span class="badge badge--verified">인증</span>
+                                {% else %}
+                                    <span class="badge badge--unverified">미인증</span>
+                                {% endif %}
+                            </td>
+                            <td><a href="{{ path('admin_authors_show', {id: author.id}) }}">열기 →</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

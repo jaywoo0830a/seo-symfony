@@ -1,0 +1,15 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}데이터 편집 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_nodes_show', {id: node.id}) }}">← {{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% endif %}</a>
+            <h1 class="dashboard__title">데이터 편집</h1>
+            <p class="dashboard__subtitle">{{ datapoint.kind.value }} · {{ datapoint.title }}</p>
+        </header>
+
+        {{ include('dashboard/datapoints/_form.html.twig', {submit_label: '저장'}) }}
+    </div>
+{% endblock %}

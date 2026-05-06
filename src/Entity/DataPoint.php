@@ -31,6 +31,7 @@ class DataPoint
     private string $title = '';
 
     #[ORM\Column(type: Types::JSON, options: ['jsonb' => true])]
+    #[Assert\NotNull]
     private mixed $value = null;
 
     #[ORM\Column(length: 500, nullable: true)]

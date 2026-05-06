@@ -1,0 +1,89 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}{{ theme.name }} · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_themes') }}">← 테마 목록</a>
+            <h1 class="dashboard__title">{{ theme.name }}</h1>
+            <p class="dashboard__subtitle"><code>/{{ theme.slug }}/</code> · depth {{ theme.depth }}</p>
+        </header>
+
+        <section class="dashboard__section">
+            <div class="panel">
+                <ul class="list">
+                    <li class="list__row">
+                        <span class="list__label">슬러그</span>
+                        <span class="list__value">{{ theme.slug }}</span>
+                    </li>
+                    <li class="list__row">
+                        <span class="list__label">depth</span>
+                        <span class="list__value">{{ theme.depth }}</span>
+                    </li>
+                    <li class="list__row">
+                        <span class="list__label">부모</span>
+                        <span class="list__value">
+                            {% if theme.parent %}
+                                <a href="{{ path('admin_themes_show', {id: theme.parent.id}) }}">{{ theme.parent.name }}</a>
+                            {% else %}
+                                <span class="data-table__muted">— 루트 —</span>
+                            {% endif %}
+                        </span>
+                    </li>
+                    <li class="list__row">
+                        <span class="list__label">콘텐츠 노드</span>
+                        <span class="list__value">{{ nodeCount }}</span>
+                    </li>
+                    <li class="list__row">
+                        <span class="list__label">생성</span>
+                        <span class="list__value">{{ theme.createdAt|date('Y-m-d H:i') }}</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        {% if theme.description %}
+            <section class="dashboard__section">
+                <header class="dashboard__section-header">
+                    <h2 class="dashboard__section-title">설명</h2>
+                </header>
+                <div class="panel">
+                    <p>{{ theme.description|nl2br }}</p>
+                </div>
+            </section>
+        {% endif %}
+
+        {% if children is not empty %}
+            <section class="dashboard__section">
+                <header class="dashboard__section-header">
+                    <h2 class="dashboard__section-title">자식 테마</h2>
+                    <span class="dashboard__section-meta">{{ children|length }}개</span>
+                </header>
+                <div class="panel">
+                    <ul class="tree">
+                        {% for child in children %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <a class="tree__name" href="{{ path('admin_themes_show', {id: child.id}) }}">{{ child.name }}</a>
+                                    <span class="tree__slug">/{{ child.slug }}/</span>
+                                </span>
+                                <span class="tree__meta">depth {{ child.depth }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="dashboard__section">
+            <div class="form__actions">
+                <a class="button button--primary" href="{{ path('admin_themes_edit', {id: theme.id}) }}">편집</a>
+                <form method="post" action="{{ path('admin_themes_delete', {id: theme.id}) }}" class="form__inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-theme-' ~ theme.id) }}">
+                    <button type="submit" class="button button--danger">삭제</button>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock %}

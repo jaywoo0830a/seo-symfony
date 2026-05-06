@@ -1,0 +1,14 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}새 테마 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <a class="dashboard__back" href="{{ path('admin_themes') }}">← 테마 목록</a>
+            <h1 class="dashboard__title">새 테마</h1>
+        </header>
+
+        {{ include('dashboard/themes/_form.html.twig', {submit_label: '생성'}) }}
+    </div>
+{% endblock %}

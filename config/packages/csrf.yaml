@@ -1,11 +1,13 @@
-# Enable stateless CSRF protection for forms and logins/logouts
+# CSRF protection.
+#
+# Forms use stateful (session-based) tokens so they work without JavaScript —
+# our admin dashboard is no-JS by design.
+#
+# Login/logout endpoints keep the stateless double-submit-cookie strategy
+# (the JS controller in assets/controllers/csrf_protection_controller.js
+# only runs when Stimulus is loaded; it is harmless when absent).
 framework:
-    form:
-        csrf_protection:
-            token_id: submit
-
     csrf_protection:
         stateless_token_ids:
-            - submit
             - authenticate
             - logout
