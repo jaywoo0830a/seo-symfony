@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql -h 127.0.0.1 -p 57475 -U app -d app -At -c ' *)",
+      "Bash(psql --version)",
+      "Bash(PGPASSWORD='!ChangeMe!' psql -h 127.0.0.1 -p 57475 -U app -d app -c \"SELECT 1\")",
+      "Bash(docker exec seo-symfony-database-1 psql -U app -d app -c ' *)",
+      "Bash(php bin/console doctrine:migrations:status)",
+      "Bash(php bin/console doctrine:schema:validate)"
+    ]
+  }
+}

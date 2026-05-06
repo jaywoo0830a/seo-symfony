@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>심포니 8로 쇼핑몰 만들기 — 빠른 시작</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/htmlasitis@0.1.0/htmlasitis.css">
+<style>
+  :root {
+    --hai-font-body: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --hai-font-mono: "Roboto Mono", ui-monospace, "SF Mono", Monaco, Consolas, monospace;
+    --hai-font-size-body: 10pt;
+    --hai-line-height-body: 1.45;
+    --hai-line-height-heading: 1.3;
+    --hai-color-faint: #888;
+    --hai-color-soft: #555;
+  }
+  body { letter-spacing: -0.01em; word-break: keep-all; }
+  p { text-align: justify; margin: 3px 0; }
+  pre { font-size: 8pt; line-height: 1.4; padding: 6px 10px; margin: 5px 0; }
+  code { font-size: 8.8pt; }
+  h1 { margin: 0 0 9px 0; font-weight: 700; font-size: 18pt; padding-bottom: 5px; }
+  h2 { font-size: 11.5pt; margin: 8px 0 2px 0; }
+  h3 { font-size: 10.5pt; margin: 6px 0 2px 0; }
+  ul, ol { margin: 3px 0; padding-left: 18px; }
+  li { margin: 0; }
+  .hai-figure {
+    display: block;
+    text-align: center;
+    margin: 8px auto;
+  }
+  .hai-figure > svg {
+    max-width: 100%;
+    max-height: 95mm;
+    height: auto;
+  }
+  .hai-figure.mermaid {
+    color: transparent;
+    font-size: 0;
+  }
+  .hai-figure.mermaid > svg {
+    color: initial;
+    font-size: 13px;
+  }
+  .hai-figure-caption {
+    text-align: center;
+    font-size: 8.5pt;
+    color: var(--hai-color-faint);
+    font-style: italic;
+    margin: 0 0 6px 0;
+  }
+  .hai-cover .hai-cover-volume {
+    font-family: "Roboto Mono", monospace;
+    font-size: 11pt;
+    letter-spacing: 0.3em;
+    color: var(--hai-color-soft);
+    margin-bottom: 80px;
+  }
+  .hai-cover h1 { font-size: 32pt; letter-spacing: -0.02em; }
+  .hai-cover .hai-cover-subtitle { font-size: 12pt; line-height: 1.6; max-width: 75%; margin-top: 8px; }
+  .hai-cover .hai-cover-author { font-family: "Roboto Mono", monospace; font-size: 9.5pt; letter-spacing: 0.15em; }
+  .hai-divider h1 { font-size: 30pt; letter-spacing: -0.02em; }
+  .hai-divider-subtitle { font-family: "Roboto Mono", monospace; font-size: 11pt; letter-spacing: 0.2em; color: var(--hai-color-soft); margin-top: 12px; }
+  .hai-toc { font-size: 10pt; line-height: 1.55; }
+  .hai-toc-row { display: flex; align-items: baseline; gap: 4px; }
+  .hai-toc-row .hai-toc-dots { flex: 1; border-bottom: 1px dotted var(--hai-color-faint); margin: 0 4px; transform: translateY(-3px); }
+  .hai-toc-part { font-weight: 700; margin-top: 7px; }
+  .hai-toc-row.hai-toc-sub { padding-left: 12px; font-size: 9.8pt; }
+  .hai-pn { font-family: "Roboto Mono", monospace; font-size: 9pt; color: var(--hai-color-faint); }
+  .hai-callout { font-size: 9.8pt; padding: 8px 11px; margin: 9px 0; }
+</style>
+</head>
+<body>
+
+<!-- 1 / cover -->
+<section class="hai-page hai-cover">
+  <div class="hai-cover-volume">QUICKSTART · 01</div>
+  <h1>심포니 8로<br>쇼핑몰 만들기</h1>
+  <div class="hai-cover-subtitle">Doctrine · Forms · Validation · Security · Session<br>Cache · Logging · Error Pages · Console · Notifier · Testing<br>핵심 11개 주제 한 권에</div>
+  <div class="hai-cover-author">JAYWOO · 2026</div>
+</section>
+
+<!-- 2 / TOC -->
+<section class="hai-page">
+  <h1>차례</h1>
+  <div class="hai-toc">
+    <div class="hai-toc-row"><span>머리말</span><span class="hai-toc-dots"></span><span class="hai-pn">3</span></div>
+    <div class="hai-toc-part">1부 — 가게를 짓다</div>
+    <div class="hai-toc-row hai-toc-sub"><span>1.1 시작 — symfony new와 도커</span><span class="hai-toc-dots"></span><span class="hai-pn">5</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>1.2 디렉터리 구조</span><span class="hai-toc-dots"></span><span class="hai-pn">6</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>1.3 첫 컨트롤러 — invokable</span><span class="hai-toc-dots"></span><span class="hai-pn">7</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>1.4 요청 처리 흐름</span><span class="hai-toc-dots"></span><span class="hai-pn">8</span></div>
+    <div class="hai-toc-part">2부 — Doctrine ORM</div>
+    <div class="hai-toc-row hai-toc-sub"><span>2.1 Product 엔티티</span><span class="hai-toc-dots"></span><span class="hai-pn">10</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>2.2 Order · OrderItem 관계</span><span class="hai-toc-dots"></span><span class="hai-pn">11</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>2.3 마이그레이션</span><span class="hai-toc-dots"></span><span class="hai-pn">12</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>2.4 Fixtures (시드 데이터)</span><span class="hai-toc-dots"></span><span class="hai-pn">13</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>2.5 QueryBuilder</span><span class="hai-toc-dots"></span><span class="hai-pn">14</span></div>
+    <div class="hai-toc-part">3부 — Form & Validation</div>
+    <div class="hai-toc-row hai-toc-sub"><span>3.1 FormType 작성</span><span class="hai-toc-dots"></span><span class="hai-pn">16</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>3.2 컨트롤러와 handleRequest</span><span class="hai-toc-dots"></span><span class="hai-pn">17</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>3.3 Validation 제약</span><span class="hai-toc-dots"></span><span class="hai-pn">18</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>3.4 CSRF · Flash 메시지</span><span class="hai-toc-dots"></span><span class="hai-pn">19</span></div>
+    <div class="hai-toc-part">4부 — Security</div>
+    <div class="hai-toc-row hai-toc-sub"><span>4.1 User 엔티티</span><span class="hai-toc-dots"></span><span class="hai-pn">21</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>4.2 Form login과 firewall</span><span class="hai-toc-dots"></span><span class="hai-pn">22</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>4.3 ROLE과 #[IsGranted]</span><span class="hai-toc-dots"></span><span class="hai-pn">23</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>4.4 Voter — 인스턴스 단위 인가</span><span class="hai-toc-dots"></span><span class="hai-pn">24</span></div>
+    <div class="hai-toc-part">5부 — Session</div>
+    <div class="hai-toc-row hai-toc-sub"><span>5.1 Session 기본</span><span class="hai-toc-dots"></span><span class="hai-pn">26</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>5.2 세션 기반 장바구니</span><span class="hai-toc-dots"></span><span class="hai-pn">27</span></div>
+    <div class="hai-toc-part">6부 — 운영 도구</div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.1 Console — #[AsCommand]</span><span class="hai-toc-dots"></span><span class="hai-pn">29</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.2 Console — 인자 · 옵션 · IO</span><span class="hai-toc-dots"></span><span class="hai-pn">30</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.3 Cache — Symfony Contracts</span><span class="hai-toc-dots"></span><span class="hai-pn">31</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.4 HTTP Cache</span><span class="hai-toc-dots"></span><span class="hai-pn">32</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.5 Logging — Monolog</span><span class="hai-toc-dots"></span><span class="hai-pn">33</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.6 Error Pages</span><span class="hai-toc-dots"></span><span class="hai-pn">34</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.7 Notifier — Email</span><span class="hai-toc-dots"></span><span class="hai-pn">35</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.8 Notifier — Chat · SMS</span><span class="hai-toc-dots"></span><span class="hai-pn">36</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.9 Testing — Unit · Integration</span><span class="hai-toc-dots"></span><span class="hai-pn">37</span></div>
+    <div class="hai-toc-row hai-toc-sub"><span>6.10 Testing — Functional</span><span class="hai-toc-dots"></span><span class="hai-pn">38</span></div>
+    <div class="hai-toc-row"><span>닫는 글 · 콜로폰</span><span class="hai-toc-dots"></span><span class="hai-pn">39</span></div>
+  </div>
+</section>
+
+<!-- 3 / preface -->
+<section class="hai-page">
+  <h1>머리말</h1>
+  <p>본서는 라라벨로 한 개 이상의 실 서비스를 출시한 PHP 개발자를 대상으로, 심포니 8.0 환경에서 작은 쇼핑몰을 1주일 내에 출시할 수 있는 최소 지식을 제공한다.</p>
+  <h2>다루는 주제</h2>
+  <p>심포니 공식 문서가 “핵심 컴포넌트”로 분류하는 11개 주제를 한 프로젝트(작은 쇼핑몰) 안에서 일관된 코드로 보여준다.</p>
+  <ol>
+    <li><strong>Doctrine</strong> — ORM, 마이그레이션, 픽스처, QueryBuilder</li>
+    <li><strong>Forms</strong> — FormType, handleRequest, 다단계 폼 패턴</li>
+    <li><strong>Validation</strong> — Assert 제약, 폼·엔티티 결합</li>
+    <li><strong>Security</strong> — User, firewall, ROLE, Voter</li>
+    <li><strong>Session</strong> — Flash, 세션 기반 장바구니</li>
+    <li><strong>Cache</strong> — 애플리케이션 캐시, HTTP 캐시</li>
+    <li><strong>Logging</strong> — Monolog 채널, 운영 구성</li>
+    <li><strong>Error Pages</strong> — 404·500 커스터마이즈</li>
+    <li><strong>Console</strong> — invokable 명령, <code>#[Argument]</code>·<code>#[Option]</code></li>
+    <li><strong>Notifier</strong> — 이메일·Slack·SMS 통합 알림</li>
+    <li><strong>Testing</strong> — PHPUnit 단위·통합·기능 테스트</li>
+  </ol>
+  <h2>대상 환경</h2>
+  <ul>
+    <li>PHP 8.5.5 (2026년 3월 GA)</li>
+    <li>Symfony 8.0.x (2025년 11월 GA)</li>
+    <li>PostgreSQL 16, Docker Compose v2</li>
+  </ul>
+  <h2>코드 표기</h2>
+  <p>모든 파일 경로는 프로젝트 루트 기준이다. 셸 명령은 <code>$</code> 프롬프트로 시작한다. 라라벨과 1:1 매핑이 가능한 지점은 “라라벨 대응” 표시로 함께 노출한다.</p>
+  <div class="hai-page-number">— 3 —</div>
+</section>
+
+<!-- 4 / part 1 divider -->
+<section class="hai-page hai-divider">
+  <h1>1부</h1>
+  <div class="hai-divider-subtitle">가게를 짓다</div>
+</section>
+
+<!-- 5 / 1.1 setup -->
+<section class="hai-page">
+  <h1>1.1 시작 — symfony new와 도커</h1>
+  <p>본 절은 빈 심포니 8.0 webapp 프로젝트를 만들고 PostgreSQL을 도커로 띄우는 절차를 정리한다.</p>
+  <h2>Symfony CLI 설치</h2>
+<pre><code>$ curl -sS https://get.symfony.com/cli/installer | bash
+$ export PATH="$HOME/.symfony5/bin:$PATH"
+$ symfony check:requirements</code></pre>
+  <h2>프로젝트 생성</h2>
+<pre><code>$ symfony new shop --version="8.0.*" --webapp
+$ cd shop
+$ symfony serve -d</code></pre>
+  <p><code>--webapp</code> 플래그는 Doctrine·Twig·Form·Validator·Security·Mailer·Messenger·Maker 번들을 일괄 설치한다. 라라벨의 <code>composer create-project laravel/laravel</code> 직후 상태에 해당한다.</p>
+  <h2>도커로 데이터베이스</h2>
+<pre><code># compose.yaml (--webapp 플래그가 자동 생성)
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: !ChangeMe!
+    ports: ["5432:5432"]
+    volumes: ["db_data:/var/lib/postgresql/data"]
+volumes: { db_data: }</code></pre>
+<pre><code>$ docker compose up -d
+$ symfony console doctrine:database:create --if-not-exists</code></pre>
+  <p>Symfony CLI는 도커 컴포즈를 감지해 <code>DATABASE_URL</code>을 자동으로 환경변수에 노출한다. 별도 <code>.env</code> 수정 없이 바로 사용 가능하다.</p>
+  <div class="hai-page-number">— 5 —</div>
+</section>
+
+<!-- 6 / 1.2 directory -->
+<section class="hai-page">
+  <h1>1.2 디렉터리 구조</h1>
+  <p>심포니 8 webapp 스캐폴드의 표준 디렉터리는 다음과 같다.</p>
+<pre><code>shop/
+├── assets/            # JS · CSS 소스 (AssetMapper)
+├── bin/console        # CLI 진입점 (artisan에 해당)
+├── config/
+│   ├── bundles.php    # 활성 번들 목록
+│   ├── packages/      # 번들별 설정
+│   ├── routes.php     # 추가 라우트 (보통 비어 있음)
+│   └── services.php   # 서비스 컨테이너
+├── migrations/        # Doctrine 마이그레이션
+├── public/index.php   # FrontController
+├── src/
+│   ├── Controller/
+│   ├── Entity/
+│   ├── Form/
+│   ├── Repository/
+│   ├── Security/
+│   └── Kernel.php
+├── templates/         # Twig
+├── tests/             # PHPUnit
+├── translations/
+├── var/{cache,log}/
+├── compose.yaml
+└── .env, .env.dev, .env.test</code></pre>
+  <h2>라라벨과의 매핑</h2>
+  <table>
+    <tr><th>라라벨</th><th>심포니</th></tr>
+    <tr><td><code>app/</code></td><td><code>src/</code> (네임스페이스 <code>App\</code>)</td></tr>
+    <tr><td><code>routes/web.php</code></td><td><code>#[Route]</code> 속성 (컨트롤러 자체에)</td></tr>
+    <tr><td><code>config/app.php</code></td><td><code>config/packages/{번들}.php</code></td></tr>
+    <tr><td><code>database/migrations/</code></td><td><code>migrations/</code></td></tr>
+    <tr><td><code>resources/views/</code></td><td><code>templates/</code></td></tr>
+    <tr><td><code>storage/</code></td><td><code>var/</code></td></tr>
+    <tr><td><code>php artisan</code></td><td><code>php bin/console</code></td></tr>
+  </table>
+  <p>라우트가 별도 파일이 아니라 컨트롤러 클래스의 PHP 속성으로 결합되는 점이 가장 큰 구조적 차이다.</p>
+  <div class="hai-page-number">— 6 —</div>
+</section>
+
+<!-- 7 / 1.3 first controller -->
+<section class="hai-page">
+  <h1>1.3 첫 컨트롤러 — invokable</h1>
+  <p>심포니 8.0의 권장 컨트롤러 패턴은 <strong>단일 액션 invokable 클래스</strong>다. <code>__invoke()</code> 메서드를 통해 컨트롤러 클래스 자체가 하나의 호출 가능 객체로 동작한다.</p>
+<pre><code>// src/Controller/HomeController.php
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+final class HomeController extends AbstractController
+{
+    #[Route('/', name: 'home', methods: ['GET'])]
+    public function __invoke(): Response
+    {
+        return $this-&gt;render('home.html.twig', [
+            'title' =&gt; '심포니 쇼핑몰',
+        ]);
+    }
+}</code></pre>
+  <h2>라라벨 대응</h2>
+<pre><code>// 라라벨
+Route::get('/', HomeController::class)-&gt;name('home');
+
+class HomeController extends Controller
+{
+    public function __invoke() {
+        return view('home', ['title' =&gt; '쇼핑몰']);
+    }
+}</code></pre>
+  <h2>AbstractController가 제공하는 헬퍼</h2>
+  <ul>
+    <li><code>render($template, $context)</code> — Twig 응답</li>
+    <li><code>json($data, $status)</code> — JSON 응답</li>
+    <li><code>redirectToRoute($name, $params)</code> — 302 리다이렉트</li>
+    <li><code>createNotFoundException()</code> · <code>createAccessDeniedException()</code></li>
+    <li><code>addFlash($type, $msg)</code> · <code>getUser()</code></li>
+    <li><code>denyAccessUnlessGranted($attr, $subject)</code></li>
+    <li><code>isCsrfTokenValid($id, $token)</code></li>
+  </ul>
+  <p>이 7개 헬퍼면 컨트롤러의 90%를 작성할 수 있다.</p>
+  <div class="hai-page-number">— 7 —</div>
+</section>
+
+<!-- 8 / 1.4 request lifecycle -->
+<section class="hai-page">
+  <h1>1.4 요청 처리 흐름</h1>
+  <p>HTTP 요청이 <code>HttpKernel</code>에 도착해서 응답으로 반환되기까지의 흐름은 다음과 같다.</p>
+  <div class="hai-figure mermaid">
+sequenceDiagram
+  participant B as Browser
+  participant K as HttpKernel
+  participant R as Router
+  participant C as Controller
+  participant T as Twig
+  B-&gt;&gt;K: HTTP 요청
+  K-&gt;&gt;R: match(request)
+  R--&gt;&gt;K: 컨트롤러 콜러블
+  K-&gt;&gt;C: __invoke(args)
+  C-&gt;&gt;T: render(template, ctx)
+  T--&gt;&gt;C: HTML
+  C--&gt;&gt;K: Response
+  K--&gt;&gt;B: 응답
+  </div>
+  <div class="hai-figure-caption">그림 1. 요청-응답 처리 흐름</div>
+  <h2>주요 이벤트</h2>
+  <p>각 단계에서 <code>EventDispatcher</code>가 이벤트를 발행한다. 사용자 코드는 <code>#[AsEventListener]</code>로 임의 단계에 후킹할 수 있다.</p>
+  <ul>
+    <li><code>kernel.request</code>: Firewall, Locale 결정</li>
+    <li><code>kernel.controller</code>: 컨트롤러 결정 직후 (IsGranted, ParamConverter)</li>
+    <li><code>kernel.view</code>: 컨트롤러가 Response가 아닌 값을 반환했을 때</li>
+    <li><code>kernel.response</code>: 응답 직전 (보안 헤더, Profiler)</li>
+    <li><code>kernel.terminate</code>: 응답 전송 후 (메트릭, 비동기 디스패치)</li>
+    <li><code>kernel.exception</code>: 예외 발생 시</li>
+  </ul>
+  <p>라라벨의 미들웨어 파이프라인이 단일 추상이라면, 심포니는 위 6개 이벤트 + 리스너 우선순위 + Firewall이라는 다층 구조로 같은 책임을 분담한다.</p>
+  <div class="hai-page-number">— 8 —</div>
+</section>
+
+<!-- 9 / part 2 divider -->
+<section class="hai-page hai-divider">
+  <h1>2부</h1>
+  <div class="hai-divider-subtitle">Doctrine ORM</div>
+</section>
+
+<!-- 10 / 2.1 product entity -->
+<section class="hai-page">
+  <h1>2.1 Product 엔티티</h1>
+  <p>Doctrine은 Active Record(라라벨 Eloquent)가 아닌 <strong>Data Mapper</strong> 패턴을 따른다. 엔티티는 데이터의 모양만 담고, 영속화는 EntityManager가, 질의는 Repository가 책임진다.</p>
+<pre><code>// src/Entity/Product.php
+namespace App\Entity;
+
+use App\Repository\ProductRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Index(columns: ['created_at'], name: 'ix_product_created_at')]
+class Product
+{
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 200)]
+    #[Assert\NotBlank, Assert\Length(max: 200)]
+    private string $name = '';
+
+    #[ORM\Column(length: 220, unique: true)]
+    private string $slug = '';
+
+    #[ORM\Column]
+    #[Assert\PositiveOrZero]
+    private int $priceKrw = 0;
+
+    #[ORM\Column]
+    private int $stock = 0;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
+
+    public function __construct() {
+        $this-&gt;createdAt = new \DateTimeImmutable();
+    }
+    // 게터·세터는 make:entity --regenerate로 생성
+}</code></pre>
+  <p>매핑 메타데이터는 PHP 속성(<code>#[ORM\*]</code>)으로 표현한다. <code>#[Assert\*]</code> 제약이 같은 위치에 있어 데이터 정의의 단일 출처(SSOT) 원칙이 유지된다.</p>
+  <div class="hai-page-number">— 10 —</div>
+</section>
+
+<!-- 11 / 2.2 order/orderitem -->
+<section class="hai-page">
+  <h1>2.2 Order · OrderItem 관계</h1>
+  <p>주문은 헤더(<code>Order</code>) + 라인(<code>OrderItem</code>) 두 엔티티로 구성한다.</p>
+  <div class="hai-figure mermaid">
+erDiagram
+  USER ||--o{ ORDERS : places
+  ORDERS ||--|{ ORDER_ITEM : contains
+  PRODUCT ||--o{ ORDER_ITEM : referenced
+  USER {
+    int id PK
+    string email UK
+  }
+  PRODUCT {
+    int id PK
+    string name
+    int price_krw
+    int stock
+  }
+  ORDERS {
+    int id PK
+    int user_id FK
+    string status
+    int total_krw
+    datetime placed_at
+  }
+  ORDER_ITEM {
+    int id PK
+    int order_id FK
+    int product_id FK
+    int quantity
+    int unit_price_krw
+  }
+  </div>
+  <div class="hai-figure-caption">그림 2. 쇼핑몰 도메인 ER</div>
+  <p><code>ORDER_ITEM.unit_price_krw</code>가 분리되어 있는 점에 주목한다. 상품 가격은 변경되어도, 과거 주문의 라인 가격은 시점값을 유지해야 회계 무결성이 보장된다.</p>
+<pre><code>#[ORM\Entity, ORM\Table(name: 'orders')]
+class Order {
+    #[ORM\OneToMany(targetEntity: OrderItem::class,
+        mappedBy: 'order', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $items;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $customer;
+}</code></pre>
+  <p><code>orders</code>로 테이블명을 명시한 이유는 <code>order</code>가 PostgreSQL 예약어이기 때문이다.</p>
+  <div class="hai-page-number">— 11 —</div>
+</section>
+
+<!-- 12 / 2.3 migration -->
+<section class="hai-page">
+  <h1>2.3 마이그레이션</h1>
+  <p>DoctrineMigrationsBundle은 “엔티티 ↔ 스키마” 차분을 자동으로 추출한다. 사용자가 SQL을 직접 작성하는 일은 거의 없다.</p>
+  <h2>차분 생성과 적용</h2>
+<pre><code>$ php bin/console make:migration
+> Generated migrations/Version20260503120000.php
+
+$ php bin/console doctrine:migrations:migrate
+> WARNING! Are you sure? (yes/no) [yes]:
+$ php bin/console doctrine:migrations:status</code></pre>
+  <h2>생성된 파일 구조</h2>
+<pre><code>final class Version20260503120000 extends AbstractMigration
+{
+    public function getDescription(): string {
+        return 'Initial schema: product, orders, order_item, app_user';
+    }
+
+    public function up(Schema $schema): void {
+        $this-&gt;addSql('CREATE TABLE product (...)');
+        $this-&gt;addSql('CREATE TABLE orders (...)');
+        $this-&gt;addSql('CREATE INDEX ix_product_created_at ...');
+    }
+
+    public function down(Schema $schema): void { /* 역순 DROP */ }
+}</code></pre>
+  <h2>운영 권장</h2>
+  <ul>
+    <li>마이그레이션 파일은 <strong>커밋 필수</strong>. 동료·CI·운영의 스키마 일관성.</li>
+    <li>운영 배포: <code>doctrine:migrations:migrate --no-interaction --allow-no-migration</code>.</li>
+    <li>자동 생성 SQL을 <strong>반드시 검토</strong>한다. 컬럼 이름 변경은 “DROP+CREATE”로 해석되어 데이터 손실로 이어질 수 있다. 이 경우 <code>up/down</code>을 수동으로 <code>ALTER COLUMN ... RENAME TO</code>로 교체.</li>
+    <li>롤백: <code>doctrine:migrations:migrate prev</code> (단계별), <code>first</code> (모두 롤백).</li>
+  </ul>
+  <p>라라벨의 <code>php artisan migrate</code> · <code>migrate:rollback</code>과 동일 위상이며, “엔티티 차분 자동 추출”이 가장 큰 차이다.</p>
+  <div class="hai-page-number">— 12 —</div>
+</section>
+
+<!-- 13 / 2.4 fixtures -->
+<section class="hai-page">
+  <h1>2.4 Fixtures (시드 데이터)</h1>
+  <p>개발·테스트 환경에서 일관된 초기 상태를 보장하기 위한 시드 도구. 라라벨 <code>Seeder</code>에 대응한다.</p>
+<pre><code>$ composer require --dev doctrine/doctrine-fixtures-bundle</code></pre>
+<pre><code>// src/DataFixtures/AppFixtures.php
+namespace App\DataFixtures;
+
+use App\Entity\Product;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Persistence\ObjectManager;
+
+final class AppFixtures extends Fixture
+{
+    public function load(ObjectManager $em): void
+    {
+        foreach (range(1, 20) as $i) {
+            $p = (new Product())
+                -&gt;setName(sprintf('상품 %02d', $i))
+                -&gt;setSlug(sprintf('item-%02d', $i))
+                -&gt;setPriceKrw(rand(5, 50) * 1000)
+                -&gt;setStock(rand(0, 50));
+            $em-&gt;persist($p);
+        }
+        $em-&gt;flush();
+    }
+}</code></pre>
+  <h2>실행 옵션</h2>
+<pre><code>$ php bin/console doctrine:fixtures:load
+  # 모든 테이블 truncate 후 적재 (확인 프롬프트)
+
+$ php bin/console doctrine:fixtures:load --append
+  # 기존 데이터 유지
+
+$ php bin/console doctrine:fixtures:load --group=demo
+  # 특정 그룹만</code></pre>
+  <h2>의존성 있는 픽스처</h2>
+  <p>여러 픽스처 클래스로 분할하고 실행 순서가 필요하면 <code>DependentFixtureInterface::getDependencies()</code> 또는 <code>OrderedFixtureInterface::getOrder()</code>를 구현한다. <code>setReference()</code>·<code>getReference()</code>로 픽스처 간 객체 공유가 가능하다.</p>
+  <p>운영 환경에서는 픽스처를 사용하지 않는다 (운영 데이터는 마이그레이션 또는 별도 데이터 스크립트로 관리).</p>
+  <div class="hai-page-number">— 13 —</div>
+</section>
+
+<!-- 14 / 2.5 querybuilder -->
+<section class="hai-page">
+  <h1>2.5 QueryBuilder</h1>
+  <p>커스텀 쿼리는 Repository 클래스의 메서드로 응집한다. <code>ServiceEntityRepository</code>를 상속하면 컨테이너에 자동 등록되어 컨트롤러·서비스에서 타입 힌트만으로 주입된다.</p>
+<pre><code>// src/Repository/ProductRepository.php
+namespace App\Repository;
+
+use App\Entity\Product;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/** @extends ServiceEntityRepository&lt;Product&gt; */
+class ProductRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry) {
+        parent::__construct($registry, Product::class);
+    }
+
+    public function findBySlug(string $slug): ?Product {
+        return $this-&gt;findOneBy(['slug' =&gt; $slug]);
+    }
+
+    public function searchByKeyword(string $q, int $limit = 50): array {
+        return $this-&gt;createQueryBuilder('p')
+            -&gt;andWhere('p.name LIKE :q')
+            -&gt;andWhere('p.stock &gt; 0')
+            -&gt;setParameter('q', '%'.$q.'%')
+            -&gt;orderBy('p.createdAt', 'DESC')
+            -&gt;setMaxResults($limit)
+            -&gt;getQuery()-&gt;getResult();
+    }
+
+    public function paginate(int $page, int $perPage = 12): array {
+        return $this-&gt;createQueryBuilder('p')
+            -&gt;orderBy('p.createdAt', 'DESC')
+            -&gt;setFirstResult(($page - 1) * $perPage)
+            -&gt;setMaxResults($perPage)
+            -&gt;getQuery()-&gt;getResult();
+    }
+}</code></pre>
+  <h2>안전과 성능</h2>
+  <ul>
+    <li>모든 변수는 <strong><code>:placeholder</code> + <code>setParameter()</code></strong>로 바인딩 — SQL 인젝션 차단.</li>
+    <li>N+1 회피: <code>-&gt;leftJoin('p.images', 'i')-&gt;addSelect('i')</code>로 FETCH JOIN.</li>
+    <li>대량 조회: <code>-&gt;getQuery()-&gt;getArrayResult()</code>로 엔티티 hydrate 생략.</li>
+  </ul>
+  <div class="hai-page-number">— 14 —</div>
+</section>
+
+<!-- 15 / part 3 divider -->
+<section class="hai-page hai-divider">
+  <h1>3부</h1>
+  <div class="hai-divider-subtitle">Form & Validation</div>
+</section>
+
+<!-- 16 / 3.1 form type -->
+<section class="hai-page">
+  <h1>3.1 FormType 작성</h1>
+  <p>Form 컴포넌트는 폼의 정의·렌더링·검증·객체 매핑을 한 클래스(<code>FormType</code>)로 응집한다. 라라벨의 <code>FormRequest</code>와 “Blade 폼”의 책임을 합친 위치에 있다.</p>
+<pre><code>// src/Form/ProductType.php
+namespace App\Form;
+
+use App\Entity\Product;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\{IntegerType, TextType, TextareaType};
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class ProductType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $b, array $opts): void
+    {
+        $b-&gt;add('name', TextType::class, ['label' =&gt; '상품명'])
+          -&gt;add('description', TextareaType::class, [
+              'label' =&gt; '설명', 'required' =&gt; false,
+          ])
+          -&gt;add('priceKrw', IntegerType::class, [
+              'label' =&gt; '가격 (원)',
+              'attr' =&gt; ['min' =&gt; 0, 'step' =&gt; 100],
+          ])
+          -&gt;add('stock', IntegerType::class, [
+              'label' =&gt; '재고',
+              'attr' =&gt; ['min' =&gt; 0],
+          ]);
+    }
+
+    public function configureOptions(OptionsResolver $r): void
+    {
+        $r-&gt;setDefaults([
+            'data_class' =&gt; Product::class,
+        ]);
+    }
+}</code></pre>
+  <p><code>data_class</code>가 지정되면 폼 데이터가 자동으로 해당 엔티티 인스턴스에 매핑된다. “신규 등록”과 “수정”이 동일 FormType을 공유한다 (빈 인스턴스 vs 기존 인스턴스만 다름).</p>
+  <p>주요 빌트인 타입: <code>TextType</code> · <code>EmailType</code> · <code>PasswordType</code> · <code>IntegerType</code> · <code>NumberType</code> · <code>ChoiceType</code> · <code>FileType</code> · <code>CollectionType</code> · <code>EntityType</code>(Doctrine 연동) · <code>RepeatedType</code> · <code>HiddenType</code> · <code>SubmitType</code>.</p>
+  <div class="hai-page-number">— 16 —</div>
+</section>
+
+<!-- 17 / 3.2 controller -->
+<section class="hai-page">
+  <h1>3.2 컨트롤러와 handleRequest</h1>
+  <p>표준 7행 패턴: 폼 생성 → 요청 바인딩 → 검증 후 영속화 → 리다이렉트 / 재렌더.</p>
+<pre><code>// src/Controller/ProductCreateController.php
+namespace App\Controller;
+
+use App\Entity\Product;
+use App\Form\ProductType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\{Request, Response};
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/admin/products/new', name: 'product_create')]
+final class ProductCreateController extends AbstractController
+{
+    public function __invoke(
+        Request $request, EntityManagerInterface $em,
+    ): Response {
+        $product = new Product();
+        $form = $this-&gt;createForm(ProductType::class, $product);
+        $form-&gt;handleRequest($request);
+
+        if ($form-&gt;isSubmitted() &amp;&amp; $form-&gt;isValid()) {
+            $em-&gt;persist($product);
+            $em-&gt;flush();
+            $this-&gt;addFlash('success', '상품이 등록되었습니다.');
+            return $this-&gt;redirectToRoute('product_show', [
+                'slug' =&gt; $product-&gt;getSlug(),
+            ]);
+        }
+        return $this-&gt;render('product/new.html.twig', ['form' =&gt; $form]);
+    }
+}</code></pre>
+  <h2>Twig 렌더링</h2>
+<pre><code>{# templates/product/new.html.twig #}
+{{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+  {{ form_row(form.name) }}
+  {{ form_row(form.priceKrw) }}
+  {{ form_row(form.stock) }}
+  {{ form_row(form.description) }}
+  &lt;button type="submit"&gt;저장&lt;/button&gt;
+{{ form_end(form) }}</code></pre>
+  <p><code>handleRequest()</code>가 메서드(GET/POST), 페이로드 바인딩, CSRF 검증, 검증 실행을 모두 처리한다.</p>
+  <div class="hai-page-number">— 17 —</div>
+</section>
+
+<!-- 18 / 3.3 validation -->
+<section class="hai-page">
+  <h1>3.3 Validation 제약</h1>
+  <p>검증 제약(<code>#[Assert\*]</code>)은 <strong>엔티티 위치</strong>에 둔다. 같은 엔티티를 여러 폼에서 재사용해도 동일 제약이 자동 적용된다.</p>
+<pre><code>use Symfony\Component\Validator\Constraints as Assert;
+
+class Product
+{
+    #[ORM\Column(length: 200)]
+    #[Assert\NotBlank(message: '상품명을 입력하세요.')]
+    #[Assert\Length(min: 2, max: 200)]
+    private string $name = '';
+
+    #[ORM\Column]
+    #[Assert\PositiveOrZero(message: '가격은 0 이상이어야 합니다.')]
+    #[Assert\Range(min: 0, max: 99_999_999)]
+    private int $priceKrw = 0;
+
+    #[ORM\Column(length: 220, unique: true)]
+    #[Assert\Regex('/^[a-z0-9-]+$/', message: '슬러그는 영소문자·숫자·하이픈만.')]
+    private string $slug = '';
+}</code></pre>
+  <h2>자주 쓰는 제약</h2>
+  <ul>
+    <li><code>NotBlank</code> · <code>NotNull</code> · <code>IsNull</code></li>
+    <li><code>Email</code> · <code>Url</code> · <code>Ip</code> · <code>Hostname</code></li>
+    <li><code>Length(min, max)</code> · <code>Range(min, max)</code></li>
+    <li><code>Choice(choices)</code> · <code>Country</code> · <code>Currency</code> · <code>Locale</code></li>
+    <li><code>Regex(pattern)</code> · <code>Type('integer')</code> · <code>Json</code></li>
+    <li><code>Positive</code> · <code>PositiveOrZero</code> · <code>Negative</code></li>
+    <li><code>File(maxSize, mimeTypes)</code> · <code>Image(maxWidth, maxHeight)</code></li>
+    <li><code>UniqueEntity(fields)</code> — 클래스 레벨 (DB 검색)</li>
+    <li><code>Callback</code> — 임의 검증 로직</li>
+    <li><code>NotCompromisedPassword</code> — Have I Been Pwned 검사</li>
+  </ul>
+  <h2>검증 그룹</h2>
+  <p><code>groups: ['Default', 'create']</code>로 컨텍스트별 제약을 분리한다. 폼 측에서 <code>'validation_groups' =&gt; ['create']</code>로 활성 그룹 지정.</p>
+  <div class="hai-page-number">— 18 —</div>
+</section>
+
+<!-- 19 / 3.4 csrf flash -->
+<section class="hai-page">
+  <h1>3.4 CSRF · Flash 메시지</h1>
+  <h2>CSRF 토큰</h2>
+  <p>Form 컴포넌트가 자동으로 CSRF 토큰을 생성·검증한다. 사용자 코드에서 별도 처리 불필요. 토큰은 <code>_token</code> 히든 필드로 추가되며, <code>handleRequest()</code>가 검증한다.</p>
+<pre><code>// 폼 외부에서 POST를 받는 경우 (예: 단순 "삭제" 버튼)
+#[Route('/products/{id}/delete', methods: ['POST'])]
+public function __invoke(Product $p, Request $request): Response
+{
+    if (!$this-&gt;isCsrfTokenValid('delete-'.$p-&gt;getId(),
+            $request-&gt;request-&gt;get('_token'))) {
+        throw $this-&gt;createAccessDeniedException();
+    }
+    // ... 삭제 로직
+}</code></pre>
+<pre><code>{# Twig: 토큰 발급 #}
+&lt;form method="post" action="{{ path('product_delete', {id: p.id}) }}"&gt;
+  &lt;input type="hidden" name="_token"
+         value="{{ csrf_token('delete-' ~ p.id) }}"&gt;
+  &lt;button&gt;삭제&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+  <h2>Flash 메시지</h2>
+  <p>일회성 메시지. 한 번 읽히면 자동 소거된다.</p>
+<pre><code>// 컨트롤러
+$this-&gt;addFlash('success', '저장되었습니다.');
+$this-&gt;addFlash('error', '입력값을 확인하세요.');
+
+return $this-&gt;redirectToRoute('product_index');</code></pre>
+<pre><code>{# templates/base.html.twig #}
+{% for label, msgs in app.flashes %}
+  {% for m in msgs %}
+    &lt;div class="alert alert-{{ label }}" role="alert"&gt;{{ m }}&lt;/div&gt;
+  {% endfor %}
+{% endfor %}</code></pre>
+  <p>특정 타입만 표시하려면 <code>app.flashes('success')</code> 또는 <code>app.flashes(['success', 'warning'])</code>.</p>
+  <div class="hai-page-number">— 19 —</div>
+</section>
+
+<!-- 20 / part 4 divider -->
+<section class="hai-page hai-divider">
+  <h1>4부</h1>
+  <div class="hai-divider-subtitle">Security</div>
+</section>
+
+<!-- 21 / 4.1 user entity -->
+<section class="hai-page">
+  <h1>4.1 User 엔티티</h1>
+  <p><code>make:user</code> 명령은 표준 골격을 자동 생성한다.</p>
+<pre><code>$ php bin/console make:user
+> Class name: User
+> Storage: Doctrine
+> Identifier property: email
+> Hash passwords?: yes</code></pre>
+<pre><code>// src/Entity/User.php
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: 'app_user')]      // 'user'는 PG 예약어
+class User implements UserInterface, PasswordAuthenticatedUserInterface
+{
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email, Assert\NotBlank]
+    private string $email = '';
+
+    /** @var list&lt;string&gt; */
+    #[ORM\Column]
+    private array $roles = [];
+
+    #[ORM\Column]
+    private string $password = '';
+
+    public function getUserIdentifier(): string {
+        return $this-&gt;email;
+    }
+
+    public function getRoles(): array {
+        $roles = $this-&gt;roles;
+        $roles[] = 'ROLE_USER';   // 모든 사용자 기본 부여
+        return array_unique($roles);
+    }
+
+    public function eraseCredentials(): void {
+        // 평문 비밀번호 임시 보유 시 여기서 해제
+    }
+}</code></pre>
+  <p>두 인터페이스의 약속: <code>UserInterface</code>는 식별·권한, <code>PasswordAuthenticatedUserInterface</code>는 비밀번호 기반 인증.</p>
+  <div class="hai-page-number">— 21 —</div>
+</section>
+
+<!-- 22 / 4.2 form login -->
+<section class="hai-page">
+  <h1>4.2 Form login과 firewall</h1>
+  <p><code>make:security:form-login</code>이 컨트롤러·템플릿·firewall 설정을 일괄 생성한다.</p>
+  <div class="hai-figure mermaid">
+sequenceDiagram
+  participant U as User
+  participant F as Firewall
+  participant A as Authenticator
+  participant DB as Database
+  participant TS as TokenStorage
+  U-&gt;&gt;F: POST /login
+  F-&gt;&gt;A: authenticate(request)
+  A-&gt;&gt;DB: findOneBy(email)
+  DB--&gt;&gt;A: User
+  A-&gt;&gt;A: PasswordHasher::verify
+  A--&gt;&gt;F: Passport(User, Roles)
+  F-&gt;&gt;TS: setToken(token)
+  F--&gt;&gt;U: 302 → defaultTargetPath
+  </div>
+  <div class="hai-figure-caption">그림 3. 폼 로그인 인증 흐름</div>
+<pre><code>// config/packages/security.php
+return static function (SecurityConfig $sec): void {
+    $sec-&gt;passwordHasher(PasswordAuthenticatedUserInterface::class)
+        -&gt;algorithm('auto');
+
+    $sec-&gt;provider('app_user_provider')
+        -&gt;entity()-&gt;class(User::class)-&gt;property('email');
+
+    $main = $sec-&gt;firewall('main');
+    $main-&gt;lazy(true)
+         -&gt;provider('app_user_provider')
+         -&gt;formLogin()
+            -&gt;loginPath('login')-&gt;checkPath('login')
+            -&gt;defaultTargetPath('home')
+            -&gt;enableCsrf(true);
+    $main-&gt;logout()-&gt;path('logout')-&gt;target('home');
+};</code></pre>
+  <p><code>lazy: true</code>는 익명 페이지에서 세션 로드를 지연시켜 정적 캐시 호환성을 확보한다.</p>
+  <div class="hai-page-number">— 22 —</div>
+</section>
+
+<!-- 23 / 4.3 roles -->
+<section class="hai-page">
+  <h1>4.3 ROLE과 #[IsGranted]</h1>
+  <p>ROLE은 단순 문자열이며 <code>ROLE_</code> 접두사가 강제된다(미준수 시 보안 컴포넌트가 무시).</p>
+  <h2>ROLE 계층</h2>
+<pre><code>// config/packages/security.php
+$sec-&gt;roleHierarchy('ROLE_ADMIN', ['ROLE_USER']);
+$sec-&gt;roleHierarchy('ROLE_OWNER', ['ROLE_ADMIN']);
+
+$sec-&gt;accessControl()-&gt;path('^/admin')-&gt;roles(['ROLE_ADMIN']);
+$sec-&gt;accessControl()-&gt;path('^/orders')-&gt;roles(['ROLE_USER']);</code></pre>
+  <p>계층 선언은 가산적이다. <code>ROLE_OWNER</code> 보유자는 자동으로 <code>ROLE_ADMIN</code>·<code>ROLE_USER</code>를 가진다. 검사 시 전이적 계층이 모두 평가된다.</p>
+  <h2>#[IsGranted] 속성</h2>
+<pre><code>use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[Route('/admin/products')]
+#[IsGranted('ROLE_ADMIN')]              // 클래스 전체에 적용
+final class AdminProductController extends AbstractController
+{
+    #[Route('/{id}/delete', methods: ['POST'])]
+    #[IsGranted('ROLE_OWNER')]          // 메서드별 강화
+    public function delete(Product $p): Response { /* ... */ }
+}</code></pre>
+  <h2>Twig에서 권한 검사</h2>
+<pre><code>{% if is_granted('ROLE_ADMIN') %}
+  &lt;a href="{{ path('admin_dashboard') }}"&gt;관리자&lt;/a&gt;
+{% endif %}
+
+{% if is_granted('view', order) %}
+  &lt;a href="{{ path('order_show', {id: order.id}) }}"&gt;상세&lt;/a&gt;
+{% endif %}</code></pre>
+  <div class="hai-page-number">— 23 —</div>
+</section>
+
+<!-- 24 / 4.4 voter -->
+<section class="hai-page">
+  <h1>4.4 Voter — 인스턴스 단위 인가</h1>
+  <p>ROLE만으로는 표현할 수 없는 “이 사용자가 이 객체에 대해 X 행위가 가능한가” 같은 질문에 답하는 컴포넌트.</p>
+<pre><code>// src/Security/OrderVoter.php
+namespace App\Security;
+
+use App\Entity\{Order, User};
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+
+final class OrderVoter extends Voter
+{
+    public const VIEW = 'view';
+    public const CANCEL = 'cancel';
+
+    protected function supports(string $att, mixed $subject): bool
+    {
+        return in_array($att, [self::VIEW, self::CANCEL], true)
+            &amp;&amp; $subject instanceof Order;
+    }
+
+    protected function voteOnAttribute(
+        string $att, mixed $subject, TokenInterface $token,
+    ): bool {
+        $user = $token-&gt;getUser();
+        if (!$user instanceof User) return false;
+
+        $isOwner = $subject-&gt;getCustomer()-&gt;getId() === $user-&gt;getId();
+        $isAdmin = in_array('ROLE_ADMIN', $user-&gt;getRoles(), true);
+
+        return match ($att) {
+            self::VIEW   =&gt; $isOwner || $isAdmin,
+            self::CANCEL =&gt; $isOwner
+                &amp;&amp; $subject-&gt;getStatus() === 'pending',
+        };
+    }
+}</code></pre>
+  <h2>호출 방법</h2>
+<pre><code>// 컨트롤러 — 명시적 거부
+$this-&gt;denyAccessUnlessGranted('view', $order);
+
+// 컨트롤러 — 분기
+if ($this-&gt;isGranted('cancel', $order)) { /* ... */ }
+
+// 라우트 속성
+#[IsGranted('cancel', subject: 'order')]
+public function cancel(Order $order): Response { /* ... */ }</code></pre>
+  <p>Voter는 <code>autoconfigure</code>로 자동 등록된다. 다중 Voter 결과는 기본 “affirmative” 전략으로 결합 (한 Voter라도 grant면 허용).</p>
+  <div class="hai-page-number">— 24 —</div>
+</section>
+
+<!-- 25 / part 5 divider -->
+<section class="hai-page hai-divider">
+  <h1>5부</h1>
+  <div class="hai-divider-subtitle">Session</div>
+</section>
+
+<!-- 26 / 5.1 session basics -->
+<section class="hai-page">
+  <h1>5.1 Session 기본</h1>
+  <p>심포니의 세션은 “읽기·쓰기 발생 시점”에 자동 시작된다 (lazy start). 응답이 자동으로 <code>private</code> 캐시로 표시되므로, 정적 캐시가 필요한 페이지에서는 세션 접근을 회피한다.</p>
+  <h2>접근 방법</h2>
+<pre><code>// 컨트롤러 — Request에서 직접
+public function __invoke(Request $request): Response
+{
+    $session = $request-&gt;getSession();
+    $session-&gt;set('locale', 'ko');
+    $locale = $session-&gt;get('locale', 'en');  // 두 번째 인자는 기본값
+}</code></pre>
+<pre><code>// 서비스 — RequestStack 주입
+namespace App\Service;
+
+use Symfony\Component\HttpFoundation\RequestStack;
+
+final readonly class ViewCounter
+{
+    public function __construct(private RequestStack $requests) {}
+
+    public function increment(): int
+    {
+        $session = $this-&gt;requests-&gt;getSession();
+        $count = $session-&gt;get('view.count', 0) + 1;
+        $session-&gt;set('view.count', $count);
+        return $count;
+    }
+}</code></pre>
+  <h2>세션 API</h2>
+<pre><code>$session-&gt;set('key', $value);
+$session-&gt;get('key', $default);
+$session-&gt;has('key');
+$session-&gt;remove('key');
+$session-&gt;clear();           // 전체 비움
+$session-&gt;invalidate();      // ID 회전 + 비움 (보안)
+$session-&gt;migrate(true);     // ID 회전 (로그인 시 권장)</code></pre>
+  <h2>구성</h2>
+<pre><code>// config/packages/framework.php
+$framework-&gt;session()
+    -&gt;cookieLifetime(0)        // 브라우저 종료 시 만료
+    -&gt;cookieSecure('auto')     // HTTPS이면 자동 secure
+    -&gt;cookieHttpOnly(true)
+    -&gt;cookieSamesite('lax')
+    -&gt;handlerId(null);         // null = PHP 기본 (파일)</code></pre>
+  <p>운영에서 다중 서버 구성이면 <code>handlerId</code>를 Redis(<code>'%env(REDIS_URL)%'</code>) 또는 PdoSessionHandler로 변경한다.</p>
+  <div class="hai-page-number">— 26 —</div>
+</section>
+
+<!-- 27 / 5.2 cart -->
+<section class="hai-page">
+  <h1>5.2 세션 기반 장바구니</h1>
+  <p>비로그인 사용자도 사용 가능한 장바구니의 가장 단순한 구현. 항목 ID와 수량을 세션 배열에 저장한다.</p>
+<pre><code>// src/Cart/Cart.php
+namespace App\Cart;
+
+use App\Repository\ProductRepository;
+use Symfony\Component\HttpFoundation\RequestStack;
+
+final readonly class Cart
+{
+    public function __construct(
+        private RequestStack $requests,
+        private ProductRepository $products,
+    ) {}
+
+    public function add(int $productId, int $qty = 1): void {
+        $items = $this-&gt;items();
+        $items[$productId] = ($items[$productId] ?? 0) + $qty;
+        $this-&gt;save($items);
+    }
+
+    public function remove(int $productId): void {
+        $items = $this-&gt;items();
+        unset($items[$productId]);
+        $this-&gt;save($items);
+    }
+
+    public function setQuantity(int $productId, int $qty): void {
+        $items = $this-&gt;items();
+        if ($qty &lt;= 0) unset($items[$productId]);
+        else $items[$productId] = $qty;
+        $this-&gt;save($items);
+    }
+
+    public function clear(): void { $this-&gt;save([]); }
+
+    /** @return array&lt;int, int&gt; productId =&gt; qty */
+    public function items(): array {
+        return $this-&gt;requests-&gt;getSession()-&gt;get('cart', []);
+    }
+
+    public function totalKrw(): int {
+        $sum = 0;
+        foreach ($this-&gt;items() as $id =&gt; $qty) {
+            $p = $this-&gt;products-&gt;find($id);
+            if ($p) $sum += $p-&gt;getPriceKrw() * $qty;
+        }
+        return $sum;
+    }
+
+    private function save(array $items): void {
+        $this-&gt;requests-&gt;getSession()-&gt;set('cart', $items);
+    }
+}</code></pre>
+  <p>로그인 시 영속 카트로 전환하려면 <code>InteractiveLoginEvent</code> 리스너에서 세션 항목을 사용자 Cart 엔티티로 머지한다.</p>
+  <div class="hai-page-number">— 27 —</div>
+</section>
+
+<!-- 28 / part 6 divider -->
+<section class="hai-page hai-divider">
+  <h1>6부</h1>
+  <div class="hai-divider-subtitle">운영 도구</div>
+</section>
+
+<!-- 29 / 6.1 console as command -->
+<section class="hai-page">
+  <h1>6.1 Console — #[AsCommand]</h1>
+  <p>심포니 8.0의 권장 콘솔 명령 패턴은 <code>#[AsCommand]</code> 속성을 가진 <strong>invokable 클래스</strong>다. <code>extends Command</code>가 더 이상 필수가 아니며, 부트스트랩 코드가 한층 줄었다.</p>
+<pre><code>// src/Command/CreateProductCommand.php
+namespace App\Command;
+
+use App\Entity\Product;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'app:product:create',
+    description: '상품을 빠르게 등록한다.',
+    aliases: ['app:p:create'],
+)]
+final class CreateProductCommand
+{
+    public function __construct(
+        private EntityManagerInterface $em,
+    ) {}
+
+    public function __invoke(SymfonyStyle $io): int
+    {
+        $name = $io-&gt;ask('상품명');
+        $price = (int) $io-&gt;ask('가격(원)', '10000');
+
+        $product = (new Product())
+            -&gt;setName($name)
+            -&gt;setPriceKrw($price)
+            -&gt;setSlug(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $name)));
+        $this-&gt;em-&gt;persist($product);
+        $this-&gt;em-&gt;flush();
+
+        $io-&gt;success(sprintf('상품 #%d 등록됨.', $product-&gt;getId()));
+        return Command::SUCCESS;
+    }
+}</code></pre>
+  <h2>실행</h2>
+<pre><code>$ php bin/console app:product:create
+$ php bin/console app:p:create        # alias
+$ php bin/console list app             # app: 그룹 전체
+$ php bin/console help app:product:create</code></pre>
+  <p>반환값은 <code>Command::SUCCESS</code>(0), <code>Command::FAILURE</code>(1), <code>Command::INVALID</code>(2) 중 하나.</p>
+  <div class="hai-page-number">— 29 —</div>
+</section>
+
+<!-- 30 / 6.2 console arguments -->
+<section class="hai-page">
+  <h1>6.2 Console — 인자 · 옵션 · IO</h1>
+  <p>심포니 8은 <code>#[Argument]</code>·<code>#[Option]</code> 속성으로 인자·옵션을 메서드 시그니처에 직접 선언한다.</p>
+<pre><code>use Symfony\Component\Console\Attribute\{Argument, Option};
+
+#[AsCommand(name: 'app:user:promote', description: '사용자를 관리자로 승격')]
+final class PromoteUserCommand
+{
+    public function __construct(
+        private UserRepository $users,
+        private EntityManagerInterface $em,
+    ) {}
+
+    public function __invoke(
+        #[Argument('승격할 사용자 이메일')]
+        string $email,
+
+        #[Option(name: 'role', shortcut: 'r',
+            description: '부여할 ROLE')]
+        string $role = 'ROLE_ADMIN',
+
+        #[Option(name: 'dry-run',
+            description: '실제 저장 없이 미리보기')]
+        bool $dryRun = false,
+
+        SymfonyStyle $io,
+    ): int {
+        $user = $this-&gt;users-&gt;findOneBy(['email' =&gt; $email])
+            ?? throw new \RuntimeException("$email 없음");
+
+        $roles = array_unique([...$user-&gt;getRoles(), $role]);
+
+        if ($dryRun) {
+            $io-&gt;note(sprintf('[dry-run] %s → %s',
+                $email, implode(', ', $roles)));
+            return Command::SUCCESS;
+        }
+
+        $user-&gt;setRoles($roles);
+        $this-&gt;em-&gt;flush();
+        $io-&gt;success("$email 에 $role 부여 완료.");
+        return Command::SUCCESS;
+    }
+}</code></pre>
+  <h2>SymfonyStyle 주요 메서드</h2>
+  <ul>
+    <li><code>$io-&gt;title(...)</code> · <code>section(...)</code> · <code>text(...)</code></li>
+    <li><code>$io-&gt;success(...)</code> · <code>warning(...)</code> · <code>error(...)</code> · <code>note(...)</code></li>
+    <li><code>$io-&gt;ask(...)</code> · <code>askHidden(...)</code> · <code>confirm(...)</code> · <code>choice(...)</code></li>
+    <li><code>$io-&gt;table($headers, $rows)</code></li>
+    <li><code>$io-&gt;progressStart(N)</code> · <code>progressAdvance()</code> · <code>progressFinish()</code></li>
+  </ul>
+  <p>실행: <code>php bin/console app:user:promote a@b.c --role=ROLE_OWNER --dry-run</code>.</p>
+  <div class="hai-page-number">— 30 —</div>
+</section>
+
+<!-- 31 / 6.3 cache -->
+<section class="hai-page">
+  <h1>6.3 Cache — Symfony Contracts</h1>
+  <p>심포니 Cache 컴포넌트는 <strong>두 인터페이스</strong>를 제공한다.</p>
+  <ul>
+    <li><code>CacheInterface</code> (Symfony Contracts): 콜백 기반 고수준 API. 권장.</li>
+    <li><code>CacheItemPoolInterface</code> (PSR-6): 명시적 아이템 관리.</li>
+  </ul>
+  <h2>기본 사용</h2>
+<pre><code>use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+
+final readonly class FeaturedProducts
+{
+    public function __construct(
+        private CacheInterface $cache,
+        private ProductRepository $products,
+    ) {}
+
+    public function __invoke(): array
+    {
+        return $this-&gt;cache-&gt;get('featured.products',
+            function (ItemInterface $item): array {
+                $item-&gt;expiresAfter(600);   // 10분
+                $item-&gt;tag(['product.featured']);
+                return $this-&gt;products-&gt;findFeatured(8);
+            });
+    }
+}</code></pre>
+  <h2>풀 정의</h2>
+<pre><code>// config/packages/cache.php
+return static function (FrameworkConfig $framework): void {
+    $cache = $framework-&gt;cache();
+    $cache-&gt;app('cache.adapter.redis');
+    $cache-&gt;defaultRedisProvider('%env(REDIS_URL)%');
+
+    $cache-&gt;pool('catalog.cache')
+          -&gt;adapters(['cache.adapter.redis_tag_aware'])
+          -&gt;defaultLifetime(3600)
+          -&gt;tags(true);
+};</code></pre>
+  <p>풀 이름은 <strong>camelCase 변수명</strong>으로 자동 와이어링된다. <code>catalog.cache</code> → <code>$catalogCache</code>.</p>
+  <h2>태그 무효화</h2>
+<pre><code>$this-&gt;catalogCache-&gt;invalidateTags(['product.featured']);
+// 'product.featured' 태그가 붙은 모든 항목 일괄 삭제</code></pre>
+  <p>주요 어댑터: <code>filesystem</code>, <code>redis</code>, <code>redis_tag_aware</code>, <code>memcached</code>, <code>apcu</code>, <code>pdo</code>, <code>array</code>.</p>
+  <div class="hai-page-number">— 31 —</div>
+</section>
+
+<!-- 32 / 6.4 http cache -->
+<section class="hai-page">
+  <h1>6.4 HTTP Cache</h1>
+  <p>리버스 프록시(CDN·Varnish·Cloudflare) 앞단에 둘 때 백엔드 부하를 극적으로 감소시킨다. 심포니 자체에도 <code>HttpCache</code> 미들웨어가 포함된다.</p>
+  <h2>응답 헤더 설정</h2>
+<pre><code>final class CatalogController extends AbstractController
+{
+    #[Route('/products', name: 'product_index')]
+    public function __invoke(ProductRepository $repo): Response
+    {
+        $response = $this-&gt;render('product/index.html.twig', [
+            'products' =&gt; $repo-&gt;paginate(1, 12),
+        ]);
+
+        $response-&gt;setPublic();
+        $response-&gt;setMaxAge(60);          // 클라이언트 캐시 60초
+        $response-&gt;setSharedMaxAge(300);   // CDN/프록시 5분
+        $response-&gt;headers-&gt;set('Vary', 'Accept-Language');
+        return $response;
+    }
+}</code></pre>
+  <h2>ETag · Last-Modified</h2>
+<pre><code>$response-&gt;setEtag(md5($response-&gt;getContent()));
+$response-&gt;setLastModified($product-&gt;getUpdatedAt());
+
+if ($response-&gt;isNotModified($request)) {
+    return $response;   // 304 Not Modified로 자동 전환
+}</code></pre>
+  <h2>Edge Side Includes (ESI)</h2>
+  <p>페이지의 일부만 캐시하려면 ESI를 활성화한다.</p>
+<pre><code>// config/packages/framework.php
+$framework-&gt;esi()-&gt;enabled(true);
+
+// Twig
+{{ render_esi(controller('App\\Controller\\CartWidget')) }}</code></pre>
+  <p>장바구니 위젯처럼 자주 변하는 부분만 별도 ESI로 분리하면, 페이지 본체는 길게 캐시하면서도 사용자별 동적 영역을 유지할 수 있다.</p>
+  <div class="hai-page-number">— 32 —</div>
+</section>
+
+<!-- 33 / 6.5 logging -->
+<section class="hai-page">
+  <h1>6.5 Logging — Monolog</h1>
+  <p>심포니는 PSR-3 표준 인터페이스(<code>LoggerInterface</code>)와 그 구현체인 Monolog를 함께 제공한다. 라라벨과 동일 라이브러리.</p>
+<pre><code>use Psr\Log\LoggerInterface;
+
+final class PlaceOrder
+{
+    public function __construct(private LoggerInterface $logger) {}
+
+    public function __invoke(Cart $cart, User $user): Order
+    {
+        $this-&gt;logger-&gt;info('order.placing', [
+            'user_id' =&gt; $user-&gt;getId(),
+            'item_count' =&gt; count($cart-&gt;items()),
+            'amount_krw' =&gt; $cart-&gt;totalKrw(),
+        ]);
+        // ... 실제 처리
+    }
+}</code></pre>
+  <h2>로그 레벨</h2>
+  <p><code>emergency · alert · critical · error · warning · notice · info · debug</code> (PSR-3 8단계).</p>
+  <h2>채널 분리</h2>
+<pre><code>// config/packages/monolog.php
+$monolog-&gt;channels()-&gt;elements(['order', 'security', 'payment']);
+
+$monolog-&gt;handler('order_file')
+    -&gt;type('rotating_file')
+    -&gt;path('%kernel.logs_dir%/order.log')
+    -&gt;maxFiles(30)-&gt;level('info')
+    -&gt;channels()-&gt;elements(['order']);
+
+$monolog-&gt;handler('error_stderr')
+    -&gt;type('stream')
+    -&gt;path('php://stderr')-&gt;level('error');</code></pre>
+  <h2>운영 권장</h2>
+  <ul>
+    <li>컨테이너 환경: stdout/stderr 출력 → 외부 도구(Loki·Datadog·CloudWatch) 수집.</li>
+    <li>JSON 포맷터(<code>monolog.formatter.json</code>)로 구조화 — 검색·필터에 유리.</li>
+    <li><code>WebProcessor</code>: IP·URL·user-agent 자동 첨부.</li>
+    <li><code>UidProcessor</code>: 요청별 고유 ID 부여 (분산 트레이싱과 결합).</li>
+  </ul>
+  <div class="hai-page-number">— 33 —</div>
+</section>
+
+<!-- 34 / 6.6 error pages -->
+<section class="hai-page">
+  <h1>6.6 Error Pages</h1>
+  <p>운영 환경(<code>APP_ENV=prod</code>)에서는 예외 발생 시 사용자에게 친화적인 HTML 페이지가 노출된다. 기본 템플릿을 사용자 템플릿으로 오버라이드할 수 있다.</p>
+  <h2>커스텀 템플릿 위치</h2>
+<pre><code>templates/
+└── bundles/
+    └── TwigBundle/
+        └── Exception/
+            ├── error404.html.twig    # 상태 코드별
+            ├── error500.html.twig
+            └── error.html.twig       # 폴백 (그 외 모든 에러)</code></pre>
+  <p><code>TwigErrorRenderer</code>는 <strong>(1)</strong> <code>error{statusCode}.html.twig</code> → <strong>(2)</strong> <code>error.html.twig</code> 순으로 검색한다.</p>
+  <h2>404 템플릿 예</h2>
+<pre><code>{# templates/bundles/TwigBundle/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}페이지를 찾을 수 없습니다{% endblock %}
+
+{% block body %}
+  &lt;div class="error-page"&gt;
+    &lt;h1&gt;404&lt;/h1&gt;
+    &lt;p&gt;요청하신 페이지를 찾을 수 없습니다.&lt;/p&gt;
+    &lt;a href="{{ path('home') }}"&gt;홈으로 돌아가기&lt;/a&gt;
+  &lt;/div&gt;
+{% endblock %}</code></pre>
+  <p>템플릿에서 사용 가능한 변수: <code>status_code</code>, <code>status_text</code>, <code>exception</code>(<code>Throwable</code> 객체).</p>
+  <h2>개발 환경에서 미리보기</h2>
+<pre><code># config/routes/framework.yaml
+when@dev:
+  _errors:
+    resource: '@FrameworkBundle/Resources/config/routing/errors.php'
+    type: php
+    prefix: /_error</code></pre>
+<pre><code>$ # 브라우저에서 다음 URL 접근
+$ # http://localhost:8000/_error/404
+$ # http://localhost:8000/_error/500.json</code></pre>
+  <p>운영 환경에서는 위 라우트가 자동 비활성화된다 (<code>when@dev</code> 가드).</p>
+  <div class="hai-page-number">— 34 —</div>
+</section>
+
+<!-- 35 / 6.7 notifier email -->
+<section class="hai-page">
+  <h1>6.7 Notifier — Email</h1>
+  <p>Notifier 컴포넌트는 다양한 채널(이메일·SMS·Chat·Push)을 통합 인터페이스로 추상화한다. 트랜잭션 메일은 Mailer 컴포넌트로도 직접 발송 가능하다.</p>
+<pre><code>$ composer require symfony/mailer symfony/twig-pack</code></pre>
+  <h2>TemplatedEmail로 발송</h2>
+<pre><code>use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+
+final readonly class SendOrderConfirmation
+{
+    public function __construct(private MailerInterface $mailer) {}
+
+    public function __invoke(Order $order): void
+    {
+        $email = (new TemplatedEmail())
+            -&gt;from(new Address('hello@shop.local', '심포니 쇼핑몰'))
+            -&gt;to($order-&gt;getCustomer()-&gt;getEmail())
+            -&gt;subject(sprintf('주문 #%d 접수', $order-&gt;getId()))
+            -&gt;htmlTemplate('email/order_confirmation.html.twig')
+            -&gt;textTemplate('email/order_confirmation.txt.twig')
+            -&gt;context(['order' =&gt; $order]);
+
+        $this-&gt;mailer-&gt;send($email);
+    }
+}</code></pre>
+  <h2>환경별 트랜스포트</h2>
+  <table>
+    <tr><th>환경</th><th>MAILER_DSN</th></tr>
+    <tr><td>개발</td><td><code>smtp://mailer:1025</code> (Mailpit)</td></tr>
+    <tr><td>테스트</td><td><code>null://null</code> (실제 발송 차단)</td></tr>
+    <tr><td>SendGrid</td><td><code>sendgrid+api://KEY@default</code></td></tr>
+    <tr><td>Postmark</td><td><code>postmark+api://KEY@default</code></td></tr>
+    <tr><td>AWS SES</td><td><code>ses+https://KEY:SECRET@default?region=ap-northeast-2</code></td></tr>
+  </table>
+  <p>인앱 발송은 응답을 지연시킨다 (SMTP RTT 200~500ms). Messenger로 비동기 디스패치를 권장한다.</p>
+  <div class="hai-page-number">— 35 —</div>
+</section>
+
+<!-- 36 / 6.8 notifier chat sms -->
+<section class="hai-page">
+  <h1>6.8 Notifier — Chat · SMS</h1>
+  <p>Notifier는 “한 알림을 여러 채널로”가 핵심 가치다. 이메일 + Slack + SMS를 단일 디스패치로 발송한다.</p>
+<pre><code>$ composer require symfony/notifier \
+    symfony/slack-notifier symfony/twilio-notifier</code></pre>
+<pre><code># .env
+SLACK_DSN=slack://TOKEN@default?channel=alerts
+TWILIO_DSN=twilio://SID:TOKEN@default?from=+1...
+
+# config/packages/notifier.php
+$notifier = $framework-&gt;notifier();
+$notifier-&gt;chatterTransport('slack')-&gt;dsn('%env(SLACK_DSN)%');
+$notifier-&gt;texterTransport('twilio')-&gt;dsn('%env(TWILIO_DSN)%');
+$notifier-&gt;channelPolicy('urgent')
+    -&gt;channels(['sms', 'chat/slack', 'email']);
+$notifier-&gt;channelPolicy('high')
+    -&gt;channels(['chat/slack', 'email']);</code></pre>
+  <h2>발송</h2>
+<pre><code>use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
+
+final class HighValueOrderNotice
+{
+    public function __construct(private NotifierInterface $notifier) {}
+
+    public function __invoke(Order $order): void
+    {
+        $note = (new Notification('고액 주문 발생'))
+            -&gt;content(sprintf('주문 #%d, %s원',
+                $order-&gt;getId(),
+                number_format($order-&gt;getTotalKrw())))
+            -&gt;importance(Notification::IMPORTANCE_HIGH);
+
+        $recipient = new Recipient(
+            email: 'ops@shop.local',
+            phone: '+821000000000',
+        );
+
+        $this-&gt;notifier-&gt;send($note, $recipient);
+    }
+}</code></pre>
+  <p><code>importance</code>가 <code>channelPolicy</code>의 키와 매칭되어 발송 채널이 결정된다. 라라벨의 <code>Notification::via()</code>와 같은 위상이지만 정책이 컴포넌트 설정으로 분리된다.</p>
+  <p>지원 트랜스포트(50개+): Slack, Discord, Teams, Telegram, Twilio, Vonage, Pushover, Firebase, OneSignal, Mattermost, Zulip 등.</p>
+  <div class="hai-page-number">— 36 —</div>
+</section>
+
+<!-- 37 / 6.9 testing unit -->
+<section class="hai-page">
+  <h1>6.9 Testing — Unit · Integration</h1>
+  <p>심포니의 테스트는 PHPUnit 기반이며, 3 계층으로 구성한다.</p>
+  <ul>
+    <li><strong>Unit</strong> — 도메인·값 객체. 컨테이너·DB 미사용. <code>TestCase</code> 상속.</li>
+    <li><strong>Integration</strong> — 컨테이너·DB 사용. <code>KernelTestCase</code> 상속.</li>
+    <li><strong>Functional</strong> — HTTP 레벨. <code>WebTestCase</code> 상속.</li>
+  </ul>
+  <h2>Unit 테스트</h2>
+<pre><code>// tests/Unit/Money/KrwTest.php
+namespace App\Tests\Unit\Money;
+
+use App\Money\Krw;
+use PHPUnit\Framework\TestCase;
+
+final class KrwTest extends TestCase
+{
+    public function test_addition_preserves_immutability(): void
+    {
+        $a = Krw::of(1000);
+        $b = Krw::of(2500);
+        $sum = $a-&gt;add($b);
+
+        $this-&gt;assertSame(3500, $sum-&gt;amount);
+        $this-&gt;assertSame(1000, $a-&gt;amount); // 원본 불변
+    }
+
+    public function test_negative_amount_throws(): void
+    {
+        $this-&gt;expectException(\InvalidArgumentException::class);
+        Krw::of(-1);
+    }
+}</code></pre>
+  <h2>Integration 테스트</h2>
+<pre><code>// tests/Integration/Repository/ProductRepositoryTest.php
+final class ProductRepositoryTest extends KernelTestCase
+{
+    public function test_search_filters_zero_stock(): void
+    {
+        $em = self::getContainer()-&gt;get(EntityManagerInterface::class);
+        $repo = self::getContainer()-&gt;get(ProductRepository::class);
+
+        $em-&gt;persist((new Product())-&gt;setName('A')-&gt;setStock(0));
+        $em-&gt;persist((new Product())-&gt;setName('B')-&gt;setStock(5));
+        $em-&gt;flush();
+
+        $hits = $repo-&gt;searchByKeyword('');
+        $this-&gt;assertCount(1, $hits);
+    }
+}</code></pre>
+  <p>실행: <code>php bin/phpunit --testsuite Unit</code>.</p>
+  <div class="hai-page-number">— 37 —</div>
+</section>
+
+<!-- 38 / 6.10 testing functional -->
+<section class="hai-page">
+  <h1>6.10 Testing — Functional</h1>
+  <p><code>WebTestCase</code>는 실제 HTTP 라이프사이클을 시뮬레이션하는 클라이언트를 제공한다. 컨트롤러·라우트·Twig·Security를 포함한 전 흐름을 테스트한다.</p>
+<pre><code>// tests/Functional/Controller/CatalogTest.php
+namespace App\Tests\Functional\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+final class CatalogTest extends WebTestCase
+{
+    public function test_index_lists_products(): void
+    {
+        $client = static::createClient();
+        $client-&gt;request('GET', '/products');
+
+        $this-&gt;assertResponseIsSuccessful();
+        $this-&gt;assertSelectorTextContains('h1', '상품 목록');
+        $this-&gt;assertSelectorCount(12, '.product-card');
+    }
+
+    public function test_show_returns_404_when_missing(): void
+    {
+        $client = static::createClient();
+        $client-&gt;request('GET', '/products/nonexistent');
+        $this-&gt;assertResponseStatusCodeSame(404);
+    }
+
+    public function test_admin_create_requires_login(): void
+    {
+        $client = static::createClient();
+        $client-&gt;request('GET', '/admin/products/new');
+        $this-&gt;assertResponseRedirects('/login');
+    }
+
+    public function test_logged_in_admin_can_create(): void
+    {
+        $client = static::createClient();
+        $admin = static::getContainer()-&gt;get(UserRepository::class)
+            -&gt;findOneBy(['email' =&gt; 'admin@shop.local']);
+        $client-&gt;loginUser($admin);
+
+        $crawler = $client-&gt;request('GET', '/admin/products/new');
+        $form = $crawler-&gt;selectButton('저장')-&gt;form([
+            'product[name]' =&gt; '테스트 상품',
+            'product[priceKrw]' =&gt; '15000',
+        ]);
+        $client-&gt;submit($form);
+        $this-&gt;assertResponseRedirects();
+    }
+}</code></pre>
+  <p>주요 어서션: <code>assertResponseIsSuccessful</code>, <code>assertResponseRedirects</code>, <code>assertSelectorTextContains</code>, <code>assertSelectorExists</code>.</p>
+  <div class="hai-page-number">— 38 —</div>
+</section>
+
+<!-- 39 / closing -->
+<section class="hai-page">
+  <h1>닫는 글 · 콜로폰</h1>
+  <p>본서는 심포니 8.0의 핵심 컴포넌트 11개를 한 프로젝트(작은 쇼핑몰) 안에서 일관된 코드로 보여주는 것을 목표로 했다. 각 장의 코드는 독립적으로 활용 가능하며, 사용자의 기존 라라벨 코드베이스에서 동등한 위치로 이식할 수 있도록 매핑을 함께 제시했다.</p>
+  <h2>다음 학습 자원</h2>
+  <ul>
+    <li><strong>심포니 공식</strong>: <em>The Fast Track</em> (Fabien Potencier) · SymfonyCasts 영상 강의 · Symfony Slack 채널.</li>
+    <li><strong>심화 주제</strong>: Workflow · Messenger · Scheduler · LiveComponent — 비동기 처리·상태 머신·실시간 컴포넌트가 필요할 때 들어가는 영역.</li>
+    <li><strong>심화 컴포넌트</strong>: API Platform 4 (REST · GraphQL · OpenAPI) · EasyAdmin 4 · Symfony UX (Stimulus · Turbo) · OpenSwoole/RoadRunner.</li>
+    <li><strong>아키텍처</strong>: Vaughn Vernon, <em>Implementing DDD</em> · Robert Martin, <em>Clean Architecture</em>.</li>
+  </ul>
+  <h2>콜로폰</h2>
+  <table>
+    <tr><th>본문 글꼴</th><td>Noto Sans KR (Variable, 100–900)</td></tr>
+    <tr><th>코드 글꼴</th><td>Roboto Mono (Variable, 100–700)</td></tr>
+    <tr><th>조판</th><td>htmlasitis 0.1.0 + Mermaid 11 (CDN)</td></tr>
+    <tr><th>대상 환경</th><td>Symfony 8.0.x · PHP 8.5.5 · PostgreSQL 16</td></tr>
+    <tr><th>인쇄 사양</th><td>A4 · 39면 · 단면</td></tr>
+    <tr><th>저작권</th><td>© 2026 jaywoo. MIT License.</td></tr>
+  </table>
+  <p>본서가 독자의 첫 번째 심포니 프로젝트 출시를 단축시키는 데 기여했다면, 본서의 목적은 달성된 것이다.</p>
+  <div class="hai-page-number">— 39 —</div>
+</section>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'neutral',
+    fontFamily: '"Noto Sans KR", sans-serif',
+    themeVariables: {
+      fontSize: '13px',
+      primaryColor: '#f5f1ea',
+      primaryTextColor: '#1a1a1a',
+      primaryBorderColor: '#1a1a1a',
+      lineColor: '#1a1a1a',
+      tertiaryColor: '#fafaf7',
+    },
+    sequence: { actorMargin: 60, messageFontSize: 13 },
+    er: { fontSize: 12 },
+  });
+</script>
+</body>
+</html>
