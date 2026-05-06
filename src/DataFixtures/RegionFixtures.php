@@ -20,7 +20,7 @@ use Doctrine\Persistence\ObjectManager;
  * Other sigungu (~203) and dong (~3,500) should be loaded from the official admin
  * code dataset via a one-off importer command, not via fixtures.
  */
-class RegionFixtures extends Fixture
+final class RegionFixtures extends Fixture
 {
     public const KR_REF = 'region-kr';
     public const SEOUL_REF = 'region-seoul';

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ContentNodeRepository::class)]
 #[ORM\Table(name: 'content_node')]
@@ -19,43 +20,42 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_content_node_last_review_at', columns: ['last_review_at'])]
 class ContentNode
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Theme::class, inversedBy: 'contentNodes')]
-    #[ORM\JoinColumn(name: 'theme_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
+    #[ORM\ManyToOne(inversedBy: 'contentNodes')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private Theme $theme;
 
-    #[ORM\ManyToOne(targetEntity: Region::class, inversedBy: 'contentNodes')]
-    #[ORM\JoinColumn(name: 'region_id', referencedColumnName: 'id', nullable: true, onDelete: 'RESTRICT')]
+    #[ORM\ManyToOne(inversedBy: 'contentNodes')]
+    #[ORM\JoinColumn(onDelete: 'RESTRICT')]
     private ?Region $region = null;
 
-    #[ORM\ManyToOne(targetEntity: Author::class, inversedBy: 'contentNodes')]
-    #[ORM\JoinColumn(name: 'author_id', referencedColumnName: 'id', nullable: true, onDelete: 'RESTRICT')]
+    #[ORM\ManyToOne(inversedBy: 'contentNodes')]
+    #[ORM\JoinColumn(onDelete: 'RESTRICT')]
     private ?Author $author = null;
 
-    #[ORM\Column(type: Types::STRING, length: 20, enumType: ContentStatus::class)]
+    #[ORM\Column(length: 20, enumType: ContentStatus::class)]
     private ContentStatus $status = ContentStatus::Draft;
 
-    #[ORM\Column(name: 'data_count', options: ['default' => 0, 'comment' => 'auto-managed by trigger; verified=true count'])]
+    #[ORM\Column(options: ['default' => 0, 'comment' => 'auto-managed by trigger; verified=true count'])]
+    #[Assert\PositiveOrZero]
     private int $dataCount = 0;
 
-    #[ORM\Column(name: 'intro_text', type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $introText = null;
 
-    #[ORM\Column(name: 'body_template', type: Types::STRING, length: 20, enumType: BodyTemplate::class, nullable: true)]
+    #[ORM\Column(length: 20, enumType: BodyTemplate::class, nullable: true)]
     private ?BodyTemplate $bodyTemplate = null;
 
-    #[ORM\Column(name: 'first_published_at', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $firstPublishedAt = null;
 
-    #[ORM\Column(name: 'last_review_at', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastReviewAt = null;
 
     /** @var array<string, mixed>|null */
-    #[ORM\Column(name: 'kpi_snapshot', type: Types::JSON, nullable: true, options: ['jsonb' => true])]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['jsonb' => true])]
     private ?array $kpiSnapshot = null;
 
     /** @var Collection<int, DataPoint> */

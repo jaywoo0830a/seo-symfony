@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RegionRepository::class)]
 #[ORM\Table(name: 'region')]
@@ -16,19 +17,19 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_region_admin_code', columns: ['admin_code'])]
 class Region
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private string $slug;
+    #[Assert\NotBlank, Assert\Length(max: 50)]
+    private string $slug = '';
 
     #[ORM\Column(length: 100)]
-    private string $name;
+    #[Assert\NotBlank, Assert\Length(max: 100)]
+    private string $name = '';
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
-    #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', nullable: true, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(onDelete: 'RESTRICT')]
     private ?Region $parent = null;
 
     /** @var Collection<int, Region> */
@@ -36,9 +37,11 @@ class Region
     private Collection $children;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['comment' => '0=country, 1=sido, 2=sigungu, 3=dong'])]
-    private int $depth;
+    #[Assert\Range(min: 0, max: 3)]
+    private int $depth = 0;
 
-    #[ORM\Column(name: 'admin_code', length: 20, nullable: true)]
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $adminCode = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 6, nullable: true)]

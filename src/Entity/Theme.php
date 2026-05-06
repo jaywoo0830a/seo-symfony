@@ -9,25 +9,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
 #[ORM\Table(name: 'theme')]
 #[ORM\UniqueConstraint(name: 'uniq_theme_parent_slug', columns: ['parent_id', 'slug'])]
 class Theme
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private string $slug;
+    #[Assert\NotBlank, Assert\Length(max: 50)]
+    private string $slug = '';
 
     #[ORM\Column(length: 100)]
-    private string $name;
+    #[Assert\NotBlank, Assert\Length(max: 100)]
+    private string $name = '';
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
-    #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', nullable: true, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(onDelete: 'RESTRICT')]
     private ?Theme $parent = null;
 
     /** @var Collection<int, Theme> */
@@ -35,12 +36,13 @@ class Theme
     private Collection $children;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['comment' => '0=root, 1=primary, 2=sub'])]
-    private int $depth;
+    #[Assert\Range(min: 0, max: 2)]
+    private int $depth = 0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(name: 'created_at')]
+    #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
     /** @var Collection<int, ContentNode> */

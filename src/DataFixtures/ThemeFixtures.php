@@ -8,7 +8,7 @@ use App\Entity\Theme;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class ThemeFixtures extends Fixture
+final class ThemeFixtures extends Fixture
 {
     public const TUTORING_REF = 'theme-tutoring';
     public const ACADEMY_REF = 'theme-academy';

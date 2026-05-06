@@ -6,29 +6,29 @@ namespace App\Entity;
 
 use App\Repository\RedirectRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RedirectRepository::class)]
 #[ORM\Table(name: 'redirect')]
 #[ORM\Index(name: 'idx_redirect_from_node', columns: ['from_node_id'])]
 class Redirect
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: ContentNode::class)]
-    #[ORM\JoinColumn(name: 'from_node_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ContentNode $fromNode;
 
-    #[ORM\ManyToOne(targetEntity: ContentNode::class)]
-    #[ORM\JoinColumn(name: 'to_node_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ContentNode $toNode;
 
-    #[ORM\Column(name: 'http_status', options: ['default' => 301])]
+    #[ORM\Column(options: ['default' => 301])]
+    #[Assert\Choice(choices: [301, 302, 308])]
     private int $httpStatus = 301;
 
-    #[ORM\Column(name: 'created_at')]
+    #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
     public function __construct()

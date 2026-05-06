@@ -9,21 +9,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
 #[ORM\Table(name: 'author')]
 class Author
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
-    private string $slug;
+    #[Assert\NotBlank, Assert\Length(max: 50)]
+    private string $slug = '';
 
-    #[ORM\Column(name: 'real_name', length: 100)]
-    private string $realName;
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank, Assert\Length(max: 100)]
+    private string $realName = '';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $credentials = null;
@@ -31,10 +32,11 @@ class Author
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $bio = null;
 
-    #[ORM\Column(name: 'photo_url', length: 500, nullable: true)]
+    #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Length(max: 500), Assert\Url]
     private ?string $photoUrl = null;
 
-    #[ORM\Column(name: 'verified_at', nullable: true)]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $verifiedAt = null;
 
     /** @var Collection<int, ContentNode> */

@@ -8,6 +8,7 @@ use App\Entity\Enum\DataPointKind;
 use App\Repository\DataPointRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DataPointRepository::class)]
 #[ORM\Table(name: 'data_point')]
@@ -15,32 +16,31 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_data_point_node_verified', columns: ['node_id', 'verified'])]
 class DataPoint
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: ContentNode::class, inversedBy: 'dataPoints')]
-    #[ORM\JoinColumn(name: 'node_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(inversedBy: 'dataPoints')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ContentNode $node;
 
-    #[ORM\Column(type: Types::STRING, length: 20, enumType: DataPointKind::class)]
+    #[ORM\Column(length: 20, enumType: DataPointKind::class)]
     private DataPointKind $kind;
 
     #[ORM\Column(length: 200)]
-    private string $title;
+    #[Assert\NotBlank, Assert\Length(max: 200)]
+    private string $title = '';
 
-    /** @var array<string, mixed>|list<mixed>|string|int|float|bool */
     #[ORM\Column(type: Types::JSON, options: ['jsonb' => true])]
-    private mixed $value;
+    private mixed $value = null;
 
     #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Length(max: 500)]
     private ?string $source = null;
 
     #[ORM\Column(options: ['default' => false])]
     private bool $verified = false;
 
-    #[ORM\Column(name: 'updated_at')]
+    #[ORM\Column]
     private \DateTimeImmutable $updatedAt;
 
     public function __construct()

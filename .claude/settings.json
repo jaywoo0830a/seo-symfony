@@ -6,7 +6,10 @@
       "Bash(PGPASSWORD='!ChangeMe!' psql -h 127.0.0.1 -p 57475 -U app -d app -c \"SELECT 1\")",
       "Bash(docker exec seo-symfony-database-1 psql -U app -d app -c ' *)",
       "Bash(php bin/console doctrine:migrations:status)",
-      "Bash(php bin/console doctrine:schema:validate)"
+      "Bash(php bin/console doctrine:schema:validate)",
+      "Bash(php bin/console dbal:run-sql \"SELECT 'theme' AS t, COUNT\\(*\\) FROM theme UNION ALL SELECT 'region', COUNT\\(*\\) FROM region UNION ALL SELECT 'author', COUNT\\(*\\) FROM author\")",
+      "Bash(php bin/console doctrine:database:drop --force --if-exists)",
+      "Bash(php bin/console doctrine:database:create)"
     ]
   }
 }

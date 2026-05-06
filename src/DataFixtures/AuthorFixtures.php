@@ -13,7 +13,7 @@ use Doctrine\Persistence\ObjectManager;
  *
  * Authors must be `verified_at != NULL` for ContentNodes to pass the publish gate.
  */
-class AuthorFixtures extends Fixture
+final class AuthorFixtures extends Fixture
 {
     public const EDITOR_REF = 'author-editor';
 
