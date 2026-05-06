@@ -1,0 +1,157 @@
+// =============================================================================
+// 사이트 chrome — 상단 phone bar / 하단 footer
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// phone-bar — 항상 보이는 상단 띠 (전화번호 + 메뉴)
+// -----------------------------------------------------------------------------
+
+.phone-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: var(--b-bg);
+    border-bottom: 1px solid var(--b-border);
+    backdrop-filter: blur(8px);
+
+    &__inner {
+        width: 100%;
+        max-width: var(--b-container);
+        margin-inline: auto;
+        padding: var(--b-space-12) var(--b-space-24);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--b-space-24);
+    }
+
+    &__brand {
+        font-size: var(--b-text-18);
+        font-weight: var(--b-weight-extrabold);
+        letter-spacing: -0.02em;
+        color: var(--b-text);
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--b-space-8);
+        padding: var(--b-space-8) var(--b-space-20);
+        background-color: var(--b-cta);
+        color: var(--b-text-on-dark);
+        border-radius: var(--b-radius-full);
+        font-weight: var(--b-weight-bold);
+        font-size: var(--b-text-14);
+        transition: background-color var(--b-duration) var(--b-easing),
+                    transform var(--b-duration) var(--b-easing);
+        white-space: nowrap;
+
+        &:hover {
+            background-color: var(--b-cta-hover);
+            transform: translateY(-1px);
+        }
+    }
+
+    &__cta-icon {
+        font-size: var(--b-text-16);
+    }
+
+    &__nav {
+        display: none;
+        gap: var(--b-space-20);
+
+        @media (min-width: 48rem) {
+            display: flex;
+        }
+    }
+
+    &__nav-link {
+        font-size: var(--b-text-14);
+        font-weight: var(--b-weight-medium);
+        color: var(--b-text-soft);
+        transition: color var(--b-duration) var(--b-easing);
+
+        &:hover { color: var(--b-primary); }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// footer — 단순 푸터
+// -----------------------------------------------------------------------------
+
+.site-foot {
+    background-color: var(--b-bg-dark);
+    color: var(--b-ink-300);
+    padding-block: var(--b-space-64) var(--b-space-32);
+
+    &__inner {
+        width: 100%;
+        max-width: var(--b-container);
+        margin-inline: auto;
+        padding-inline: var(--b-space-24);
+        display: grid;
+        gap: var(--b-space-32);
+        grid-template-columns: 1fr;
+
+        @media (min-width: 48rem) {
+            grid-template-columns: 2fr 1fr 1fr;
+        }
+    }
+
+    &__brand {
+        font-size: var(--b-text-20);
+        font-weight: var(--b-weight-extrabold);
+        color: var(--b-ink-0);
+        letter-spacing: -0.02em;
+        margin-bottom: var(--b-space-8);
+    }
+
+    &__tagline {
+        font-size: var(--b-text-14);
+        line-height: var(--b-line-snug);
+        max-width: 32ch;
+    }
+
+    &__col-title {
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-bold);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--b-ink-400);
+        margin-bottom: var(--b-space-12);
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--b-space-8);
+    }
+
+    &__list-item a {
+        font-size: var(--b-text-14);
+        color: var(--b-ink-200);
+        transition: color var(--b-duration) var(--b-easing);
+
+        &:hover { color: var(--b-ink-0); }
+    }
+
+    &__phone {
+        font-size: var(--b-text-24);
+        font-weight: var(--b-weight-extrabold);
+        color: var(--b-ink-0);
+        letter-spacing: -0.01em;
+    }
+
+    &__legal {
+        max-width: var(--b-container);
+        margin: var(--b-space-48) auto 0;
+        padding: var(--b-space-24) var(--b-space-24) 0;
+        border-top: 1px solid var(--b-ink-700);
+        font-size: var(--b-text-12);
+        color: var(--b-ink-500);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--b-space-16);
+    }
+}

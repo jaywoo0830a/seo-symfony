@@ -1,0 +1,85 @@
+// =============================================================================
+// CTA 버튼 — 큰 호출 동작 (전화 유도)
+// =============================================================================
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--b-space-12);
+    padding: var(--b-space-16) var(--b-space-32);
+    font-size: var(--b-text-16);
+    font-weight: var(--b-weight-bold);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+    border: 2px solid transparent;
+    border-radius: var(--b-radius-full);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--b-duration) var(--b-easing);
+    white-space: nowrap;
+
+    &:focus-visible {
+        outline: 3px solid var(--b-cta);
+        outline-offset: 3px;
+    }
+
+    // ─── primary: 메인 CTA. 오렌지 배경 + 큰 크기 + glow ─────────────────────
+    &--primary {
+        background-color: var(--b-cta);
+        color: var(--b-text-on-dark);
+        border-color: var(--b-cta);
+        box-shadow: var(--b-shadow-md);
+
+        &:hover {
+            background-color: var(--b-cta-hover);
+            border-color: var(--b-cta-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--b-shadow-lg), var(--b-shadow-glow);
+        }
+    }
+
+    // ─── secondary: 외곽선만, 흰 배경 ─────────────────────────────────────
+    &--secondary {
+        background-color: var(--b-bg);
+        color: var(--b-primary);
+        border-color: var(--b-primary);
+
+        &:hover {
+            background-color: var(--b-primary-soft);
+            transform: translateY(-1px);
+        }
+    }
+
+    // ─── ghost: 텍스트만, 어두운 배경에서 ─────────────────────────────────
+    &--ghost {
+        color: var(--b-text-on-dark);
+        border-color: rgba(255, 255, 255, 0.3);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+    }
+
+    // ─── 사이즈 ───────────────────────────────────────────────────────
+    &--lg {
+        padding: var(--b-space-20) var(--b-space-48);
+        font-size: var(--b-text-18);
+    }
+
+    &--xl {
+        padding: var(--b-space-24) var(--b-space-64);
+        font-size: var(--b-text-20);
+        gap: var(--b-space-16);
+    }
+
+    &__icon {
+        font-size: 1.2em;
+        line-height: 1;
+    }
+
+    &__phone {
+        font-variant-numeric: tabular-nums;
+    }
+}

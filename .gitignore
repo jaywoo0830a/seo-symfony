@@ -22,4 +22,6 @@
 # sass build artifacts (source: assets/scss/, build: `npm run build`)
 /assets/styles/app.css
 /assets/styles/app.css.map
+/assets/styles/brand.css
+/assets/styles/brand.css.map
 /node_modules/

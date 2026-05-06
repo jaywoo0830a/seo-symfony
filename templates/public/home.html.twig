@@ -1,29 +1,89 @@
 {% extends 'public/layout.html.twig' %}
 
-{% block title %}SEO 사이트{% endblock %}
-{% block description %}지역별 교육 서비스 정보 허브.{% endblock %}
+{% block title %}전국 검증된 강사 매칭 — SEO 사이트{% endblock %}
+{% block description %}지역별로 검증된 교육 서비스를 한 통의 전화로 추천받으세요. 평일·주말 모두 상담 가능.{% endblock %}
 {% block canonical %}<link rel="canonical" href="{{ url('public_home') }}">{% endblock %}
 
 {% block content %}
-    <article class="article">
-        <header class="article__header">
-            <h1 class="article__title">SEO 사이트</h1>
-            <p class="article__lede">지역별 교육 서비스 허브. 테마를 선택하세요.</p>
-        </header>
+    {# Hero #}
+    <section class="hero">
+        <div class="hero__inner">
+            <div>
+                <span class="hero__eyebrow">📍 전국 17개 시도 · 228개 시군구 커버</span>
+                <h1 class="hero__title">
+                    검증된 강사를<br>
+                    <span class="hero__highlight">한 통의 전화</span>로 매칭합니다
+                </h1>
+                <p class="hero__lede">
+                    학력·자격증·신분증을 모두 확인한 강사 풀에서, 지역과 과목에 맞는 사람을 5분 안에 추천드립니다. 매칭이 마음에 들지 않으면 비용은 0원입니다.
+                </p>
+                <div class="hero__actions">
+                    <a class="cta cta--primary cta--lg" href="{{ brand_phone_link() }}">
+                        <span class="cta__icon" aria-hidden="true">📞</span>
+                        <span>{{ brand_phone() }} 지금 전화하기</span>
+                    </a>
+                    <span class="hero__assurance">상담 무료 · 매칭 비용 없음</span>
+                </div>
+            </div>
+            <div class="hero__stats">
+                <div class="hero__stat">
+                    <div class="hero__stat-figure">12,000+</div>
+                    <span class="hero__stat-label">매칭 가능 강사</span>
+                </div>
+                <div class="hero__stat">
+                    <div class="hero__stat-figure">228</div>
+                    <span class="hero__stat-label">서비스 가능 시군구</span>
+                </div>
+                <div class="hero__stat">
+                    <div class="hero__stat-figure">5분</div>
+                    <span class="hero__stat-label">평균 매칭 시간</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <section class="article__section">
-            <ul class="theme-grid">
+    {# 테마 그리드 #}
+    <section class="section section--alt">
+        <div class="section__inner">
+            <header class="section__header">
+                <span class="section__eyebrow">서비스</span>
+                <h2 class="section__title">필요한 영역을 골라보세요</h2>
+                <p class="section__lede">테마별로 지역 단위까지 들어가 평균 시급·강사 수·인기 과목을 확인할 수 있습니다.</p>
+            </header>
+            <ul class="home-themes">
                 {% for theme in themes %}
                     <li>
-                        <a class="theme-grid__card" href="/{{ theme.slug }}/">
-                            <span class="theme-grid__name">{{ theme.name }}</span>
+                        <a class="home-themes__card" href="/{{ theme.slug }}/">
+                            <span class="home-themes__name">{{ theme.name }}</span>
                             {% if theme.description %}
-                                <span class="theme-grid__desc">{{ theme.description }}</span>
+                                <span class="home-themes__desc">{{ theme.description }}</span>
                             {% endif %}
+                            <span class="home-themes__more">살펴보기 →</span>
                         </a>
                     </li>
                 {% endfor %}
             </ul>
-        </section>
-    </article>
+        </div>
+    </section>
+
+    {# 마지막 CTA #}
+    <section class="final-cta">
+        <div class="final-cta__inner">
+            <span class="final-cta__eyebrow">지금 바로 시작</span>
+            <h2 class="final-cta__title">5분 안에 맞는 강사 추천 받기</h2>
+            <p class="final-cta__lede">한 번 통화로 지역·과목·예산을 정리하면 후보 강사 3명을 바로 보내드립니다.</p>
+            <div class="final-cta__phone-block">
+                <a class="final-cta__phone-link" href="{{ brand_phone_link() }}">
+                    <span class="final-cta__phone-icon" aria-hidden="true">📞</span>
+                    <span>{{ brand_phone() }}</span>
+                </a>
+                <span class="final-cta__hint">평일 09:00 – 21:00 · 주말 10:00 – 18:00</span>
+            </div>
+            <div class="final-cta__assurances">
+                <span class="final-cta__assurance">상담 비용 없음</span>
+                <span class="final-cta__assurance">매칭 후 환불 보장</span>
+                <span class="final-cta__assurance">강사 신원 100% 검증</span>
+            </div>
+        </div>
+    </section>
 {% endblock %}

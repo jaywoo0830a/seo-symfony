@@ -1,0 +1,60 @@
+// =============================================================================
+// home — 홈페이지 전용 (themes 그리드)
+// =============================================================================
+
+.home-themes {
+    display: grid;
+    gap: var(--b-space-24);
+    grid-template-columns: 1fr;
+
+    @media (min-width: 48rem) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 64rem) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    &__card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: var(--b-space-12);
+        padding: var(--b-space-32);
+        background-color: var(--b-bg);
+        border: 1px solid var(--b-border);
+        border-radius: var(--b-radius-xl);
+        text-decoration: none;
+        color: inherit;
+        transition: transform var(--b-duration) var(--b-easing),
+                    box-shadow var(--b-duration) var(--b-easing),
+                    border-color var(--b-duration) var(--b-easing);
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--b-shadow-lg);
+            border-color: var(--b-primary);
+        }
+    }
+
+    &__name {
+        font-size: var(--b-text-24);
+        font-weight: var(--b-weight-extrabold);
+        letter-spacing: -0.02em;
+        color: var(--b-text);
+    }
+
+    &__desc {
+        font-size: var(--b-text-14);
+        line-height: var(--b-line-base);
+        color: var(--b-text-soft);
+        flex-grow: 1;
+    }
+
+    &__more {
+        margin-top: var(--b-space-12);
+        font-size: var(--b-text-14);
+        font-weight: var(--b-weight-bold);
+        color: var(--b-primary);
+    }
+}

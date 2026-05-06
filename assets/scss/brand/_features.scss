@@ -1,0 +1,186 @@
+// =============================================================================
+// feature-grid — "왜 우리인가" 카드
+// listing — 제공 항목 리스트 (과목, 학교 등)
+// callout — 강조 문장 (비교 데이터)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// feature-grid
+// -----------------------------------------------------------------------------
+
+.feature-grid {
+    display: grid;
+    gap: var(--b-space-24);
+    grid-template-columns: 1fr;
+
+    @media (min-width: 48rem) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 64rem) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &__card {
+        padding: var(--b-space-32);
+        background-color: var(--b-bg);
+        border: 1px solid var(--b-border);
+        border-radius: var(--b-radius-xl);
+        transition: transform var(--b-duration) var(--b-easing),
+                    box-shadow var(--b-duration) var(--b-easing),
+                    border-color var(--b-duration) var(--b-easing);
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--b-shadow-lg);
+            border-color: var(--b-brand-200);
+        }
+    }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--b-space-48);
+        height: var(--b-space-48);
+        margin-bottom: var(--b-space-20);
+        background-color: var(--b-primary-soft);
+        color: var(--b-primary);
+        border-radius: var(--b-radius-md);
+        font-size: var(--b-text-20);
+        font-weight: var(--b-weight-bold);
+    }
+
+    &__title {
+        font-size: var(--b-text-20);
+        font-weight: var(--b-weight-bold);
+        margin-bottom: var(--b-space-12);
+        letter-spacing: -0.015em;
+    }
+
+    &__body {
+        font-size: var(--b-text-16);
+        line-height: var(--b-line-base);
+        color: var(--b-text-soft);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// listing — 키-값 리스트 (qualitative DataPoint)
+// -----------------------------------------------------------------------------
+
+.listing {
+    display: grid;
+    gap: var(--b-space-16);
+
+    @media (min-width: 48rem) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    &__item {
+        padding: var(--b-space-24);
+        background-color: var(--b-bg);
+        border: 1px solid var(--b-border);
+        border-radius: var(--b-radius-lg);
+    }
+
+    &__title {
+        font-size: var(--b-text-14);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--b-text-soft);
+        margin-bottom: var(--b-space-8);
+    }
+
+    &__body {
+        font-size: var(--b-text-16);
+        line-height: var(--b-line-base);
+        color: var(--b-text);
+    }
+
+    &__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--b-space-8);
+        margin: 0;
+    }
+
+    &__tag {
+        padding: var(--b-space-4) var(--b-space-12);
+        background-color: var(--b-primary-soft);
+        color: var(--b-primary);
+        border-radius: var(--b-radius-full);
+        font-size: var(--b-text-14);
+        font-weight: var(--b-weight-medium);
+    }
+
+    &__pairs {
+        display: grid;
+        gap: var(--b-space-8);
+        margin: 0;
+    }
+
+    &__pair {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--b-space-12);
+        padding-block: var(--b-space-4);
+        border-bottom: 1px dashed var(--b-border-soft);
+
+        &:last-child { border-bottom: 0; }
+    }
+
+    &__pair-key {
+        font-size: var(--b-text-14);
+        color: var(--b-text-soft);
+    }
+
+    &__pair-val {
+        font-size: var(--b-text-14);
+        font-weight: var(--b-weight-semibold);
+        color: var(--b-text);
+        text-align: right;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// callout — 비교 데이터 (강조 인용 박스)
+// -----------------------------------------------------------------------------
+
+.callout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--b-space-12);
+    padding: var(--b-space-32);
+    background:
+        linear-gradient(135deg, var(--b-primary-soft) 0%, var(--b-bg) 100%);
+    border-radius: var(--b-radius-xl);
+    border-left: 4px solid var(--b-primary);
+
+    @media (min-width: 48rem) {
+        padding: var(--b-space-40);
+    }
+
+    &__title {
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-bold);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--b-primary);
+    }
+
+    &__quote {
+        font-size: clamp(var(--b-text-18), 2vw, var(--b-text-24));
+        line-height: var(--b-line-snug);
+        font-weight: var(--b-weight-semibold);
+        color: var(--b-text);
+        letter-spacing: -0.015em;
+    }
+}
+
+.callout-stack {
+    display: grid;
+    gap: var(--b-space-16);
+}

@@ -9,29 +9,53 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Asta+Sans:wght@300..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/brand.css') }}">
 </head>
-<body class="public">
-    <header class="site-header">
-        <div class="site-header__container">
-            <a class="site-header__brand" href="{{ path('public_home') }}">SEO 사이트</a>
-            <nav class="site-header__nav">
+<body>
+    {# 상단 sticky 전화 바 #}
+    <header class="phone-bar">
+        <div class="phone-bar__inner">
+            <a class="phone-bar__brand" href="{{ path('public_home') }}">SEO 사이트</a>
+            <nav class="phone-bar__nav">
                 {% for theme in top_themes() %}
-                    <a class="site-header__nav-link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
+                    <a class="phone-bar__nav-link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
                 {% endfor %}
             </nav>
+            <a class="phone-bar__cta" href="{{ brand_phone_link() }}">
+                <span class="phone-bar__cta-icon" aria-hidden="true">📞</span>
+                <span>{{ brand_phone() }}</span>
+            </a>
         </div>
     </header>
 
-    <main class="site-main">
-        <div class="site-main__container">
-            {% block content %}{% endblock %}
-        </div>
-    </main>
+    {% block content %}{% endblock %}
 
-    <footer class="site-footer">
-        <div class="site-footer__container">
-            <span>© SEO 사이트 · <a href="{{ path('public_sitemap') }}">sitemap</a></span>
+    {# 하단 footer #}
+    <footer class="site-foot">
+        <div class="site-foot__inner">
+            <div>
+                <div class="site-foot__brand">SEO 사이트</div>
+                <p class="site-foot__tagline">전국 지역별 검증된 강사·교육 서비스를 매칭하는 플랫폼입니다.</p>
+            </div>
+            <div>
+                <div class="site-foot__col-title">서비스</div>
+                <ul class="site-foot__list">
+                    {% for theme in top_themes() %}
+                        <li class="site-foot__list-item">
+                            <a href="/{{ theme.slug }}/">{{ theme.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <div class="site-foot__col-title">상담 / 문의</div>
+                <a class="site-foot__phone" href="{{ brand_phone_link() }}">{{ brand_phone() }}</a>
+                <p class="site-foot__tagline" style="margin-top: 0.5rem;">평일 09:00 – 21:00<br>주말 10:00 – 18:00</p>
+            </div>
+        </div>
+        <div class="site-foot__legal">
+            <span>© SEO 사이트 · 데모</span>
+            <span><a href="{{ path('public_sitemap') }}">sitemap</a></span>
         </div>
     </footer>
 </body>

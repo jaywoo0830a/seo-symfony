@@ -1,0 +1,19 @@
+// =============================================================================
+// 브랜드 랜딩 — SCSS 엔트리
+//
+// 대시보드의 app.scss와 완전히 독립. 출력: assets/styles/brand.css
+//
+// Build:  npm run build       (양쪽 다 빌드)
+// Watch:  npm run watch
+// =============================================================================
+
+@use 'tokens';
+@use 'base';
+@use 'chrome';
+@use 'button';
+@use 'hero';
+@use 'section';
+@use 'features';
+@use 'faq';
+@use 'final-cta';
+@use 'home';
