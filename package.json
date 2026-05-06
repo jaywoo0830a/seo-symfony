@@ -1,0 +1,10 @@
+{
+    "name": "seo-symfony",
+    "private": true,
+    "description": "SEO 운영 대시보드 — frontend build (sass only).",
+    "scripts": {
+        "build": "sass assets/scss/app.scss assets/styles/app.css --no-source-map --style=expanded",
+        "watch": "sass --watch assets/scss/app.scss:assets/styles/app.css --no-source-map --style=expanded",
+        "build:prod": "sass assets/scss/app.scss assets/styles/app.css --no-source-map --style=compressed"
+    }
+}

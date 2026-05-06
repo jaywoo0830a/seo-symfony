@@ -1,0 +1,15 @@
+// =============================================================================
+// SEO 운영 대시보드 — SCSS entry
+//
+// Build:    sass assets/scss/app.scss assets/styles/app.css --no-source-map
+// Watch:    sass --watch assets/scss/app.scss:assets/styles/app.css --no-source-map
+// =============================================================================
+
+@use 'tokens';
+@use 'base';
+@use 'layout';
+@use 'dashboard';
+@use 'components';
+@use 'forms';
+@use 'widgets';
+@use 'public';

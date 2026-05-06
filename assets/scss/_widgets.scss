@@ -1,0 +1,221 @@
+/* =============================================================================
+   Block: matrix
+   ============================================================================= */
+
+.matrix {
+    width: 100%;
+    background-color: var(--color-surface);
+    border: var(--rule);
+}
+
+.matrix__cell {
+    padding: var(--space-12) var(--space-16);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+    text-align: center;
+    font-size: var(--text-14);
+    line-height: var(--line-snug);
+    vertical-align: middle;
+}
+
+.matrix__cell:last-child {
+    border-right: 0;
+}
+
+.matrix__row:last-child .matrix__cell {
+    border-bottom: 0;
+}
+
+.matrix__cell--head {
+    background-color: var(--color-tint);
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-soft);
+}
+
+.matrix__cell--row-head {
+    text-align: left;
+    background-color: var(--color-tint);
+    font-weight: var(--weight-semibold);
+}
+
+.matrix__cell--live {
+    background-color: var(--color-mark);
+    color: var(--color-on-mark);
+    font-weight: var(--weight-bold);
+}
+
+.matrix__cell--noindex {
+    background-color: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
+    font-weight: var(--weight-semibold);
+}
+
+.matrix__cell--demoted {
+    background-color: var(--color-surface);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--color-tint),
+        var(--color-tint) 0.125rem,
+        transparent 0.125rem,
+        transparent 0.5rem
+    );
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
+    color: var(--color-ink);
+    font-weight: var(--weight-semibold);
+}
+
+.matrix__cell--draft {
+    background-color: var(--color-tint);
+    color: var(--color-soft);
+}
+
+.matrix__cell--dead {
+    background-color: var(--color-surface);
+    color: var(--color-faint);
+    text-decoration: line-through;
+}
+
+.matrix__cell--empty {
+    color: var(--color-faint);
+}
+
+.matrix__cell-figure {
+    font-size: var(--text-18);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.matrix__cell-link {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
+.matrix__cell-link:hover {
+    text-decoration: underline;
+}
+
+.matrix__cell-label {
+    font-size: var(--text-12);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+/* =============================================================================
+   Block: legend
+   ============================================================================= */
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    padding-top: var(--space-8);
+}
+
+.legend__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    font-size: var(--text-12);
+    color: var(--color-soft);
+}
+
+.legend__swatch {
+    width: var(--space-12);
+    height: var(--space-12);
+    background-color: var(--color-tint);
+    flex-shrink: 0;
+}
+
+.legend__swatch--live {
+    background-color: var(--color-mark);
+}
+
+.legend__swatch--noindex {
+    background-color: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
+}
+
+.legend__swatch--demoted {
+    background-color: var(--color-surface);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--color-tint),
+        var(--color-tint) 0.0625rem,
+        transparent 0.0625rem,
+        transparent 0.25rem
+    );
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
+}
+
+.legend__swatch--empty {
+    background-color: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-rule);
+}
+
+
+/* =============================================================================
+   Block: dp-list (DataPoint inline CRUD list)
+   ============================================================================= */
+
+.dp-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.dp-list__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-block: var(--space-12);
+    border-bottom: var(--rule);
+}
+
+.dp-list__item:last-child {
+    border-bottom: 0;
+}
+
+.dp-list__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-8);
+}
+
+.dp-list__title {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+}
+
+.dp-list__actions {
+    display: flex;
+    gap: var(--space-12);
+    align-items: baseline;
+}
+
+.dp-list__action {
+    font-family: inherit;
+    font-size: var(--text-12);
+    color: var(--color-soft);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+}
+
+.dp-list__action:hover {
+    color: var(--color-ink);
+}
+
+.dp-list__action--danger:hover {
+    color: var(--color-mark);
+    text-decoration: underline;
+}
+

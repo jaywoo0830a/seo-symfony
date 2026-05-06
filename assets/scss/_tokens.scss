@@ -1,0 +1,62 @@
+/* =============================================================================
+   SEO 운영 대시보드 — BEM
+   - Font: Asta Sans (단일)
+   - Base: 1rem
+   - Scalars: 2의 배수 (px 기준)
+   ============================================================================= */
+
+:root {
+    /* Spacing — px가 2의 배수가 되도록 (16px = 1rem 기준) */
+    --space-2:   0.125rem;
+    --space-4:   0.25rem;
+    --space-8:   0.5rem;
+    --space-12:  0.75rem;
+    --space-16:  1rem;
+    --space-20:  1.25rem;
+    --space-24:  1.5rem;
+    --space-32:  2rem;
+    --space-40:  2.5rem;
+    --space-48:  3rem;
+    --space-64:  4rem;
+    --space-96:  6rem;
+
+    /* Type scale */
+    --text-12: 0.75rem;
+    --text-14: 0.875rem;
+    --text-16: 1rem;
+    --text-18: 1.125rem;
+    --text-20: 1.25rem;
+    --text-24: 1.5rem;
+    --text-32: 2rem;
+    --text-40: 2.5rem;
+    --text-48: 3rem;
+
+    /* Weights */
+    --weight-light:    300;
+    --weight-regular:  400;
+    --weight-medium:   500;
+    --weight-semibold: 600;
+    --weight-bold:     700;
+
+    /* Line heights */
+    --line-tight: 1.2;
+    --line-snug:  1.4;
+    --line-base:  1.6;
+
+    /* Color — 단조로운 모노톤 (quickstart.html과 동일 결) */
+    --color-bg:       #faf8f4;
+    --color-surface:  #ffffff;
+    --color-tint:     #f0ece4;
+    --color-rule:     #e0dcd3;
+    --color-ink:      #1a1a1a;
+    --color-soft:     #555555;
+    --color-faint:    #888888;
+    --color-mark:     #1a1a1a;
+    --color-on-mark:  #ffffff;
+
+    /* Layout */
+    --container-max: 80rem;
+    --rule:          0.125rem solid var(--color-rule);
+    --rule-strong:   0.125rem solid var(--color-ink);
+}
+

@@ -1,0 +1,150 @@
+/* =============================================================================
+   Block: layout
+   ============================================================================= */
+
+.layout {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+.layout__container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-32);
+}
+
+.layout__header {
+    border-bottom: var(--rule);
+    background-color: var(--color-bg);
+}
+
+.layout__header > .layout__container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-32);
+    padding-block: var(--space-20);
+}
+
+.layout__brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-12);
+}
+
+.layout__brand-name {
+    font-size: var(--text-18);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.02em;
+}
+
+.layout__brand-tag {
+    font-size: var(--text-12);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.16em;
+    color: var(--color-faint);
+    text-transform: uppercase;
+}
+
+.layout__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+}
+
+.layout__nav-link {
+    font-size: var(--text-14);
+    color: var(--color-soft);
+    padding-block: var(--space-4);
+    border-bottom: var(--space-2) solid transparent;
+}
+
+.layout__nav-link--current {
+    color: var(--color-ink);
+    font-weight: var(--weight-semibold);
+    border-bottom-color: var(--color-ink);
+}
+
+.layout__nav-link--disabled {
+    color: var(--color-faint);
+    cursor: default;
+}
+
+.layout__user {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-12);
+    font-size: var(--text-12);
+}
+
+.layout__user-name {
+    color: var(--color-soft);
+    letter-spacing: 0.04em;
+}
+
+.layout__user-logout {
+    color: var(--color-faint);
+    letter-spacing: 0.04em;
+}
+
+.layout__user-logout:hover {
+    color: var(--color-ink);
+}
+
+.layout__main > .layout__container {
+    padding-block: var(--space-48) var(--space-64);
+}
+
+.layout__footer {
+    border-top: var(--rule);
+}
+
+.layout__footer > .layout__container {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-16);
+    padding-block: var(--space-24);
+    font-size: var(--text-12);
+    color: var(--color-faint);
+    letter-spacing: 0.04em;
+}
+
+
+/* =============================================================================
+   Block: login (full-page login screen)
+   ============================================================================= */
+
+.login {
+    max-width: 24rem;
+    margin: var(--space-96) auto var(--space-48);
+    padding-inline: var(--space-32);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+}
+
+.login__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    text-align: center;
+}
+
+.login__title {
+    font-size: var(--text-24);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.login__subtitle {
+    font-size: var(--text-12);
+    color: var(--color-faint);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: var(--weight-semibold);
+    margin: 0;
+}
+
