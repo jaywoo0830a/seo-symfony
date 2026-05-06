@@ -101,4 +101,34 @@ class ContentNodeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Nodes that were once published but auto-degraded to noindex
+     * (data_count fell below 5). first_published_at is set by the publish
+     * gate on entry to 'live' and never cleared, so the pair is the
+     * marker for "previously live".
+     *
+     * @return list<ContentNode>
+     */
+    public function findDemoted(): array
+    {
+        return $this->createQueryBuilder('n')
+            ->where('n.status = :status')
+            ->andWhere('n.firstPublishedAt IS NOT NULL')
+            ->setParameter('status', ContentStatus::Noindex)
+            ->orderBy('n.firstPublishedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countDemoted(): int
+    {
+        return (int) $this->createQueryBuilder('n')
+            ->select('COUNT(n.id)')
+            ->where('n.status = :status')
+            ->andWhere('n.firstPublishedAt IS NOT NULL')
+            ->setParameter('status', ContentStatus::Noindex)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

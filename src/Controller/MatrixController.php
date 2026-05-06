@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\ContentNode;
+use App\Entity\Enum\ContentStatus;
 use App\Repository\ContentNodeRepository;
 use App\Repository\RegionRepository;
 use App\Repository\ThemeRepository;
@@ -30,8 +32,9 @@ final class MatrixController extends AbstractController
                 $node = $nodes->findByCoordinates($theme, $sido);
                 $cells[] = [
                     'sido' => $sido,
-                    'state' => $node?->getStatus()->value ?? 'empty',
+                    'state' => $this->cellState($node),
                     'count' => $node?->getDataCount() ?? 0,
+                    'node' => $node,
                 ];
             }
             $matrix[] = ['theme' => $theme, 'cells' => $cells];
@@ -41,5 +44,22 @@ final class MatrixController extends AbstractController
             'sidos' => $sidos,
             'matrix' => $matrix,
         ];
+    }
+
+    /**
+     * Derives the cell state for the matrix view. 'demoted' is a synthetic
+     * state that means "noindex but was once published" — operator should
+     * see it as a regression, not a normal noindex.
+     */
+    private function cellState(?ContentNode $node): string
+    {
+        if ($node === null) {
+            return 'empty';
+        }
+        if ($node->getStatus() === ContentStatus::Noindex && $node->getFirstPublishedAt() !== null) {
+            return 'demoted';
+        }
+
+        return $node->getStatus()->value;
     }
 }

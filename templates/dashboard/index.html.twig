@@ -51,9 +51,15 @@
                     <span class="link-card__title">매트릭스</span>
                     <span class="link-card__hint">테마 × 시도 좌표 전체</span>
                 </a>
-                <a class="link-card" href="{{ path('admin_queue') }}">
+                <a class="link-card{{ demotedCount > 0 ? ' link-card--alert' }}" href="{{ path('admin_queue') }}">
                     <span class="link-card__title">갱신 큐</span>
-                    <span class="link-card__hint">90일 미갱신 {{ staleCount }}건</span>
+                    <span class="link-card__hint">
+                        {%- if demotedCount > 0 -%}
+                            ⚠ 강등 {{ demotedCount }}건 · 90일 미갱신 {{ staleCount }}건
+                        {%- else -%}
+                            90일 미갱신 {{ staleCount }}건
+                        {%- endif -%}
+                    </span>
                 </a>
                 <a class="link-card" href="{{ path('admin_silo') }}">
                     <span class="link-card__title">무결성</span>

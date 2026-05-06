@@ -27,6 +27,10 @@
                                 <td class="matrix__cell matrix__cell--{{ cell.state }}">
                                     {% if cell.state == 'empty' %}
                                         <span class="matrix__cell-label">·</span>
+                                    {% elseif cell.node %}
+                                        <a class="matrix__cell-link" href="{{ path('admin_nodes_show', {id: cell.node.id}) }}">
+                                            <span class="matrix__cell-figure">{{ cell.count }}</span>
+                                        </a>
                                     {% else %}
                                         <span class="matrix__cell-figure">{{ cell.count }}</span>
                                     {% endif %}
@@ -40,6 +44,10 @@
                 <li class="legend__item">
                     <span class="legend__swatch legend__swatch--live"></span>
                     <span>live</span>
+                </li>
+                <li class="legend__item">
+                    <span class="legend__swatch legend__swatch--demoted"></span>
+                    <span>강등 (live → noindex)</span>
                 </li>
                 <li class="legend__item">
                     <span class="legend__swatch legend__swatch--noindex"></span>

@@ -6,8 +6,39 @@
     <div class="dashboard">
         <header class="dashboard__header">
             <h1 class="dashboard__title">갱신 큐</h1>
-            <p class="dashboard__subtitle">마지막 검토 이후 경과한 라이브 노드 목록입니다.</p>
+            <p class="dashboard__subtitle">강등 알림과 검토 기한이 지난 라이브 노드 목록입니다.</p>
         </header>
+
+        <section class="dashboard__section">
+            <header class="dashboard__section-header">
+                <h2 class="dashboard__section-title">강등됨 (live → noindex)</h2>
+                <span class="dashboard__section-meta">{{ demoted|length }}건</span>
+            </header>
+            {% if demoted is empty %}
+                <div class="panel">
+                    <div class="empty">
+                        <span class="empty__title">강등된 노드 없음</span>
+                        <span class="empty__hint">라이브 노드의 검증 데이터가 5건 미만으로 떨어지면 자동으로 noindex가 됩니다.</span>
+                    </div>
+                </div>
+            {% else %}
+                <ul class="tree">
+                    {% for node in demoted %}
+                        <li class="tree__item">
+                            <span class="tree__label">
+                                <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
+                                    {{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% else %} · 허브{% endif %}
+                                </a>
+                            </span>
+                            <span class="tree__meta">
+                                검증 {{ node.dataCount }}/5 ·
+                                발행 {{ node.firstPublishedAt|date('Y-m-d') }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
 
         <section class="dashboard__section">
             <header class="dashboard__section-header">
@@ -25,10 +56,9 @@
                     {% for node in overdue %}
                         <li class="tree__item">
                             <span class="tree__label">
-                                <span class="tree__name">{{ node.theme.name }}</span>
-                                {% if node.region %}
-                                    <span class="tree__slug">/{{ node.region.slug }}</span>
-                                {% endif %}
+                                <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
+                                    {{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% else %} · 허브{% endif %}
+                                </a>
                             </span>
                             <span class="tree__meta">
                                 {{ node.lastReviewAt ? node.lastReviewAt|date('Y-m-d') : '미갱신' }}
@@ -55,10 +85,9 @@
                     {% for node in soon %}
                         <li class="tree__item">
                             <span class="tree__label">
-                                <span class="tree__name">{{ node.theme.name }}</span>
-                                {% if node.region %}
-                                    <span class="tree__slug">/{{ node.region.slug }}</span>
-                                {% endif %}
+                                <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
+                                    {{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% else %} · 허브{% endif %}
+                                </a>
                             </span>
                             <span class="tree__meta">
                                 {{ node.lastReviewAt ? node.lastReviewAt|date('Y-m-d') : '미갱신' }}

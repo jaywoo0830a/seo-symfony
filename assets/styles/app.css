@@ -906,6 +906,20 @@ table {
     font-weight: var(--weight-semibold);
 }
 
+.matrix__cell--demoted {
+    background-color: var(--color-surface);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--color-tint),
+        var(--color-tint) 0.125rem,
+        transparent 0.125rem,
+        transparent 0.5rem
+    );
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
+    color: var(--color-ink);
+    font-weight: var(--weight-semibold);
+}
+
 .matrix__cell--draft {
     background-color: var(--color-tint);
     color: var(--color-soft);
@@ -926,6 +940,16 @@ table {
     font-weight: var(--weight-bold);
     letter-spacing: -0.02em;
     line-height: 1;
+}
+
+.matrix__cell-link {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
+.matrix__cell-link:hover {
+    text-decoration: underline;
 }
 
 .matrix__cell-label {
@@ -966,6 +990,18 @@ table {
 
 .legend__swatch--noindex {
     background-color: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
+}
+
+.legend__swatch--demoted {
+    background-color: var(--color-surface);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--color-tint),
+        var(--color-tint) 0.0625rem,
+        transparent 0.0625rem,
+        transparent 0.25rem
+    );
     box-shadow: inset 0 0 0 var(--space-2) var(--color-ink);
 }
 
@@ -1168,6 +1204,11 @@ table {
 
 .link-card:hover {
     border-color: var(--color-ink);
+}
+
+.link-card--alert {
+    border-color: var(--color-ink);
+    background-color: var(--color-tint);
 }
 
 .link-card__title {

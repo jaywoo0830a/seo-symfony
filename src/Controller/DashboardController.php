@@ -37,6 +37,7 @@ final class DashboardController extends AbstractController
                 'data_points' => $dataPoints->count([]),
             ],
             'staleCount' => count($nodes->findStale(90)),
+            'demotedCount' => $nodes->countDemoted(),
         ];
     }
 }

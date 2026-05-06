@@ -16,6 +16,7 @@ final class RefreshQueueController extends AbstractController
     public function __invoke(ContentNodeRepository $nodes): array
     {
         return [
+            'demoted' => $nodes->findDemoted(),
             'overdue' => $nodes->findStale(90),
             'soon' => $nodes->findStale(60),
         ];
