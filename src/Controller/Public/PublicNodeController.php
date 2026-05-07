@@ -10,6 +10,7 @@ use App\Entity\Enum\ContentStatus;
 use App\Entity\Enum\DataPointKind;
 use App\Repository\ContentNodeRepository;
 use App\Repository\RedirectRepository;
+use App\Service\BreadcrumbBuilder;
 use App\Service\PathResolver;
 use App\Service\UrlBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +34,7 @@ final class PublicNodeController extends AbstractController
         ContentNodeRepository $nodes,
         RedirectRepository $redirects,
         UrlBuilder $urls,
+        BreadcrumbBuilder $breadcrumbs,
     ): Response {
         // Canonicalise to trailing slash.
         if (!str_ends_with($request->getPathInfo(), '/')) {
@@ -69,14 +71,23 @@ final class PublicNodeController extends AbstractController
             return $response;
         }
 
-        return $this->render('public/node.html.twig', $this->buildContext($node, $nodes, $urls), $response);
+        return $this->render(
+            'public/node.html.twig',
+            $this->buildContext($node, $nodes, $urls, $breadcrumbs, $request->getSchemeAndHttpHost()),
+            $response,
+        );
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function buildContext(ContentNode $node, ContentNodeRepository $nodes, UrlBuilder $urls): array
-    {
+    private function buildContext(
+        ContentNode $node,
+        ContentNodeRepository $nodes,
+        UrlBuilder $urls,
+        BreadcrumbBuilder $breadcrumbs,
+        string $absoluteBaseUrl,
+    ): array {
         $byKind = [];
         foreach (DataPointKind::cases() as $kind) {
             $byKind[$kind->value] = [];
@@ -88,6 +99,7 @@ final class PublicNodeController extends AbstractController
         }
 
         $h1 = $this->buildH1($node);
+        $crumbs = $breadcrumbs->build($node);
 
         return [
             'node' => $node,
@@ -99,7 +111,9 @@ final class PublicNodeController extends AbstractController
             'siblings' => $this->findSiblings($node, $nodes),
             'children' => $nodes->findChildrenOf($node),
             'urls' => $urls,
+            'crumbs' => $crumbs,
             'json_ld' => $this->buildJsonLd($node, $h1),
+            'breadcrumbs_jsonld' => $breadcrumbs->buildJsonLd($crumbs, $absoluteBaseUrl),
         ];
     }
 

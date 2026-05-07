@@ -20,8 +20,17 @@ final class UrlBuilder
 {
     public function build(ContentNode $node): string
     {
-        $themePath = $this->themePath($node->getTheme());
-        $regionPath = $node->getRegion() ? $this->regionPath($node->getRegion()) : '';
+        return $this->buildPath($node->getTheme(), $node->getRegion());
+    }
+
+    /**
+     * 좌표(테마 + 지역)만으로 URL 생성. ContentNode가 없는 중간 좌표
+     * (예: breadcrumb 항목들)에도 URL을 만들 수 있음.
+     */
+    public function buildPath(Theme $theme, ?Region $region): string
+    {
+        $themePath = $this->themePath($theme);
+        $regionPath = $region ? $this->regionPath($region) : '';
 
         return '/' . $themePath . ($regionPath !== '' ? '/' . $regionPath : '') . '/';
     }

@@ -10,6 +10,22 @@
 {% block canonical %}<link rel="canonical" href="{{ abs_url }}">{% endblock %}
 
 {% block content %}
+    {# ─── BREADCRUMB ─────────────────────────────────────────────── #}
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb__list">
+            {% for crumb in crumbs %}
+                <li class="breadcrumb__item">
+                    {% if crumb.current %}
+                        <span class="breadcrumb__current" aria-current="page">{{ crumb.label }}</span>
+                    {% else %}
+                        <a class="breadcrumb__link" href="{{ crumb.url }}">{{ crumb.label }}</a>
+                        <span class="breadcrumb__sep" aria-hidden="true">›</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+    </nav>
+
     {# ─── HERO ───────────────────────────────────────────────────── #}
     <section class="hero">
         <div class="hero__inner">
@@ -189,6 +205,7 @@
         </div>
     </section>
 
-    {# JSON-LD (서버 사이드 생성, 실행 JS 아님) #}
+    {# JSON-LD (서버 사이드 생성, 실행 JS 아님) — Article + BreadcrumbList #}
     <script type="application/ld+json">{{ json_ld|raw }}</script>
+    <script type="application/ld+json">{{ breadcrumbs_jsonld|raw }}</script>
 {% endblock %}
