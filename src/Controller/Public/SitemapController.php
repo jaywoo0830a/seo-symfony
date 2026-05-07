@@ -21,18 +21,37 @@ final class SitemapController extends AbstractController
     ): Response {
         $base = $request->getSchemeAndHttpHost();
         $entries = [];
+        $latest = null;
         foreach ($nodes->findLiveForSitemap() as $node) {
+            $lastmod = $node->getLastReviewAt() ?? $node->getFirstPublishedAt();
+            if ($lastmod !== null && ($latest === null || $lastmod > $latest)) {
+                $latest = $lastmod;
+            }
             $entries[] = [
                 'loc' => $base . $urls->build($node),
-                'lastmod' => $node->getLastReviewAt() ?? $node->getFirstPublishedAt(),
+                'lastmod' => $lastmod,
                 'priority' => $this->priority($node->getRegion()?->getDepth()),
                 'changefreq' => $this->changefreq($node->getRegion()?->getDepth()),
             ];
         }
 
         $xml = $this->renderView('public/sitemap.xml.twig', ['entries' => $entries]);
+        $response = new Response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
 
-        return new Response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+        // 사이트맵은 더 길게 캐시 (브라우저 30분 / 공유 캐시 1시간).
+        // 가장 최근 업데이트된 노드의 시간으로 Last-Modified 설정.
+        $response->setPublic();
+        $response->setMaxAge(1800);
+        $response->setSharedMaxAge(3600);
+        if ($latest !== null) {
+            $response->setLastModified($latest);
+
+            if ($response->isNotModified($request)) {
+                return $response;
+            }
+        }
+
+        return $response;
     }
 
     private function priority(?int $regionDepth): string

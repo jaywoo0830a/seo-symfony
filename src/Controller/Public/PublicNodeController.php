@@ -56,7 +56,20 @@ final class PublicNodeController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('public/node.html.twig', $this->buildContext($node, $nodes, $urls));
+        // 캐시 헤더: 브라우저 5분 / 공유 캐시(CDN·리버스 프록시) 30분.
+        // 같은 노드의 데이터가 변하면 Last-Modified가 갱신되므로
+        // 클라이언트는 If-Modified-Since로 304 응답을 받게 됨.
+        $response = new Response();
+        $response->setPublic();
+        $response->setMaxAge(300);
+        $response->setSharedMaxAge(1800);
+        $response->setLastModified($node->getLastReviewAt() ?? $node->getFirstPublishedAt());
+
+        if ($response->isNotModified($request)) {
+            return $response;
+        }
+
+        return $this->render('public/node.html.twig', $this->buildContext($node, $nodes, $urls), $response);
     }
 
     /**
