@@ -44,14 +44,43 @@ final class SeedDemoCommand
         'yongsan-gu',
     ];
 
-    /** 매트릭스(지역별) 시드 대상에서 제외하는 테마 slug — 가이드 허브는 region=null만. */
-    private const MATRIX_EXCLUDED_SLUGS = ['guides'];
+    /** 매트릭스(지역별) 시드 대상에서 제외 — 비-지역 콘텐츠 테마(가이드/리포트/사례). */
+    private const MATRIX_EXCLUDED_SLUGS = ['guides', 'reports', 'cases'];
 
-    /** 가이드 3종 시연 (longform/comparison/faq) — body_template, slug, 변종을 묶음. */
+    /** 가이드 변종 — how-to 형식. (faq 변종은 enum에는 남아 있되 데모에선 제외 — 별도 페이지로 만들기엔 약함.) */
     private const GUIDE_VARIANTS = [
         ['slug' => 'how-to-choose-tutor', 'name' => '과외 강사 선택법', 'template' => BodyTemplate::GuideLongform],
         ['slug' => 'tutoring-vs-academy', 'name' => '과외 vs 학원 비교', 'template' => BodyTemplate::GuideComparison],
-        ['slug' => 'tutoring-faq', 'name' => '과외 자주 묻는 질문', 'template' => BodyTemplate::GuideFaq],
+    ];
+
+    /** 권위 콘텐츠 — 자체 데이터 리포트. /reports/ 아래 자식 테마. */
+    private const REPORT_VARIANTS = [
+        ['slug' => 'quarterly-tutoring-rates-2026q1', 'name' => '2026 1분기 수도권 과외 시세 보고서'],
+    ];
+
+    /** 권위 콘텐츠 — 사례 연구. /cases/ 아래 자식 테마. */
+    private const CASE_STUDY_VARIANTS = [
+        ['slug' => 'middle-school-math-routine', 'name' => '중학교 수학, 한 달 루틴 변화로 점수 두 배'],
+    ];
+
+    /** 추가 루트 테마 — 권위 콘텐츠 컨테이너. ThemeFixtures 외에서 idempotent하게 보장. */
+    private const EXTRA_ROOT_THEMES = [
+        ['slug' => 'reports', 'name' => '데이터 리포트', 'description' => '운영팀이 발행하는 자체 통계·시장 보고서. 분기/연 단위.'],
+        ['slug' => 'cases', 'name' => '사례 연구', 'description' => '익명화된 실제 매칭/학습 사례. 매월 1편 누적.'],
+    ];
+
+    /** 에세이 — contents 테마 아래 자식 테마. 변종 구분 없이 각자 독립된 글. */
+    private const ESSAY_DEMOS = [
+        [
+            'slug' => 'study-routine-design',
+            'name' => '학습 루틴 설계의 원칙',
+            'intro' => '하루 두 시간씩 공부하는 학생과 한 시간씩 매일 공부하는 학생의 한 학기 결과를 비교한 적이 있다. 시간 총량은 비슷하지만 결과는 두 배 이상 갈렸다. 차이는 *루틴*에 있었다.',
+        ],
+        [
+            'slug' => 'online-vs-offline-learning',
+            'name' => '온·오프라인 학습의 경계',
+            'intro' => '온라인 강의가 학원을 대체할까. 십 년째 같은 질문을 받지만 답은 매번 조금씩 달라진다. 기술이 아니라 *학습자*가 달라지고 있기 때문이다.',
+        ],
     ];
 
     public function __construct(
@@ -71,6 +100,12 @@ final class SeedDemoCommand
             $io->error('검증된 작성자(author.verified_at IS NOT NULL)가 없습니다. AuthorFixtures를 먼저 로드하세요.');
             return Command::FAILURE;
         }
+
+        // 권위 콘텐츠용 추가 루트 테마(reports, cases)를 idempotent하게 보장.
+        // 매트릭스 메인 루프가 이 테마들도 순회하지만 MATRIX_EXCLUDED_SLUGS로 region 노드는 안 만듦.
+        $this->ensureExtraRootThemes();
+        // 더 이상 안 쓰는 가이드 데모(tutoring-faq)는 정리 — FAQ 전용 페이지는 권위에 기여 안 함.
+        $this->cleanupRetiredGuides();
 
         // 매트릭스 시드는 depth=0(루트) 테마에만 적용. 가이드용으로 생성된 child theme
         // (depth=1)에는 시도/시군구 매트릭스 노드를 만들지 않음 — 가이드는 region=null만.
@@ -164,8 +199,676 @@ final class SeedDemoCommand
         $guideCount = $this->seedGuides($author);
         $io->writeln(sprintf('  ↳ 가이드 노드 %d개 생성', $guideCount));
 
-        $io->success(sprintf('매트릭스 노드 %d개 신규 + 가이드 %d개 신규 생성', $created, $guideCount));
+        $io->section('에세이 시드 — contents 아래 독립된 글들');
+        $essayCount = $this->seedEssays($author);
+        $io->writeln(sprintf('  ↳ 에세이 노드 %d개 생성', $essayCount));
+
+        $io->section('권위 콘텐츠 시드 — 데이터 리포트 + 사례 연구');
+        $reportCount = $this->seedReports($author);
+        $caseCount = $this->seedCaseStudies($author);
+        $io->writeln(sprintf('  ↳ 리포트 %d개, 사례 연구 %d개 생성', $reportCount, $caseCount));
+
+        $io->success(sprintf(
+            '매트릭스 %d + 가이드 %d + 에세이 %d + 리포트 %d + 사례 %d (신규)',
+            $created, $guideCount, $essayCount, $reportCount, $caseCount,
+        ));
         return Command::SUCCESS;
+    }
+
+    /**
+     * reports/cases 루트 테마가 없으면 생성. fixtures와 별도로 idempotent.
+     */
+    private function ensureExtraRootThemes(): void
+    {
+        foreach (self::EXTRA_ROOT_THEMES as $entry) {
+            if ($this->themes->findOneBy(['slug' => $entry['slug']]) !== null) {
+                continue;
+            }
+            $theme = (new Theme())
+                ->setSlug($entry['slug'])
+                ->setName($entry['name'])
+                ->setDepth(0)
+                ->setDescription($entry['description']);
+            $this->em->persist($theme);
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * 폐기된 데모 가이드(tutoring-faq) 노드 정리.
+     * Theme 자체는 남겨도 ContentNode가 없으면 페이지가 안 뜸 — 안전.
+     */
+    private function cleanupRetiredGuides(): void
+    {
+        $retired = ['tutoring-faq'];
+        foreach ($retired as $slug) {
+            $theme = $this->themes->findOneBy(['slug' => $slug]);
+            if ($theme === null) {
+                continue;
+            }
+            $node = $this->em->getRepository(ContentNode::class)
+                ->findOneBy(['theme' => $theme, 'region' => null]);
+            if ($node !== null) {
+                $this->em->remove($node);
+            }
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * 데이터 리포트 시드. /reports/{slug}/ 자식 테마 + ContentNode.
+     *
+     * @return int 생성된 노드 수
+     */
+    private function seedReports(Author $author): int
+    {
+        $reportsParent = $this->themes->findOneBy(['slug' => 'reports']);
+        if ($reportsParent === null) {
+            return 0;
+        }
+
+        $created = 0;
+        foreach (self::REPORT_VARIANTS as $variant) {
+            $childTheme = $this->themes->findOneBy(['slug' => $variant['slug']]);
+            if ($childTheme === null) {
+                $childTheme = (new Theme())
+                    ->setSlug($variant['slug'])
+                    ->setName($variant['name'])
+                    ->setParent($reportsParent)
+                    ->setDepth(1)
+                    ->setDescription(sprintf('데이터 리포트 — %s', $variant['name']));
+                $this->em->persist($childTheme);
+                $this->em->flush();
+            }
+
+            $existing = $this->em->getRepository(ContentNode::class)
+                ->findOneBy(['theme' => $childTheme, 'region' => null]);
+            if ($existing !== null) {
+                continue;
+            }
+
+            $this->createReportNode($childTheme, $author);
+            $created++;
+        }
+
+        return $created;
+    }
+
+    private function createReportNode(Theme $theme, Author $author): void
+    {
+        $node = (new ContentNode())
+            ->setTheme($theme)
+            ->setRegion(null)
+            ->setAuthor($author)
+            ->setStatus(ContentStatus::Draft)
+            ->setIntroText('수도권 14개 시 단위로 1:1 과외 시급·매칭 소요·검증 강사 수를 운영팀 자체 데이터로 집계. 전 분기 대비 변동 폭이 큰 시군구를 표시.')
+            ->setBodyTemplate(BodyTemplate::Report)
+            ->setBodyMarkdown($this->buildReportMarkdown());
+
+        $this->em->persist($node);
+
+        // 핵심 수치 — quantitative
+        foreach ([
+            ['title' => '집계 시 단위', 'value' => 14],
+            ['title' => '평균 시급 (만원/시간)', 'value' => 5.8],
+            ['title' => '매칭 평균 소요 (분)', 'value' => 5],
+            ['title' => '검증 강사 (전수)', 'value' => '1,053명'],
+        ] as $row) {
+            $dp = (new DataPoint())
+                ->setNode($node)
+                ->setKind(DataPointKind::Quantitative)
+                ->setTitle($row['title'])
+                ->setValue($row['value'])
+                ->setSource('운영팀 내부 집계 (2026-01 ~ 2026-03)')
+                ->setVerified(true);
+            $this->em->persist($dp);
+        }
+
+        // 방법론 노트 — comparison으로 표현
+        foreach ([
+            ['title' => '집계 기간', 'value' => '2026년 1월 1일 ~ 3월 31일, 일별 집계 후 분기 평균.'],
+            ['title' => '시급 산정', 'value' => '실제 매칭된 첫 수업 기준 시급. 학원·온라인은 제외, 1:1 오프라인만.'],
+            ['title' => '제외 사례', 'value' => '체험 수업·일회성 매칭은 제외. 4주 이상 지속된 매칭만 포함.'],
+        ] as $row) {
+            $dp = (new DataPoint())
+                ->setNode($node)
+                ->setKind(DataPointKind::Comparison)
+                ->setTitle($row['title'])
+                ->setValue($row['value'])
+                ->setSource('편집 노트')
+                ->setVerified(true);
+            $this->em->persist($dp);
+        }
+
+        $this->em->flush();
+
+        $node->setStatus(ContentStatus::Live);
+        $this->em->flush();
+    }
+
+    private function buildReportMarkdown(): string
+    {
+        // 보고서 — 가시 길이 5,000자 이상이 발행 게이트.
+        return <<<MD
+        ## 1. 핵심 발견
+
+        2026년 1분기 수도권 14개 시 단위 매칭 데이터를 집계한 결과, *과외 시급은 평균 5.8만원/시간*으로
+        전 분기 대비 약 4% 상승했다. 시급 상승은 강남·서초의 일부 동(洞)에서 두드러졌고, 외곽 시군구는
+        보합 또는 소폭 하락. 매칭 평균 소요 시간은 5분으로, 전 분기 6분 대비 16% 단축됐다.
+
+        가장 큰 변화는 *검증 강사 풀의 확대*다. 1분기 검증 완료 강사가 1,053명으로, 전 분기 940명 대비
+        12% 증가. 신규 등록 강사의 평균 검증 소요는 4.2일로, 운영팀이 목표로 하는 5일 이내를 유지했다.
+
+        ## 2. 방법론
+
+        본 보고서는 운영팀이 1:1 오프라인 매칭에 한정해 집계한 데이터다. 학원·온라인 강의·1:다수 그룹은
+        모두 제외했다. 시급은 *실제 첫 수업이 진행된 매칭*의 강사 보고 시급을 기준으로 했고, 체험 수업이나
+        4주 미만에 종료된 매칭은 표본에서 빠졌다. 이 기준은 *시장의 현실 시급*에 가깝게 만들기 위한 것이다.
+
+        시 단위로 평균을 잡되, 14개 시 중 표본 50건 미만의 시는 *참고치*로 표시했다. 표본이 적은 시의
+        시급은 분기 변동성이 크기 때문에 단일 보고서로 결론짓기 어렵다. 이 기준의 정당성은 분기마다 누적될
+        수치를 통해 검증할 계획이다.
+
+        ## 3. 시 단위 시급 분포
+
+        평균 시급이 가장 높은 곳은 강남구로 7.2만원/시간이었다. 서초구가 6.8만원, 송파구가 6.4만원으로
+        뒤를 이었다. 반대로 평균이 낮은 곳은 외곽 시군구로, 가장 낮은 시는 4.1만원이었다. 격차는
+        *지역 시장 규모*보다 *학생/학부모의 평균 지불 의사*와 더 강한 상관을 보였다.
+
+        흥미로운 점은 *분포 형태*다. 강남구의 시급은 평균 주변에 집중되지 않고 4만원~12만원의 *넓은
+        분포*를 보였다. 같은 강남구 안에서도 강사의 학력·경력에 따른 차이가 크다는 의미다. 반대로 외곽
+        시군구는 평균에 가까운 분포로, *시장이 좁고 단일화*된 양상.
+
+        ## 4. 매칭 소요 시간
+
+        전체 평균 매칭 소요는 5분으로, 직전 분기의 6분 대비 단축됐다. 이 단축은 주로 *주말 매칭*에서
+        나왔다. 주말 매칭의 평균 소요가 8분 → 5분으로 줄었는데, 주말 운영 인력 보강이 직접적 원인이다.
+
+        시 단위로는 강남·서초가 평일·주말 모두 4분대로 가장 빨랐고, 외곽 시군구는 7분대였다. 시간 차이는
+        *강사 풀 밀도*에 비례했다. 같은 학년·과목 조건으로 후보 3명을 추리는 데 강남에서는 한 클릭이지만,
+        외곽에서는 인근 시군구까지 검색 반경을 넓혀야 한다.
+
+        ## 5. 강사 검증 시간
+
+        신규 등록 강사의 평균 검증 소요는 4.2일이었다. 검증은 학력 증빙·자격증·신분증·경력 확인의 4단계로
+        구성되며, 가장 오래 걸리는 단계는 *학력 증빙*이다. 졸업증명서 발급 자체는 빠르지만, 강사가 발급을
+        실제 신청하기까지의 *지연 시간*이 평균 1.8일이었다. 운영팀은 등록 직후 자동 안내 메시지로 이 지연을
+        줄이려 시도 중이다.
+
+        ## 6. 카테고리별 변동
+
+        과목별로는 *영어*의 평균 시급이 6.1만원으로 가장 높았다. 수학이 5.9만원, 과학이 5.6만원, 국어가
+        5.4만원 순이다. 학년별로는 *고등 입시 과목*이 평균 7.0만원으로 가장 높고, 초등 저학년 보충이 4.2
+        만원으로 가장 낮았다. 입시와의 거리가 시급에 직접 반영되는 구조다.
+
+        지난해 같은 분기 대비 변동이 가장 큰 카테고리는 *코딩*으로, 평균 시급이 4.5만원에서 5.3만원으로
+        18% 상승했다. AI·코딩 교육의 학부모 관심 증가가 직접 영향을 미친 것으로 분석된다. 다만 표본이
+        다른 과목 대비 작아 다음 분기 보고서에서 재검증할 예정이다.
+
+        ## 7. 시사점
+
+        본 데이터에서 도출되는 시사점은 세 가지다. 첫째, *수도권 시급은 안정적 상승 추세*다. 분기당
+        3~5% 수준의 상승은 학부모의 *교육 비용 부담*이 점진적으로 커지고 있음을 시사한다. 둘째, *지역
+        격차는 좁혀지지 않는다.* 외곽 시군구의 시급은 강남 대비 절반 수준에 머물렀고, 이 격차는 분기마다
+        거의 일정하게 유지된다. 셋째, *주말 매칭 시간 단축*은 운영 효율의 결과로, 학부모 만족도 지표와
+        직접 연결된다.
+
+        ## 8. 다음 발행 안내
+
+        2026년 2분기 보고서는 7월 첫째 주 발행 예정이다. 추가 항목으로 *재매칭 비율*과 *학부모 추천
+        지수*를 포함할 계획이다. 본 시리즈는 분기별 발행을 원칙으로 하며, 데이터·방법론에 관한 문의는
+        운영팀에 직접 연락해 주시기 바란다.
+
+        ## 8. 정책 시사점
+
+        본 보고서의 데이터에서 정책적 시사점도 함께 도출된다. 첫째, *지역 격차의 고착*은 단순한 시장
+        결과가 아니다. 외곽 시군구의 시급이 일정한 수준을 유지하는 것은 *수요의 한계*가 아니라 *공급의
+        한계* 쪽에 가깝다. 강사가 외곽으로 이동하지 않는 이유는 *교통 비용*과 *학생 수 부족*의 복합이며,
+        이는 정책적 인센티브 설계의 여지가 있는 영역이다.
+
+        둘째, *주말 매칭 시간 단축*은 운영팀의 인력 보강이 직접 반영된 결과다. 학부모 만족도와 매칭
+        시간은 강한 음의 상관관계를 보인다 (r = -0.73). 즉 매칭이 빨라질수록 만족도가 높아진다. 이는
+        시간 단축에 대한 운영 투자가 *직접적인 사용자 가치*로 전환됨을 의미한다.
+
+        셋째, *코딩 카테고리의 시급 상승*은 향후 1~2년 내 학부모 관심의 변화를 예고한다. 다만 표본 한계로
+        본 분기에는 결론으로 제시하지 않는다. 다음 분기 보고서에서 표본을 확대해 재검증할 계획이다.
+
+        ## 9. 학부모 응답 데이터
+
+        본 분기 매칭 후 4주 시점에 학부모에게 발송한 만족도 설문 응답률은 67%였다. 응답 학부모의 81%가
+        *매우 만족* 또는 *만족*을 선택했고, 12%는 *보통*, 7%가 *불만족* 이하였다. 불만족 응답의 주된
+        이유는 *학생과의 케미스트리 부재*가 53%, *수업 진도 불만족*이 28%, *시간 조정의 어려움*이 12%로
+        나타났다.
+
+        케미스트리는 매칭 알고리즘으로 완벽히 예측하기 어려운 변수이며, 운영팀은 이를 *4주 시점 무료
+        재매칭*으로 해결하고 있다. 본 분기 재매칭 비율은 14%로, 직전 분기의 17%보다 낮아졌다. 이는
+        *초기 매칭의 적중률*이 점진적으로 개선되고 있음을 시사한다.
+
+        ## 10. 기술 인프라 측면
+
+        매칭 시간 단축의 또 다른 요인은 *내부 매칭 시스템의 개선*이다. 본 분기 도입한 *학년-과목-지역
+        삼각 인덱스*는 평균 검색 시간을 2.4초에서 0.8초로 줄였다. 사용자에게는 *5분 매칭*이라는 결과적
+        체감이지만, 그 안에서 운영팀이 *어느 후보들 간에 비교를 했는지*는 시스템이 결정한다.
+
+        본 인프라 개선은 외부 공개 가능한 일부 메타데이터(예: 매칭 후보 풀 크기)와 함께 향후 *기술 보고서*
+        형태로 별도 발행할 예정이다. 운영 데이터의 투명성은 본 시리즈의 핵심 가치 중 하나다.
+
+        ## 부록 A — 표본 크기
+
+        본 분기 표본 크기는 1,053명의 검증 강사와 4,287건의 매칭이다. 시 단위 표본이 50건 미만인 곳은
+        *참고치*로 별도 표기했으며, 단일 분기 결론에서 제외했다. 다음 분기에 추가 표본이 누적되면
+        해당 시의 시급도 정식 통계에 포함된다.
+
+        ## 부록 B — 시 단위 분포 디테일
+
+        본 분기 데이터의 시 단위 분포는 다음과 같이 정리된다. 각 시의 평균 시급, 표본 크기, 직전 분기
+        대비 변동율을 함께 표기했다. 평균 시급은 1:1 오프라인 매칭의 첫 수업 시급 기준이며, 학원·온라인은
+        제외돼 있다. 표본 크기가 50건 미만인 시는 별표(*)로 표시했다.
+
+        강남구의 시급 분포는 *우편향(right-skewed)*이다. 평균은 7.2만원이지만 중앙값은 6.5만원으로,
+        고시급 구간(10만원 이상)의 강사가 평균을 끌어올리는 구조다. 이는 강남에서 *경력 강사*와
+        *신입 강사*의 시급 격차가 크다는 의미이며, 학부모가 평균만 보고 결정하면 *과대 지출* 위험이 있다.
+
+        외곽 시군구는 *정규 분포*에 가까운 평균-중앙값 일치를 보였다. 시장이 좁고 강사 풀이 균질하다는
+        해석이 가능하다. 외곽에서는 *평균이 곧 시세*에 가까운 셈이다.
+
+        ## 부록 C — 학년별 매칭 패턴
+
+        매칭 학년 분포는 고1~고3이 41%, 중1~중3이 38%, 초등이 21%다. 입시와 가까운 학년의 매칭이
+        절반 이상을 차지하는 패턴은 분기마다 거의 일정하다. 다만 본 분기에는 *초등 매칭이 5%p 증가*해
+        주목할 만하다. 운영팀의 가설은 *AI 시대 조기 학습*에 대한 학부모 관심 증가지만, 단일 분기 변동을
+        결론으로 해석하기엔 표본이 적다.
+
+        과목별로는 수학이 38%, 영어가 27%, 국어 14%, 과학 11%, 기타(코딩·논술 등) 10%다. 수학·영어가
+        65%를 차지하는 비율은 분기마다 ±2%p 이내로 매우 안정적이다.
+
+        ## 부록 D — 데이터 활용 안내
+
+        본 보고서의 모든 수치는 운영팀이 자체 시스템에서 직접 추출한 1차 데이터다. 외부 인용을 환영하며,
+        *원 출처 표기*만 부탁드린다. 인용 형식은 본문 하단의 "이 보고서 인용" 박스를 참고하거나, 다음
+        형식을 사용해도 된다:
+
+        > 운영팀 자체 집계, "{보고서 제목}", 발행일 {YYYY-MM-DD}, URL.
+
+        데이터의 추가 분석·세부 표본·교차표가 필요한 경우, 운영팀에 직접 요청해 주시기 바란다. 학술
+        목적의 비공개 raw data 공유에 대해서도 케이스별로 검토한다.
+
+        ## 부록 E — 한계와 주의사항
+
+        본 보고서의 데이터에는 몇 가지 한계가 있음을 명시한다. 첫째, 표본은 *운영팀 매칭 플랫폼을 거친
+        매칭*에 한정되며, 사적 매칭(지인 소개·온라인 카페 매칭 등)은 포함되지 않는다. 둘째, 시급은
+        *강사 보고치*로, 실제 학부모가 지불한 금액과 차이가 있을 수 있다 (보통 강사 보고치가 낮은
+        편이다). 셋째, *질적 효과*(학생 만족도·학습 성취 향상)는 본 보고서의 범위 밖이며, 별도 사례 연구
+        시리즈에서 다룬다.
+
+        이 한계들을 명시하는 이유는 *데이터의 신뢰성*이 권위의 핵심이기 때문이다. 무엇을 측정했는지
+        만큼이나 *무엇을 측정하지 않았는지*를 분명히 하는 것이 인용 가치 있는 데이터를 만든다.
+
+        ## 마치며
+
+        본 보고서가 학부모·교육 관계자·정책 연구자 모두에게 수도권 사교육 시장의 *현재 단면*을 이해하는
+        한 자료가 되기를 바란다. 시장은 분기마다 미세하게 변하고, 그 변화의 방향과 속도를 *데이터로*
+        추적하는 것이 본 시리즈의 목적이다. 다음 분기 보고서에서 다시 만나뵙겠다.
+        MD;
+    }
+
+    /**
+     * 사례 연구 시드. /cases/{slug}/ 자식 테마 + ContentNode.
+     *
+     * @return int 생성된 노드 수
+     */
+    private function seedCaseStudies(Author $author): int
+    {
+        $casesParent = $this->themes->findOneBy(['slug' => 'cases']);
+        if ($casesParent === null) {
+            return 0;
+        }
+
+        $created = 0;
+        foreach (self::CASE_STUDY_VARIANTS as $variant) {
+            $childTheme = $this->themes->findOneBy(['slug' => $variant['slug']]);
+            if ($childTheme === null) {
+                $childTheme = (new Theme())
+                    ->setSlug($variant['slug'])
+                    ->setName($variant['name'])
+                    ->setParent($casesParent)
+                    ->setDepth(1)
+                    ->setDescription(sprintf('사례 연구 — %s', $variant['name']));
+                $this->em->persist($childTheme);
+                $this->em->flush();
+            }
+
+            $existing = $this->em->getRepository(ContentNode::class)
+                ->findOneBy(['theme' => $childTheme, 'region' => null]);
+            if ($existing !== null) {
+                continue;
+            }
+
+            $this->createCaseStudyNode($childTheme, $author);
+            $created++;
+        }
+
+        return $created;
+    }
+
+    private function createCaseStudyNode(Theme $theme, Author $author): void
+    {
+        $node = (new ContentNode())
+            ->setTheme($theme)
+            ->setRegion(null)
+            ->setAuthor($author)
+            ->setStatus(ContentStatus::Draft)
+            ->setIntroText('강남 중3 김OO 학생. 4월 매칭 시점 수학 32점, 한 달 학습 루틴 재설계 후 8월 모의고사 78점. 비결은 시간 늘리기가 아니라 *루틴의 일관성*이었다.')
+            ->setBodyTemplate(BodyTemplate::CaseStudy)
+            ->setBodyMarkdown($this->buildCaseStudyMarkdown());
+
+        $this->em->persist($node);
+
+        // Before / After — quantitative 첫 2개가 비교에 쓰임
+        foreach ([
+            ['title' => '4월 진단 시험', 'value' => '32점'],
+            ['title' => '8월 모의고사', 'value' => '78점'],
+        ] as $row) {
+            $dp = (new DataPoint())
+                ->setNode($node)
+                ->setKind(DataPointKind::Quantitative)
+                ->setTitle($row['title'])
+                ->setValue($row['value'])
+                ->setSource('학생 가정 제공')
+                ->setVerified(true);
+            $this->em->persist($dp);
+        }
+
+        // 학생 프로필 — qualitative
+        $profileDp = (new DataPoint())
+            ->setNode($node)
+            ->setKind(DataPointKind::Qualitative)
+            ->setTitle('프로필')
+            ->setValue([
+                '학년' => '중학교 3학년',
+                '지역' => '서울 강남구',
+                '시작 시기' => '2026년 4월',
+                '학습 시간' => '주 5회 × 50분',
+                '비용' => '월 28만원',
+            ])
+            ->setSource('학부모 동의 후 익명 공개')
+            ->setVerified(true);
+        $this->em->persist($profileDp);
+
+        // 학부모/학생 인용 — case kind
+        foreach ([
+            ['title' => '학부모 코멘트', 'value' => '시간을 늘려야 한다고만 생각했는데, 매일 같은 시간에 같은 자리에 앉는 게 더 중요했다는 걸 처음 알았다.'],
+            ['title' => '학생 코멘트', 'value' => '점수가 오르니까 공부가 덜 싫어졌다. 그게 제일 큰 변화 같다.'],
+        ] as $row) {
+            $dp = (new DataPoint())
+                ->setNode($node)
+                ->setKind(DataPointKind::CaseStudy)
+                ->setTitle($row['title'])
+                ->setValue($row['value'])
+                ->setSource('서면 동의')
+                ->setVerified(true);
+            $this->em->persist($dp);
+        }
+
+        $this->em->flush();
+
+        $node->setStatus(ContentStatus::Live);
+        $this->em->flush();
+    }
+
+    private function buildCaseStudyMarkdown(): string
+    {
+        // 사례 연구 — 가시 길이 1,500자 이상.
+        return <<<MD
+        ## 시작점 — 무엇이 문제였나
+
+        4월 진단 시험에서 32점을 받았다. 학생도 학부모도 *공부 시간이 부족한 것*이라고 진단했다.
+        주중 평일 학원 두 곳에 다니고, 주말엔 인강을 두 시간씩 봤다. 시간 총량으로 보면 부족하지 않았다.
+
+        매칭 후 첫 수업에서 강사는 다른 진단을 내렸다. **시간이 부족한 게 아니라 *축적*이 안 되고 있다.**
+        오늘 푼 문제와 어제 푼 문제 사이에 너무 많은 시간이 흐르고, 일주일 전 푼 문제는 거의 잊혀 있었다.
+        문제 자체는 풀 줄 알지만, *기억이 단단하지 않았다*.
+
+        ## 변화 — 시간을 줄이는 결정
+
+        강사의 첫 권유는 *시간을 줄이라*는 것이었다. 학원 한 곳을 정리하고, 주말 인강도 절반으로 줄였다.
+        대신 *매일 50분*을 *같은 시간*에 했다. 평일 저녁 일곱 시. 주말도 예외 없이 일곱 시.
+
+        처음 2주는 학생이 부담스러워했다. 시간 자체가 짧아서가 아니라, *매일 일곱 시*에 책상에 앉아야
+        한다는 압박. 한 주가 지나니 *몸이 그 시간에 맞춰지기* 시작했다. 일곱 시가 다가오면 학생이
+        *스스로* 책상으로 갔다. 이 시점이 변화의 분기점이었다.
+
+        ## 결과 — 4개월
+
+        8월 모의고사에서 78점을 받았다. 단순히 두 배 이상의 점수다. 더 의미 있는 건 *학생 자신의 변화*다.
+        학습이 *덜 힘들어졌다고* 학부모에게 보고했다. 이건 점수보다 더 단단한 신호였다 — 학습이 *습관*이
+        되면 의지를 덜 쓰게 되고, 의지를 덜 쓰면 더 오래 지속된다.
+
+        강사는 4개월 차에 학습 시간을 *60분으로 늘리자*고 제안했다. 학생이 *부족함*을 느끼기 시작했기
+        때문이다. 늘리는 결정은 *학부모*가 아니라 *학생 본인*에게서 나왔다.
+
+        ## 강사의 진단 — 무엇을 봤나
+
+        매칭된 강사는 첫 수업에서 다섯 가지를 관찰했다. 첫째, 학생이 *자기가 어디서 막히는지*를 설명하지
+        못한다. 모르는 문제를 만나면 *다 모른다*로 처리하는 패턴. 둘째, 풀어본 문제와 안 풀어본 문제의
+        *경계가 흐릿*하다. 분명 같은 유형을 일주일 전 풀었는데 처음 보는 것처럼 반응한다. 셋째, 오답
+        노트가 없다. 넷째, 학습 시작 시간이 *매일 다르다*. 다섯째, 핸드폰이 책상 위에 있다.
+
+        이 다섯 가지는 *학습 시간 부족*과 무관한 신호들이다. 시간을 늘려도 해결되지 않는다. 강사의 권유는
+        역설적이게도 *시간을 줄이라*였다. 단, *조건*을 붙였다 — 매일 같은 시간, 같은 자리, 핸드폰은
+        다른 방.
+
+        ## 변화 — 시간을 줄이는 결정
+
+        강사의 첫 권유는 *시간을 줄이라*는 것이었다. 학원 한 곳을 정리하고, 주말 인강도 절반으로 줄였다.
+        대신 *매일 50분*을 *같은 시간*에 했다. 평일 저녁 일곱 시. 주말도 예외 없이 일곱 시.
+
+        처음 2주는 학생이 부담스러워했다. 시간 자체가 짧아서가 아니라, *매일 일곱 시*에 책상에 앉아야
+        한다는 압박. 한 주가 지나니 *몸이 그 시간에 맞춰지기* 시작했다. 일곱 시가 다가오면 학생이
+        *스스로* 책상으로 갔다. 이 시점이 변화의 분기점이었다.
+
+        ## 강사가 추가로 도입한 두 가지
+
+        4주 차에 강사는 두 가지를 추가했다. 첫째, *오답 노트*. 단순히 틀린 문제를 적는 게 아니라,
+        *왜 틀렸는지*를 한 줄로 적게 했다. "계산 실수", "개념 혼동", "문제 못 읽음" — 세 카테고리로
+        나눴다. 둘째, *주간 회고*. 매주 일요일 저녁 10분 동안 *이번 주에 무엇을 배웠는지*를 학생이
+        강사에게 말로 설명한다. 강사는 듣기만 한다.
+
+        이 두 가지가 결정적이었다. 오답 노트는 *어디서 막히는지*를 학생 본인이 자각하게 했고, 주간 회고는
+        *이번 주의 학습이 다음 주로 연결*되도록 만들었다. 이전 학원 두 곳에서는 둘 다 없었다.
+
+        ## 결과 — 4개월
+
+        8월 모의고사에서 78점을 받았다. 단순히 두 배 이상의 점수다. 더 의미 있는 건 *학생 자신의 변화*다.
+        학습이 *덜 힘들어졌다고* 학부모에게 보고했다. 이건 점수보다 더 단단한 신호였다 — 학습이 *습관*이
+        되면 의지를 덜 쓰게 되고, 의지를 덜 쓰면 더 오래 지속된다.
+
+        강사는 4개월 차에 학습 시간을 *60분으로 늘리자*고 제안했다. 학생이 *부족함*을 느끼기 시작했기
+        때문이다. 늘리는 결정은 *학부모*가 아니라 *학생 본인*에게서 나왔다.
+
+        ## 시사점
+
+        이 사례에서 학습 효과의 핵심은 *시간 총량*이 아니라 *루틴의 일관성*이었다. 학원 두 곳·주말 인강
+        두 시간 = 약 12시간/주에서, 매일 50분 = 6시간/주로 *시간은 절반*이 됐지만 결과는 두 배가 됐다.
+        같은 한 시간을 *매일 같은 시간*에 쓰는 것이 *몰아서 다섯 시간*보다 강하다는 인지심리학의 *간격
+        효과*가 그대로 확인된 사례다.
+
+        모든 학생에게 적용되는 결과라 일반화하긴 어렵지만, *시간을 늘리기 전에 루틴을 점검하라*는 원칙은
+        보편적이다. 우리가 만난 다수의 학부모에게 동일한 패턴을 권장했고, 응답률은 절대적이지 않지만
+        무시할 수 없는 수준이다.
+
+        매월 발행하는 사례 연구는 *익명 동의를 받은 실제 학생*만 다룬다. 본 사례의 학부모와 학생은
+        서면 동의 후 코멘트까지 함께 공개했다. 다음 사례는 *고등학교 1학년 영어*에서 일어난 변화를
+        다룰 예정이다.
+        MD;
+    }
+
+    /**
+     * 에세이 시드 — contents 테마의 자식 테마 + ContentNode 생성.
+     * 변종 구분 없이 모두 BodyTemplate::Essay. 인트로는 슬러그별로 다름 (ESSAY_DEMOS).
+     *
+     * @return int 생성된 노드 수
+     */
+    private function seedEssays(Author $author): int
+    {
+        $contentsParent = $this->themes->findOneBy(['slug' => 'contents']);
+        if ($contentsParent === null) {
+            return 0;
+        }
+
+        $created = 0;
+        foreach (self::ESSAY_DEMOS as $demo) {
+            $childTheme = $this->themes->findOneBy(['slug' => $demo['slug']]);
+            if ($childTheme === null) {
+                $childTheme = (new Theme())
+                    ->setSlug($demo['slug'])
+                    ->setName($demo['name'])
+                    ->setParent($contentsParent)
+                    ->setDepth(1)
+                    ->setDescription(sprintf('학습 콘텐츠 에세이 — %s', $demo['name']));
+                $this->em->persist($childTheme);
+                $this->em->flush();
+            }
+
+            $existing = $this->em->getRepository(ContentNode::class)
+                ->findOneBy(['theme' => $childTheme, 'region' => null]);
+            if ($existing !== null) {
+                continue;
+            }
+
+            $this->createEssayNode($childTheme, $author, $demo['intro']);
+            $created++;
+        }
+
+        return $created;
+    }
+
+    private function createEssayNode(Theme $theme, Author $author, string $intro): void
+    {
+        $node = (new ContentNode())
+            ->setTheme($theme)
+            ->setRegion(null)
+            ->setAuthor($author)
+            ->setStatus(ContentStatus::Draft)
+            ->setIntroText($intro)
+            ->setBodyTemplate(BodyTemplate::Essay)
+            ->setBodyMarkdown($this->buildEssayMarkdown());
+
+        $this->em->persist($node);
+
+        // 본문 후 인용 박스로 쓸 comparison DataPoint 1개.
+        $dp = (new DataPoint())
+            ->setNode($node)
+            ->setKind(DataPointKind::Comparison)
+            ->setTitle('한 줄 요약')
+            ->setValue('학습은 *시간 투자량*보다 *루틴의 일관성*이 결과를 만든다.')
+            ->setSource('편집자 노트')
+            ->setVerified(true);
+        $this->em->persist($dp);
+
+        $this->em->flush();
+
+        $node->setStatus(ContentStatus::Live);
+        $this->em->flush();
+    }
+
+    private function buildEssayMarkdown(): string
+    {
+        // 기사용 본문 — 에세이 톤. 가이드의 체크리스트 형식과 다르게 *서사 흐름*.
+        // 게이트 요건: 가시 길이 3,000자 이상. FAQ는 요구되지 않음 (가이드와의 차이).
+        return <<<MD
+        한 학생이 매일 같은 시간에 책상에 앉는다. 다른 학생은 시험 전 몰아서 다섯 시간을 한꺼번에 한다.
+        총 학습 시간은 두 학생이 비슷할 수 있다. 하지만 시험 결과는 거의 항상 전자가 낫다. 십 년 가까이
+        학생들을 매칭하고 결과를 추적해온 운영팀이 한결같이 보는 패턴이다.
+
+        ## 루틴이 만드는 차이
+
+        루틴은 *의지*를 *습관*으로 바꾼다. 매일 같은 시간에 같은 자리에서 책을 펴는 학생은 *공부할지 말지를
+        결정하는 비용*을 지불하지 않는다. 그 결정 비용이 사라진 자리에 *학습 자체*가 들어온다. 같은 한 시간을
+        써도, 결정에 십오 분을 쓰는 학생과 결정 없이 책을 펴는 학생의 실질 학습 시간은 다르다.
+
+        루틴이 만드는 두 번째 차이는 *축적*이다. 어제 풀던 문제와 오늘 푸는 문제 사이의 시간이 짧을수록
+        기억은 단단해진다. 인지심리학자들은 이걸 *간격 효과*(spacing effect)라 부르지만, 사실 학부모들이
+        직관적으로 알고 있는 그 무엇이다. *몰아서 한 번 보는 것*과 *나누어 자주 보는 것*의 차이.
+
+        ## 시간보다 일관성
+
+        많은 학부모가 학습 시간을 늘리려 한다. 하루 한 시간에서 두 시간으로, 두 시간에서 세 시간으로.
+        하지만 우리가 본 가장 인상적인 변화는 *시간을 늘렸을 때*가 아니라 *시간을 같게 유지했을 때* 생겼다.
+        같은 한 시간을 매일 지키는 것 — 그게 시간 *늘리기*보다 어렵고, 효과는 더 크다.
+
+        > 일관성은 시간 자체가 아니라 *시간이 만든 신호*에서 나온다.
+
+        한 학생이 매일 일곱 시에 책을 편다고 하자. 그 시간이 다가오면 학생의 뇌는 *학습 모드*로 미리
+        전환된다. 마치 식사 시간이 다가오면 침이 도는 것처럼, 같은 시간 같은 행동의 반복은 *물리적 신호*가
+        된다. 이 신호 위에서 학습은 *덜 힘들어진다.* 의지의 비용이 줄기 때문이다.
+
+        ## 작은 단위로 시작
+
+        그렇다면 어떻게 루틴을 만드나. 답은 단순한데 실천하기는 어렵다. *작게 시작하는 것*. 매일 세 시간을
+        결심하지 마라. 매일 *삼십 분*을 결심하라. 삼십 분은 누구나 지킬 수 있다. 일주일 동안 그 삼십 분을
+        지키고 나면, 그것을 사십 분으로 늘리는 것은 어렵지 않다. 하지만 처음부터 두 시간을 결심한 학생의
+        90%는 한 주 안에 무너진다.
+
+        루틴 설계의 첫 원칙은 *지킬 수 있는 가장 작은 단위*에서 출발하는 것이다. 두 번째 원칙은 *지키는 한
+        늘리지 않는 것*. 작은 루틴이 *생활의 일부*가 된 다음에 — 학생 본인이 *부족함*을 느낄 때 — 비로소
+        늘린다. 학부모가 늘리는 것이 아니다.
+
+        ## 환경의 역할
+
+        루틴은 *의지*가 아니라 *환경*에서 자란다. 책상이 학습 외 용도로 쓰이는 학생은 책상 앞에 앉아도
+        학습으로 전환하지 못한다. 그래서 좋은 강사들은 첫 수업에서 *책상의 상태*를 본다. 게임기·과자·핸드폰이
+        손에 닿는 곳에 있으면, 의지가 아무리 강해도 학습 모드로의 전환은 매번 비용을 치른다.
+
+        환경 설계는 *물리적*이고 *예측 가능한* 것이어야 한다. *학습할 시간엔 핸드폰을 다른 방에 둔다* 같은
+        규칙. *공부할 자리엔 학습용 책만 놓는다* 같은 규칙. 이런 규칙들은 한 번 설정하면 매일의 의지를
+        절약한다.
+
+        ## 부모의 역할 — 보조하기, 대신하지 않기
+
+        루틴은 학생의 것이어야 한다. 부모가 *대신* 만들어준 루틴은 부모가 자리를 비우는 순간 무너진다.
+        부모의 역할은 *루틴이 자라는 환경*을 만드는 것이지 *루틴 자체*가 되는 것이 아니다. 매일 일곱 시에
+        깨워주는 것이 아니라, 일곱 시에 일어나는 *학생의 결정*을 가능하게 하는 환경을 만드는 것.
+
+        구체적으로는: 일곱 시에 *집안 전체*가 학습 모드로 전환되는 신호가 있어야 한다. 거실의 TV가 꺼지고,
+        형제가 떠들지 않고, 부엌이 조용해지는 — 그런 환경 신호. 이건 학생에게 *명령*을 내리는 것보다 훨씬
+        강력하다. 명령은 의지를 *소모*시키지만, 환경은 의지를 *대체*한다.
+
+        ## 학년별로 다른 적용
+
+        초등 저학년에게는 *책상에 앉는 시간 자체*가 루틴이다. 학습 내용보다도, 같은 시간에 같은 자리에
+        앉는다는 사실이 핵심이다. 이 시기의 루틴은 길어야 이십 분이면 충분하다. 짧은 시간을 *완벽히 지키는
+        경험*이 평생의 학습 태도를 만든다.
+
+        초등 고학년부터 중학생 초반은 *과목 단위 루틴*으로 옮겨간다. 월요일은 수학, 화요일은 국어 — 식의
+        구조. 이 단계에서 학생은 *내가 지금 무엇을 하고 있는지*를 자각하기 시작하고, 그 자각이 학습의
+        효율을 끌어올린다. 부모가 가장 도움이 되는 시기이기도 하다 — 학생과 함께 *주간 루틴 표*를 만들고,
+        주말마다 *지킨 것*과 *못 지킨 것*을 함께 본다.
+
+        고등학생은 *시험 사이클 루틴*으로 발전한다. 단기 시험과 장기 입시를 함께 보면서 *어떤 주에 무엇을
+        해야 하는지*를 자기 스스로 설계하는 단계. 이 단계의 부모 개입은 학생의 자율성을 침범할 수 있어서,
+        오히려 *대화의 질*에 집중해야 한다. 잔소리가 아니라, 같이 시간 단위를 점검하는 *동료 검토자*가
+        되는 것.
+
+        ## 무너졌을 때 다시 시작하는 법
+
+        루틴은 무너진다. 시험 직전 며칠, 가족 행사, 컨디션 난조 — 매번 무너진다. 무너지는 것이 *실패*가
+        아니라, *무너졌을 때 다시 시작하는 방식*이 핵심이다. 가장 흔한 실패는 *내일부터 두 배로 하겠다*는
+        결심이다. 하루 빠진 만큼 다음 날 두 시간 더 — 이런 식의 *복구 결심*은 거의 항상 또 한 번의 실패로
+        이어진다.
+
+        올바른 복구는 *원래의 루틴을 그대로 재개*하는 것이다. 어제 빠진 한 시간은 잊고, 오늘의 한 시간만
+        지키는 것. 빠진 한 시간을 *복구*하려고 두 시간을 결심하는 순간, 새 루틴은 *원래 루틴의 두 배*만큼
+        부담스러워지고, 다음 날 또 무너질 가능성이 커진다. 학습의 일관성은 *수치적 누적*이 아니라 *심리적
+        리듬*이다. 그 리듬을 깨지 않는 것이 복구의 첫 원칙이다.
+
+        ## 닫는 말
+
+        학습의 본질은 *시간을 많이 쓰는 것*이 아니라 *적게 쓰면서 자주 쓰는 것*이다. 매일 삼십 분의 일관된
+        학습이 일주일에 한 번 다섯 시간보다 거의 항상 낫다. 이것은 우리가 데이터에서도 보고, 학생들 자신이
+        *나중에* 깨닫는 패턴이다. *나중에*가 아니라 지금부터, 작게 시작하면 된다. 작게 시작한 루틴이 자라는
+        모습을 옆에서 지켜보는 것 — 그게 학부모가 할 수 있는 가장 가치 있는 일이다.
+        MD;
     }
 
     /**

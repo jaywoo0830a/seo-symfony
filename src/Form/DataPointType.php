@@ -23,7 +23,13 @@ class DataPointType extends AbstractType
             ->add('kind', EnumType::class, [
                 'label' => '종류',
                 'class' => DataPointKind::class,
-                'choice_label' => fn (DataPointKind $k) => $k->value,
+                'choice_label' => fn (DataPointKind $k) => match ($k) {
+                    DataPointKind::Quantitative => '정량 (quantitative) — 숫자·통계',
+                    DataPointKind::Qualitative => '정성 (qualitative) — 목록·분포',
+                    DataPointKind::Comparison => '비교 (comparison) — 차별 인사이트',
+                    DataPointKind::CaseStudy => '사례 (case) — 매칭 사례·후기',
+                    DataPointKind::Faq => 'FAQ (faq) — 질문·답변',
+                },
             ])
             ->add('title', TextType::class, [
                 'label' => '제목',

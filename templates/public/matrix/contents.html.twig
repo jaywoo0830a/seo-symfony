@@ -83,6 +83,14 @@
         title: keyword ~ '의 학습 효과',
     } only %}
 
+    {# ─── 자식 기사/칼럼 — contents 아래 article 노드들이 있으면 노출 ─── #}
+    {% include 'public/_partials/theme_children.html.twig' with {
+        items: theme_children,
+        urls: urls,
+        eyebrow: '에디토리얼',
+        title: '학습 콘텐츠 칼럼',
+    } only %}
+
     {# ─── FAQ ────────────────────────────────────────────────── #}
     {% include 'public/_partials/faq.html.twig' with {
         items: byKind.faq,

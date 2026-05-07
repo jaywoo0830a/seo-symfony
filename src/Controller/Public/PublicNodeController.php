@@ -111,7 +111,7 @@ final class PublicNodeController extends AbstractController
             'url' => $urls->build($node),
             'h1' => $h1,
             'template' => $template,
-            'body_html' => $template->isGuide() ? $this->renderMarkdown($node->getBodyMarkdown()) : null,
+            'body_html' => $template->isProse() ? $this->renderMarkdown($node->getBodyMarkdown()) : null,
             'template_override' => $this->findTemplateOverride($node, $twig),
             'matrix_template' => $this->findMatrixTemplate($node, $twig),
             'byKind' => $byKind,

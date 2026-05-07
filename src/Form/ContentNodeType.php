@@ -48,7 +48,12 @@ class ContentNodeType extends AbstractType
             ->add('status', EnumType::class, [
                 'label' => '상태',
                 'class' => ContentStatus::class,
-                'choice_label' => fn (ContentStatus $s) => $s->value,
+                'choice_label' => fn (ContentStatus $s) => match ($s) {
+                    ContentStatus::Draft => '초안 (draft) — 작업 중',
+                    ContentStatus::Live => '발행 (live) — 공개됨',
+                    ContentStatus::Noindex => '비색인 (noindex) — 발행 게이트 미달',
+                    ContentStatus::Dead => '폐기 (dead) — 자동 301 리다이렉트',
+                },
             ])
             ->add('introText', TextareaType::class, [
                 'label' => '인트로 텍스트',
@@ -59,10 +64,21 @@ class ContentNodeType extends AbstractType
             ->add('bodyTemplate', EnumType::class, [
                 'label' => '본문 템플릿',
                 'class' => BodyTemplate::class,
-                'choice_label' => fn (BodyTemplate $t) => $t->value,
+                'choice_label' => fn (BodyTemplate $t) => match ($t) {
+                    BodyTemplate::Hub => '허브 (hub) — 매트릭스 자동',
+                    BodyTemplate::Sido => '시도 (sido) — 매트릭스 자동',
+                    BodyTemplate::Sigungu => '시군구 (sigungu) — 매트릭스 자동',
+                    BodyTemplate::Dong => '동 (dong) — 매트릭스 자동',
+                    BodyTemplate::GuideLongform => '가이드 — 심층 (guide_longform)',
+                    BodyTemplate::GuideComparison => '가이드 — 비교 (guide_comparison)',
+                    BodyTemplate::GuideFaq => '가이드 — FAQ (guide_faq)',
+                    BodyTemplate::Essay => '에세이 (essay)',
+                    BodyTemplate::Report => '데이터 리포트 (report)',
+                    BodyTemplate::CaseStudy => '사례 연구 (case_study)',
+                },
                 'required' => false,
                 'placeholder' => '— 좌표로 자동 결정 (지역 깊이 기반) —',
-                'help' => '가이드 변종(guide_*)을 선택하면 본문은 Markdown으로 렌더링됩니다.',
+                'help' => 'guide_*/essay/report/case_study를 선택하면 본문은 Markdown으로 렌더링됩니다. 발행 시 변종마다 다른 게이트 적용 (가이드는 FAQ 3개+, 리포트는 5,000자+ 등).',
             ])
             ->add('bodyMarkdown', TextareaType::class, [
                 'label' => '본문 (Markdown)',

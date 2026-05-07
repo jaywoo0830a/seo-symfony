@@ -1,0 +1,262 @@
+// =============================================================================
+// .essay — 에디토리얼 prose. 가이드(_guide.scss)와 다른 톤.
+// 가이드: how-to 구조, 체크리스트 강조, 강한 액션 CTA
+// 에세이: 매거진 reading flow, drop cap, 작성자 byline, 차분한 흐름
+// 변종 구분 없음 — 각 에세이는 독립된 글.
+// =============================================================================
+
+.essay {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: var(--b-space-48) var(--b-space-24) var(--b-space-80);
+
+    // ─── 헤더 ─────────────────────────────────────────────────────────
+    &__header {
+        margin-bottom: var(--b-space-40);
+        padding-bottom: var(--b-space-32);
+        border-bottom: 1px solid var(--b-border-soft);
+    }
+
+    &__meta-top {
+        display: flex;
+        align-items: center;
+        gap: var(--b-space-16);
+        font-size: var(--b-text-13);
+        margin-bottom: var(--b-space-20);
+    }
+
+    &__category {
+        padding: var(--b-space-4) var(--b-space-12);
+        background: var(--b-ink-900);
+        color: var(--b-text-on-dark);
+        border-radius: var(--b-radius-sm);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    &__date {
+        color: var(--b-text-faint);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__title {
+        font-size: var(--b-text-48);
+        font-weight: var(--b-weight-extrabold);
+        line-height: var(--b-line-tight);
+        letter-spacing: -0.025em;
+        margin: 0 0 var(--b-space-20);
+        font-family: 'Asta Sans', serif;
+
+        @media (max-width: 640px) { font-size: var(--b-text-32); }
+    }
+
+    &__lede {
+        font-size: var(--b-text-20);
+        font-weight: var(--b-weight-medium);
+        line-height: var(--b-line-base);
+        color: var(--b-text-soft);
+        margin: 0 0 var(--b-space-24);
+        font-style: italic;
+    }
+
+    &__byline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: var(--b-space-8);
+        font-size: var(--b-text-14);
+
+        &-label {
+            color: var(--b-text-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: var(--b-text-12);
+        }
+
+        &-name {
+            font-weight: var(--b-weight-bold);
+            color: var(--b-text);
+        }
+
+        &-credit {
+            color: var(--b-text-soft);
+
+            &::before {
+                content: '·';
+                margin-right: var(--b-space-8);
+                color: var(--b-text-faint);
+            }
+        }
+    }
+
+    // ─── 본문 — drop cap이 가이드와 시각 차이의 핵심 ──────────────────
+    &__body {
+        font-size: var(--b-text-18);
+        line-height: 1.7;
+        color: var(--b-text);
+
+        // 첫 문단 첫 글자 drop cap (매거진 시그니처)
+        > p:first-of-type::first-letter {
+            float: left;
+            font-size: 4.5em;
+            line-height: 0.85;
+            font-weight: var(--b-weight-extrabold);
+            color: var(--b-primary);
+            margin: 0.05em 0.12em 0 0;
+            font-family: 'Asta Sans', serif;
+        }
+
+        h2 {
+            font-size: var(--b-text-24);
+            font-weight: var(--b-weight-bold);
+            margin: var(--b-space-48) 0 var(--b-space-16);
+            line-height: var(--b-line-snug);
+            font-family: 'Asta Sans', serif;
+        }
+
+        h3 {
+            font-size: var(--b-text-20);
+            font-weight: var(--b-weight-semibold);
+            margin: var(--b-space-32) 0 var(--b-space-12);
+        }
+
+        p {
+            margin: 0 0 var(--b-space-20);
+        }
+
+        ul, ol {
+            margin: 0 0 var(--b-space-20);
+            padding-left: var(--b-space-24);
+
+            li { margin-bottom: var(--b-space-8); }
+        }
+
+        blockquote {
+            margin: var(--b-space-32) 0;
+            padding: 0 var(--b-space-24);
+            border-left: 3px solid var(--b-ink-900);
+            font-style: italic;
+            color: var(--b-text-soft);
+            font-size: var(--b-text-20);
+            line-height: 1.5;
+        }
+
+        a {
+            color: var(--b-primary);
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+
+            &:hover { color: var(--b-primary-hover); }
+        }
+
+        strong { font-weight: var(--b-weight-bold); }
+
+        em { color: var(--b-text-soft); }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--b-border-soft);
+            margin: var(--b-space-40) auto;
+            width: 4rem;
+        }
+    }
+
+    // ─── pull-quote 박스 (comparison DataPoint) ───────────────────────
+    &__pulls {
+        margin: var(--b-space-48) 0;
+        display: grid;
+        gap: var(--b-space-20);
+    }
+
+    &__pull {
+        margin: 0;
+        padding: var(--b-space-24) var(--b-space-32);
+        background: var(--b-bg-soft);
+        border-left: 4px solid var(--b-primary);
+        border-radius: 0 var(--b-radius-md) var(--b-radius-md) 0;
+
+        &-quote {
+            display: block;
+            font-size: var(--b-text-20);
+            font-weight: var(--b-weight-medium);
+            line-height: var(--b-line-snug);
+            color: var(--b-text);
+            font-family: 'Asta Sans', serif;
+        }
+
+        &-source {
+            display: block;
+            margin-top: var(--b-space-12);
+            font-size: var(--b-text-14);
+            color: var(--b-text-soft);
+            font-style: normal;
+        }
+    }
+
+    // ─── 함께 읽기 (theme_siblings) ───────────────────────────────────
+    &__related {
+        margin-top: var(--b-space-64);
+        padding-top: var(--b-space-32);
+        border-top: 2px solid var(--b-border-soft);
+
+        &-title {
+            font-size: var(--b-text-14);
+            font-weight: var(--b-weight-semibold);
+            color: var(--b-text-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0 0 var(--b-space-20);
+        }
+
+        &-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: var(--b-space-12);
+        }
+
+        &-link {
+            display: flex;
+            align-items: baseline;
+            gap: var(--b-space-12);
+            padding: var(--b-space-16) 0;
+            text-decoration: none;
+            color: var(--b-text);
+            border-bottom: 1px solid var(--b-border-soft);
+
+            &:hover {
+                .essay__related-name { color: var(--b-primary); }
+            }
+        }
+
+        &-cat {
+            font-size: var(--b-text-12);
+            font-weight: var(--b-weight-semibold);
+            color: var(--b-text-faint);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            min-width: 4rem;
+        }
+
+        &-name {
+            font-size: var(--b-text-18);
+            font-weight: var(--b-weight-semibold);
+            line-height: var(--b-line-snug);
+            transition: color var(--b-duration) var(--b-easing);
+        }
+
+        &-up {
+            margin: var(--b-space-24) 0 0;
+            font-size: var(--b-text-14);
+
+            a {
+                color: var(--b-primary);
+                text-decoration: none;
+                &:hover { text-decoration: underline; }
+            }
+        }
+    }
+
+}

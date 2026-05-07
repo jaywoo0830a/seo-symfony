@@ -1,0 +1,130 @@
+{# 자체 데이터 리포트 — 권위 콘텐츠.
+
+   에디토리얼 톤(article)과도, how-to 톤(guide)과도 다른 *학술/저널 톤*.
+   기자·교육 매체가 *원 출처를 인용*할 때 보일 모양:
+   - 보고서 ID/번호 + 발행일 + 작성기관
+   - 요약(Executive Summary)이 본문 위에 분리됨
+   - 본문은 단단한 reading column
+   - 핵심 수치 강조 박스
+   - 인용 안내(citation suggestion)
+   - 다음 발행 예고
+#}
+
+{% include 'public/_partials/breadcrumb.html.twig' %}
+
+<article class="report">
+    <header class="report__header">
+        <div class="report__masthead">
+            <span class="report__series">{{ node.theme.parent.name|default('보고서') }} 시리즈</span>
+            <span class="report__id">{{ keyword }}</span>
+        </div>
+        <h1 class="report__title">{{ h1 }}</h1>
+        <div class="report__credits">
+            {% if node.author %}
+                <div class="report__credit">
+                    <span class="report__credit-label">발행</span>
+                    <span class="report__credit-value">{{ node.author.realName }}{% if node.author.credentials %} · {{ node.author.credentials|striptags|slice(0, 80) }}{% endif %}</span>
+                </div>
+            {% endif %}
+            {% if node.firstPublishedAt %}
+                <div class="report__credit">
+                    <span class="report__credit-label">발행일</span>
+                    <span class="report__credit-value">{{ node.firstPublishedAt|date('Y년 m월 d일') }}</span>
+                </div>
+            {% endif %}
+            {% if node.lastReviewAt and node.lastReviewAt != node.firstPublishedAt %}
+                <div class="report__credit">
+                    <span class="report__credit-label">최종 검토</span>
+                    <span class="report__credit-value">{{ node.lastReviewAt|date('Y. m. d.') }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if node.introText %}
+        <section class="report__summary">
+            <h2 class="report__summary-label">요약</h2>
+            <p class="report__summary-text">{{ node.introText }}</p>
+        </section>
+    {% endif %}
+
+    {# 핵심 수치 — quantitative DataPoint를 *발견점 박스*로 #}
+    {% if byKind.quantitative is not empty %}
+        <aside class="report__findings">
+            <h2 class="report__findings-label">핵심 수치</h2>
+            <dl class="report__findings-list">
+                {% for dp in byKind.quantitative|slice(0, 4) %}
+                    <div class="report__finding">
+                        <dt class="report__finding-label">{{ dp.title }}</dt>
+                        <dd class="report__finding-value">
+                            {%- if dp.value is iterable -%}
+                                {%- set first_key = dp.value|keys|first -%}
+                                {%- if first_key is same as(0) -%}
+                                    {{ dp.value|length }}건
+                                {%- else -%}
+                                    {{ dp.value['평균'] ?? dp.value|first }}
+                                {%- endif -%}
+                            {%- else -%}
+                                {{ dp.value }}
+                            {%- endif -%}
+                        </dd>
+                    </div>
+                {% endfor %}
+            </dl>
+        </aside>
+    {% endif %}
+
+    {% if body_html %}
+        <div class="report__body">
+            {{ body_html|raw }}
+        </div>
+    {% endif %}
+
+    {# 출처/방법론 인용 박스 — comparison DataPoint 활용 #}
+    {% if byKind.comparison is not empty %}
+        <section class="report__notes">
+            <h2 class="report__notes-label">방법론 노트</h2>
+            <ul class="report__notes-list">
+                {% for dp in byKind.comparison %}
+                    <li>
+                        <strong>{{ dp.title }}</strong>
+                        <span>
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value|raw }}{% endif -%}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    {# 인용 안내 — 권위 콘텐츠의 핵심: *어떻게 인용하면 되는지*까지 제시 #}
+    <section class="report__citation">
+        <h2 class="report__citation-label">이 보고서 인용</h2>
+        <p class="report__citation-text">
+            <span class="report__citation-author">{{ node.author.realName|default(brand_public_name()) }}</span>,
+            <em>{{ h1 }}</em>,
+            {{ brand_public_name() }},
+            {{ node.firstPublishedAt|date('Y') }}.
+            URL: <code>{{ absolute_url(url) }}</code>
+        </p>
+    </section>
+
+    {# 형제 보고서 — theme_siblings #}
+    {% if theme_siblings is not empty %}
+        <section class="report__series-list">
+            <h2 class="report__series-label">시리즈 다른 보고서</h2>
+            <ul>
+                {% for sibling in theme_siblings %}
+                    <li>
+                        <a href="{{ urls.build(sibling) }}">
+                            <span class="report__series-name">{{ sibling.theme.name }}</span>
+                            {% if sibling.firstPublishedAt %}
+                                <span class="report__series-date">{{ sibling.firstPublishedAt|date('Y. m.') }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+</article>

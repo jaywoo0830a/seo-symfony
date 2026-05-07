@@ -1,0 +1,109 @@
+{# 사례 연구 — 권위 콘텐츠 (E-E-A-T의 Experience).
+
+   기사/가이드/리포트와 다른 *서사형* 톤:
+   - 학생 프로필 카드 (좌측 사이드 정보)
+   - Before / After 강조 — 가장 단단한 증거
+   - 학생/학부모 인용
+   - 짧은 본문 + 강한 구조
+
+   매월 1편씩 누적되도록 가벼운 분량 (1500자 이상)이 발행 게이트.
+#}
+
+{% include 'public/_partials/breadcrumb.html.twig' %}
+
+<article class="case-study">
+    <header class="case-study__header">
+        <span class="case-study__tag">사례 연구</span>
+        <h1 class="case-study__title">{{ h1 }}</h1>
+        {% if node.introText %}
+            <p class="case-study__lede">{{ node.introText }}</p>
+        {% endif %}
+    </header>
+
+    {# Before / After — quantitative DataPoint 첫 2개를 *극단 비교*로 #}
+    {% if byKind.quantitative|length >= 2 %}
+        <section class="case-study__delta">
+            {% set _before = byKind.quantitative[0] %}
+            {% set _after = byKind.quantitative[1] %}
+            <div class="case-study__delta-side case-study__delta-side--before">
+                <span class="case-study__delta-label">시작</span>
+                <span class="case-study__delta-figure">
+                    {%- if _before.value is iterable %}{{ _before.value|first }}{% else %}{{ _before.value }}{% endif -%}
+                </span>
+                <span class="case-study__delta-caption">{{ _before.title }}</span>
+            </div>
+            <div class="case-study__delta-arrow" aria-hidden="true">→</div>
+            <div class="case-study__delta-side case-study__delta-side--after">
+                <span class="case-study__delta-label">결과</span>
+                <span class="case-study__delta-figure">
+                    {%- if _after.value is iterable %}{{ _after.value|first }}{% else %}{{ _after.value }}{% endif -%}
+                </span>
+                <span class="case-study__delta-caption">{{ _after.title }}</span>
+            </div>
+        </section>
+    {% endif %}
+
+    {# 학생 프로필 박스 — qualitative DataPoint 첫 항목을 카드화 #}
+    {% if byKind.qualitative is not empty %}
+        <aside class="case-study__profile">
+            <h2 class="case-study__profile-label">학생 프로필 (익명)</h2>
+            {% for dp in byKind.qualitative %}
+                <div class="case-study__profile-row">
+                    <span class="case-study__profile-key">{{ dp.title }}</span>
+                    <span class="case-study__profile-value">
+                        {%- if dp.value is iterable -%}
+                            {%- set first_key = dp.value|keys|first -%}
+                            {%- if first_key is same as(0) -%}
+                                {{ dp.value|join(', ') }}
+                            {%- else -%}
+                                {% for k, v in dp.value %}<span><strong>{{ k }}</strong> {{ v }}</span>{% if not loop.last %} · {% endif %}{% endfor %}
+                            {%- endif -%}
+                        {%- else -%}
+                            {{ dp.value }}
+                        {%- endif -%}
+                    </span>
+                </div>
+            {% endfor %}
+        </aside>
+    {% endif %}
+
+    {% if body_html %}
+        <div class="case-study__body">
+            {{ body_html|raw }}
+        </div>
+    {% endif %}
+
+    {# 인용 — DataPoint kind=case가 있으면 인용 박스로 #}
+    {% if byKind.case is not empty %}
+        <section class="case-study__quotes">
+            {% for dp in byKind.case %}
+                <blockquote class="case-study__quote">
+                    <p class="case-study__quote-text">
+                        {%- if dp.value is iterable %}{{ dp.value|join(' ') }}{% else %}{{ dp.value }}{% endif -%}
+                    </p>
+                    <cite class="case-study__quote-source">— {{ dp.title }}</cite>
+                </blockquote>
+            {% endfor %}
+        </section>
+    {% endif %}
+
+    <footer class="case-study__footer">
+        {% if node.author %}
+            <div class="case-study__byline">
+                정리: <strong>{{ node.author.realName }}</strong>
+                {% if node.lastReviewAt %}· {{ node.lastReviewAt|date('Y. m. d.') }} 검토{% endif %}
+            </div>
+        {% endif %}
+
+        {% if theme_siblings is not empty %}
+            <div class="case-study__related">
+                <span class="case-study__related-label">다른 사례</span>
+                <ul>
+                    {% for sibling in theme_siblings %}
+                        <li><a href="{{ urls.build(sibling) }}">{{ sibling.theme.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </footer>
+</article>

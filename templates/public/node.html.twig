@@ -14,6 +14,9 @@
 {% set theme_label = node.theme.name %}
 {% set keyword = (region_label ~ ' ' ~ theme_label)|trim %}
 {% set is_guide = template.isGuide() %}
+{% set is_essay = template.isEssay() %}
+{% set is_report = template.isReport() %}
+{% set is_case_study = template.isCaseStudy() %}
 
 {% block title %}{{ keyword }} 강사 추천 — 전화 한 통이면 충분{% endblock %}
 {% block description %}{{ node.introText|default('')|striptags|slice(0, 160) }}{% endblock %}
@@ -24,6 +27,12 @@
         {% include template_override %}
     {% elseif is_guide %}
         {% include 'public/_guide.html.twig' %}
+    {% elseif is_essay %}
+        {% include 'public/_essay.html.twig' %}
+    {% elseif is_report %}
+        {% include 'public/_report.html.twig' %}
+    {% elseif is_case_study %}
+        {% include 'public/_case_study.html.twig' %}
     {% else %}
         {% include matrix_template %}
     {% endif %}
