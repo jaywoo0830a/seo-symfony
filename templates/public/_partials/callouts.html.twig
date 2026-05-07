@@ -1,10 +1,14 @@
-{# Comparison callouts — args: items (list of DataPoint), eyebrow, title #}
+{# Comparison callouts — args: items, eyebrow, title #}
+{% set items = items is defined ? items : [] %}
+{% set eyebrow = eyebrow is defined ? eyebrow : '인사이트' %}
+{% set title = title is defined ? title : '무엇이 다른가' %}
+
 {% if items is not empty %}
     <section class="section section--alt">
         <div class="section__inner section__inner--narrow">
             <header class="section__header">
-                <span class="section__eyebrow">{{ eyebrow|default('인사이트') }}</span>
-                <h2 class="section__title">{{ title|default('무엇이 다른가') }}</h2>
+                <span class="section__eyebrow">{{ eyebrow }}</span>
+                <h2 class="section__title">{{ title }}</h2>
             </header>
             <div class="callout-stack">
                 {% for dp in items %}

@@ -1,19 +1,22 @@
-{# Feature grid — "왜 우리인가" 3-card section.
-   args: eyebrow, title, lede (all optional with defaults), features (list of {icon, title, body}, default: 3 trust cards) #}
-{% set _features = features|default([
+{# Feature grid — args: eyebrow, title, lede, features #}
+{% set eyebrow = eyebrow is defined ? eyebrow : '왜 우리인가' %}
+{% set title = title is defined ? title : '검증된 사람만' %}
+{% set lede = lede is defined ? lede : '' %}
+{% set features = features is defined ? features : [
     {icon: '✓', title: '신원·자격 100% 검증', body: '학력 증빙·자격증·신분증을 모두 확인하며, 인증 마크가 표시된 강사만 매칭됩니다.'},
     {icon: '⚡', title: '5분 매칭, 비용 0원', body: '전화 한 통으로 지역·과목·예산을 알려주시면 후보 3명을 즉시 추천드립니다. 매칭 비용 없음.'},
     {icon: '🛡', title: '맞지 않으면 환불', body: '첫 수업 후 마음에 들지 않으면 100% 환불해드립니다. 후속 수업에 부담 없도록.'},
-]) %}
+] %}
+
 <section class="section">
     <div class="section__inner">
         <header class="section__header">
-            <span class="section__eyebrow">{{ eyebrow|default('왜 우리인가') }}</span>
-            <h2 class="section__title">{{ title|default('검증된 사람만') }}</h2>
+            <span class="section__eyebrow">{{ eyebrow }}</span>
+            <h2 class="section__title">{{ title }}</h2>
             {% if lede %}<p class="section__lede">{{ lede }}</p>{% endif %}
         </header>
         <div class="feature-grid">
-            {% for f in _features %}
+            {% for f in features %}
                 <div class="feature-grid__card">
                     <div class="feature-grid__icon" aria-hidden="true">{{ f.icon }}</div>
                     <h3 class="feature-grid__title">{{ f.title }}</h3>

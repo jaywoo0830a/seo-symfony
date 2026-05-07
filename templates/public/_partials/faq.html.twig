@@ -1,10 +1,15 @@
-{# FAQ — args: items (list of DataPoint with kind=faq), eyebrow, title, alt (bool: alt section background) #}
+{# FAQ — args: items, eyebrow, title, alt #}
+{% set items = items is defined ? items : [] %}
+{% set eyebrow = eyebrow is defined ? eyebrow : '자주 묻는 질문' %}
+{% set title = title is defined ? title : '전화 전 궁금하신 것' %}
+{% set alt = alt is defined ? alt : true %}
+
 {% if items is not empty %}
-    <section class="section{% if alt|default(true) %} section--alt{% endif %}">
+    <section class="section{% if alt %} section--alt{% endif %}">
         <div class="section__inner">
             <header class="section__header">
-                <span class="section__eyebrow">{{ eyebrow|default('자주 묻는 질문') }}</span>
-                <h2 class="section__title">{{ title|default('전화 전 궁금하신 것') }}</h2>
+                <span class="section__eyebrow">{{ eyebrow }}</span>
+                <h2 class="section__title">{{ title }}</h2>
             </header>
             <div class="faq">
                 {% for dp in items %}

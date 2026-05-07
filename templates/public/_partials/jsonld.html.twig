@@ -1,3 +1,6 @@
-{# JSON-LD scripts — args: article (string, raw JSON), breadcrumbs (string, raw JSON) #}
+{# JSON-LD scripts — args: article (raw JSON), breadcrumbs (raw JSON) #}
+{% set article = article is defined ? article : '' %}
+{% set breadcrumbs = breadcrumbs is defined ? breadcrumbs : '' %}
+
 {% if article %}<script type="application/ld+json">{{ article|raw }}</script>{% endif %}
 {% if breadcrumbs %}<script type="application/ld+json">{{ breadcrumbs|raw }}</script>{% endif %}

@@ -1,10 +1,14 @@
-{# Qualitative listing — args: items (list of DataPoint), eyebrow, title #}
+{# Qualitative listing — args: items, eyebrow, title #}
+{% set items = items is defined ? items : [] %}
+{% set eyebrow = eyebrow is defined ? eyebrow : '제공 범위' %}
+{% set title = title is defined ? title : '다루는 것' %}
+
 {% if items is not empty %}
     <section class="section">
         <div class="section__inner">
             <header class="section__header">
-                <span class="section__eyebrow">{{ eyebrow|default('제공 범위') }}</span>
-                <h2 class="section__title">{{ title|default('다루는 것') }}</h2>
+                <span class="section__eyebrow">{{ eyebrow }}</span>
+                <h2 class="section__title">{{ title }}</h2>
             </header>
             <ul class="listing">
                 {% for dp in items %}

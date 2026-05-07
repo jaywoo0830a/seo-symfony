@@ -1,0 +1,262 @@
+// =============================================================================
+// matrix--contents : 학습 콘텐츠 매트릭스 — 디지털 상품 톤.
+// 다크 hero + 카탈로그 그리드. 과외(그라디언트)와 학원(split 패널)과 모두 다름.
+// =============================================================================
+
+.matrix--contents {
+    background: var(--b-bg);
+}
+
+// ─── contents-hero : 다크 + 카드 메트릭 ─────────────────────────────
+.contents-hero {
+    padding: var(--b-space-80) var(--b-space-24);
+    background: var(--b-ink-900);
+    color: var(--b-text-on-dark);
+    position: relative;
+    overflow: hidden;
+
+    // 디지털 격자 배경 (살짝)
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+    }
+
+    &__inner {
+        max-width: var(--b-container-narrow);
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        padding: var(--b-space-4) var(--b-space-12);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--b-radius-full);
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.06em;
+        margin-bottom: var(--b-space-24);
+    }
+
+    &__title {
+        font-size: var(--b-text-56);
+        font-weight: var(--b-weight-extrabold);
+        line-height: var(--b-line-tight);
+        letter-spacing: -0.03em;
+        margin: 0 0 var(--b-space-24);
+
+        @media (max-width: 640px) { font-size: var(--b-text-32); }
+    }
+
+    &__highlight {
+        background: linear-gradient(90deg, var(--b-accent-300), var(--b-accent-500));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: var(--b-weight-extrabold);
+    }
+
+    &__lede {
+        font-size: var(--b-text-20);
+        line-height: var(--b-line-base);
+        opacity: 0.85;
+        max-width: 40rem;
+        margin: 0 0 var(--b-space-48);
+    }
+
+    &__metrics {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--b-space-16);
+
+        @media (max-width: 640px) {
+            grid-template-columns: 1fr;
+        }
+
+        li {
+            padding: var(--b-space-20);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--b-radius-md);
+            backdrop-filter: blur(4px);
+        }
+    }
+
+    &__metric-figure {
+        display: block;
+        font-size: var(--b-text-40);
+        font-weight: var(--b-weight-extrabold);
+        color: var(--b-accent-300);
+        line-height: var(--b-line-tight);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__metric-label {
+        display: block;
+        margin-top: var(--b-space-4);
+        font-size: var(--b-text-13);
+        opacity: 0.75;
+    }
+}
+
+// ─── contents-tracks : 학습 경로 카드 그리드 ─────────────────────────
+.contents-tracks {
+    padding: var(--b-space-64) var(--b-space-24);
+    background: var(--b-bg);
+
+    &__inner {
+        max-width: var(--b-container);
+        margin: 0 auto;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: var(--b-space-48);
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--b-primary);
+        margin-bottom: var(--b-space-8);
+    }
+
+    &__title {
+        font-size: var(--b-text-32);
+        font-weight: var(--b-weight-bold);
+        margin: 0;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--b-space-20);
+    }
+}
+
+.contents-track {
+    padding: var(--b-space-24);
+    background: var(--b-surface);
+    border: 1px solid var(--b-border-soft);
+    border-radius: var(--b-radius-lg);
+    transition: all var(--b-duration) var(--b-easing);
+
+    &:hover {
+        border-color: var(--b-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--b-shadow-md);
+    }
+
+    &__title {
+        font-size: var(--b-text-18);
+        font-weight: var(--b-weight-semibold);
+        margin: 0 0 var(--b-space-16);
+        color: var(--b-primary);
+    }
+
+    &__chips {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--b-space-8);
+
+        li {
+            padding: var(--b-space-4) var(--b-space-12);
+            background: var(--b-bg-soft);
+            border-radius: var(--b-radius-full);
+            font-size: var(--b-text-13);
+            color: var(--b-text);
+            font-weight: var(--b-weight-medium);
+        }
+    }
+
+    &__pairs {
+        margin: 0;
+        font-size: var(--b-text-14);
+
+        dt {
+            font-weight: var(--b-weight-semibold);
+            color: var(--b-text-soft);
+            margin-top: var(--b-space-8);
+
+            &:first-child { margin-top: 0; }
+        }
+
+        dd {
+            margin: 0;
+            color: var(--b-text);
+            line-height: var(--b-line-base);
+        }
+    }
+}
+
+// ─── contents-cta : 디지털 상품 CTA — 부드러운 톤 ───────────────────
+.contents-cta {
+    padding: var(--b-space-64) var(--b-space-24);
+    background: linear-gradient(135deg, var(--b-ink-900), var(--b-ink-800));
+    color: var(--b-text-on-dark);
+
+    &__inner {
+        max-width: 32rem;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        padding: var(--b-space-4) var(--b-space-16);
+        background: var(--b-accent-500);
+        border-radius: var(--b-radius-full);
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: var(--b-space-20);
+    }
+
+    &__title {
+        font-size: var(--b-text-32);
+        font-weight: var(--b-weight-bold);
+        margin: 0 0 var(--b-space-16);
+    }
+
+    &__lede {
+        font-size: var(--b-text-16);
+        opacity: 0.85;
+        margin: 0 0 var(--b-space-32);
+        line-height: var(--b-line-base);
+    }
+
+    &__phone {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--b-space-12);
+        padding: var(--b-space-16) var(--b-space-32);
+        background: var(--b-accent-500);
+        color: var(--b-text-on-dark);
+        border-radius: var(--b-radius-md);
+        text-decoration: none;
+        font-weight: var(--b-weight-bold);
+        font-size: var(--b-text-20);
+        font-variant-numeric: tabular-nums;
+        transition: background var(--b-duration) var(--b-easing);
+
+        &:hover { background: var(--b-accent-600); }
+    }
+}
