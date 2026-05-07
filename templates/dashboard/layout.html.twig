@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}SEO 대시보드{% endblock %}
+{% block title %}{{ brand_admin_name() }}{% endblock %}
 
 {% block stylesheets %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
         <header class="layout__header">
             <div class="layout__container">
                 <a class="layout__brand" href="{{ path('admin_dashboard') }}">
-                    <span class="layout__brand-name">SEO 대시보드</span>
+                    <span class="layout__brand-name">{{ brand_admin_name() }}</span>
                 </a>
                 <form class="layout__search" method="get" action="{{ path('admin_search') }}" role="search">
                     <input class="layout__search-input"
