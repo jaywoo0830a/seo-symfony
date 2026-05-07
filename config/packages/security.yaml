@@ -20,6 +20,16 @@ security:
                 check_path: app_login
                 default_target_path: admin_dashboard
                 enable_csrf: true
+            login_throttling:
+                max_attempts: 5
+                interval: '1 minute'
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 2592000  # 30일
+                path: /
+                secure: auto
+                samesite: lax
+                always_remember_me: false
             logout:
                 path: app_logout
                 target: app_login

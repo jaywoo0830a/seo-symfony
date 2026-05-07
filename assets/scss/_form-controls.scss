@@ -111,6 +111,27 @@
         flex-wrap: wrap;
     }
 
+    // 체크박스 한 줄 (label + input 가로 배치)
+    &__check {
+        display: flex;
+        align-items: center;
+        gap: var(--space-8);
+    }
+
+    &__check-input {
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--color-mark);
+        cursor: pointer;
+    }
+
+    &__check-label {
+        font-size: var(--text-14);
+        color: var(--color-soft);
+        cursor: pointer;
+        user-select: none;
+    }
+
     // 인라인 폼 (단일 버튼만 들어가는 작은 폼: 검증 토글, 삭제 등)
     &__inline {
         display: inline-flex;

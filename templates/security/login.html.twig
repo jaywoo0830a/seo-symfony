@@ -35,6 +35,11 @@
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
+            <div class="form__check">
+                <input type="checkbox" id="inputRememberMe" name="_remember_me" value="on" class="form__check-input">
+                <label for="inputRememberMe" class="form__check-label">로그인 유지 (30일)</label>
+            </div>
+
             <div class="form__actions">
                 <button type="submit" class="button button--primary">로그인</button>
             </div>
