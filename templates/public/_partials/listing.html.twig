@@ -1,0 +1,39 @@
+{# Qualitative listing — args: items (list of DataPoint), eyebrow, title #}
+{% if items is not empty %}
+    <section class="section">
+        <div class="section__inner">
+            <header class="section__header">
+                <span class="section__eyebrow">{{ eyebrow|default('제공 범위') }}</span>
+                <h2 class="section__title">{{ title|default('다루는 것') }}</h2>
+            </header>
+            <ul class="listing">
+                {% for dp in items %}
+                    <li class="listing__item">
+                        <span class="listing__title">{{ dp.title }}</span>
+                        <div class="listing__body">
+                            {%- if dp.value is iterable -%}
+                                {%- set first_key = dp.value|keys|first -%}
+                                {%- if first_key is same as(0) -%}
+                                    <ul class="listing__tags">
+                                        {% for v in dp.value %}<li class="listing__tag">{{ v }}</li>{% endfor %}
+                                    </ul>
+                                {%- else -%}
+                                    <dl class="listing__pairs">
+                                        {% for k, v in dp.value %}
+                                            <div class="listing__pair">
+                                                <span class="listing__pair-key">{{ k }}</span>
+                                                <span class="listing__pair-val">{{ v is iterable ? v|join(', ') : v }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </dl>
+                                {%- endif -%}
+                            {%- else -%}
+                                {{ dp.value }}
+                            {%- endif -%}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endif %}

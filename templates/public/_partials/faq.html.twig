@@ -1,0 +1,21 @@
+{# FAQ — args: items (list of DataPoint with kind=faq), eyebrow, title, alt (bool: alt section background) #}
+{% if items is not empty %}
+    <section class="section{% if alt|default(true) %} section--alt{% endif %}">
+        <div class="section__inner">
+            <header class="section__header">
+                <span class="section__eyebrow">{{ eyebrow|default('자주 묻는 질문') }}</span>
+                <h2 class="section__title">{{ title|default('전화 전 궁금하신 것') }}</h2>
+            </header>
+            <div class="faq">
+                {% for dp in items %}
+                    <details class="faq__item">
+                        <summary class="faq__question">{{ dp.title }}</summary>
+                        <div class="faq__answer">
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value }}{% endif -%}
+                        </div>
+                    </details>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endif %}

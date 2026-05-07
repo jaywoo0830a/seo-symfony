@@ -1,0 +1,124 @@
+{# 학원(academy) 매트릭스 — 모든 /academy/*/* 지역 페이지의 셸.
+
+   tutoring 매트릭스와 *구조적으로* 다름:
+   - hero: split 레이아웃 (좌 카피 + 우 데이터 패널) — 과외는 단일 hero + 옆 stats
+   - 섹션 순서: 비교(callouts) → 운영정보(listing) → FAQ — 과외는 hero → 신뢰특징 → 비교 → 리스팅 → FAQ
+   - feature_grid 없음 (과외의 트러스트 시그널은 학원에 안 맞음 — 학원은 *비교*가 본업)
+   - .matrix--academy 래퍼로 SCSS 스코프
+
+   같은 학원 테마 내 모든 지역(서울 학원, 부산 학원, …)은 이 셸을 공유.
+#}
+
+<div class="matrix--academy">
+    {% include 'public/_partials/breadcrumb.html.twig' %}
+
+    {# ─── 학원 전용 hero (split 레이아웃) ─────────────────── #}
+    <section class="academy-hero">
+        <div class="academy-hero__inner">
+            <div class="academy-hero__main">
+                <span class="academy-hero__eyebrow">🏫 {{ keyword }} 디렉토리</span>
+                <h1 class="academy-hero__title">
+                    {%- if region_label %}<span class="academy-hero__region">{{ region_label }}</span> {% endif -%}
+                    학원, 한 페이지에서 비교
+                </h1>
+                {% if node.introText %}
+                    <p class="academy-hero__lede">{{ node.introText }}</p>
+                {% endif %}
+                <a class="academy-hero__cta" href="{{ brand_phone_link() }}">
+                    <span aria-hidden="true">📞</span>
+                    <span>{{ brand_phone() }} 학원 정보 문의</span>
+                </a>
+            </div>
+
+            {# 우측 데이터 패널 — quantitative DataPoint를 *표 형태*로 #}
+            {% if byKind.quantitative is not empty %}
+                <aside class="academy-hero__panel">
+                    <h2 class="academy-hero__panel-title">한눈에 보는 {{ region_label ?: '전국' }}</h2>
+                    <dl class="academy-hero__panel-data">
+                        {% for dp in byKind.quantitative|slice(0, 4) %}
+                            <div class="academy-hero__panel-row">
+                                <dt>{{ dp.title }}</dt>
+                                <dd>
+                                    {%- if dp.value is iterable -%}
+                                        {%- set first_key = dp.value|keys|first -%}
+                                        {%- if first_key is same as(0) -%}
+                                            {{ dp.value|length }}건
+                                        {%- else -%}
+                                            {{ dp.value['평균'] ?? dp.value|first }}
+                                        {%- endif -%}
+                                    {%- else -%}
+                                        {{ dp.value }}
+                                    {%- endif -%}
+                                </dd>
+                            </div>
+                        {% endfor %}
+                    </dl>
+                </aside>
+            {% endif %}
+        </div>
+    </section>
+
+    {# ─── 비교가 먼저 — 학원은 *비교 의도*가 본업 ──────────── #}
+    {% if byKind.comparison is not empty %}
+        <section class="academy-compare">
+            <div class="academy-compare__inner">
+                <header class="academy-compare__header">
+                    <span class="academy-compare__eyebrow">{{ region_label ?: '시장' }} 학원 비교</span>
+                    <h2 class="academy-compare__title">같은 {{ region_label ?: '지역' }}, 무엇이 다른가</h2>
+                </header>
+                <table class="academy-compare__table">
+                    <thead>
+                        <tr>
+                            <th scope="col">비교 포인트</th>
+                            <th scope="col">{{ region_label ?: '전국' }} 학원 시장의 특징</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dp in byKind.comparison %}
+                            <tr>
+                                <th scope="row">{{ dp.title }}</th>
+                                <td>
+                                    {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value|raw }}{% endif -%}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
+
+    {# ─── 운영 정보 (qualitative) — 학원의 핵심 정보 ────── #}
+    {% include 'public/_partials/listing.html.twig' with {
+        items: byKind.qualitative,
+        eyebrow: '운영 정보',
+        title: keyword ~ '의 운영 형태',
+    } only %}
+
+    {% include 'public/_partials/theme_children.html.twig' with {
+        items: theme_children,
+        urls: urls,
+        title: theme_label ~ ' 카테고리의 페이지',
+    } only %}
+
+    {# ─── FAQ (alt 배경 끔 — 학원은 plain bg가 정보 톤에 맞음) ─── #}
+    {% include 'public/_partials/faq.html.twig' with {
+        items: byKind.faq,
+        eyebrow: '학원 등록 전 확인',
+        title: keyword ~ ' 자주 묻는 질문',
+        alt: false,
+    } only %}
+
+    {# ─── CTA — 학원은 *문의 톤*. 과외의 "지금 매칭"과 다르게 ─── #}
+    <section class="academy-cta">
+        <div class="academy-cta__inner">
+            <h2 class="academy-cta__title">방문 전 한 통화로 정리하세요</h2>
+            <p class="academy-cta__lede">학원별 시간표·수강료·반 편성을 운영팀이 직접 안내. 방문 일정도 함께 잡아드립니다.</p>
+            <a class="academy-cta__phone" href="{{ brand_phone_link() }}">
+                <span aria-hidden="true">📞</span>
+                <span>{{ brand_phone() }}</span>
+                <span class="academy-cta__hours">{{ brand_phone_hours() }}</span>
+            </a>
+        </div>
+    </section>
+</div>

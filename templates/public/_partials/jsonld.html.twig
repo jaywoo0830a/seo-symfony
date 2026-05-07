@@ -1,0 +1,3 @@
+{# JSON-LD scripts — args: article (string, raw JSON), breadcrumbs (string, raw JSON) #}
+{% if article %}<script type="application/ld+json">{{ article|raw }}</script>{% endif %}
+{% if breadcrumbs %}<script type="application/ld+json">{{ breadcrumbs|raw }}</script>{% endif %}

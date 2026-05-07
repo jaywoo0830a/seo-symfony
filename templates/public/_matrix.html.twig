@@ -1,0 +1,52 @@
+{# 제네릭 매트릭스 fallback — matrix/{theme-slug}.html.twig가 없을 때 사용.
+
+   카피는 의도적으로 *테마 색채 없이* 작성됨. 새 테마를 추가했는데 전용 매트릭스를
+   아직 안 만들었어도 망가지지 않게. 실제 운영에서는 모든 루트 테마마다
+   matrix/*.html.twig 를 갖추는 것을 권장.
+
+   사용 가능한 컨텍스트 (PublicNodeController가 주입):
+     node, byKind, theme_children, theme_siblings, urls, crumbs,
+     region_label, theme_label, keyword
+#}
+
+{% include 'public/_partials/breadcrumb.html.twig' %}
+
+{% set _hero_stats = [] %}
+{% for dp in byKind.quantitative|slice(0, 3) %}
+    {% set _hero_stats = _hero_stats|merge([{
+        figure: dp.value is iterable ? dp.value|length : dp.value,
+        label: dp.title,
+    }]) %}
+{% endfor %}
+
+{% include 'public/_partials/hero.html.twig' with {
+    eyebrow: keyword ~ ' 정보',
+    title_main: region_label ? '' : theme_label,
+    title_highlight: region_label,
+    title_tail: region_label ? ' ' ~ theme_label : '',
+    lede: node.introText,
+    stats: _hero_stats,
+} only %}
+
+{% include 'public/_partials/callouts.html.twig' with {
+    items: byKind.comparison,
+    eyebrow: (region_label ?: '시장') ~ ' 인사이트',
+    title: keyword ~ '의 특징',
+} only %}
+
+{% include 'public/_partials/listing.html.twig' with {
+    items: byKind.qualitative,
+    title: keyword ~ '에서 다루는 것',
+} only %}
+
+{% include 'public/_partials/theme_children.html.twig' with {
+    items: theme_children,
+    urls: urls,
+    title: theme_label ~ ' 카테고리의 페이지',
+} only %}
+
+{% include 'public/_partials/faq.html.twig' with {items: byKind.faq} only %}
+
+{% include 'public/_partials/final_cta.html.twig' with {
+    eyebrow: (region_label ?: '전국') ~ ' ' ~ theme_label,
+} only %}

@@ -1,0 +1,40 @@
+{# Hero — args:
+    eyebrow (string, optional)
+    title_main (string, required) — pre-highlight text
+    title_highlight (string, optional) — highlighted span
+    title_tail (string, optional) — text after highlight
+    lede (string, optional)
+    cta_label (string, default: brand phone)
+    assurance (string, optional) — small text under CTA
+    stats (list of {figure, label}, optional) — right-side stat blocks
+#}
+<section class="hero">
+    <div class="hero__inner">
+        <div>
+            {% if eyebrow %}<span class="hero__eyebrow">{{ eyebrow }}</span>{% endif %}
+            <h1 class="hero__title">
+                {{ title_main }}
+                {%- if title_highlight %} <span class="hero__highlight">{{ title_highlight }}</span>{% endif -%}
+                {%- if title_tail %} {{ title_tail }}{% endif -%}
+            </h1>
+            {% if lede %}<p class="hero__lede">{{ lede }}</p>{% endif %}
+            <div class="hero__actions">
+                <a class="cta cta--primary cta--lg" href="{{ brand_phone_link() }}">
+                    <span class="cta__icon" aria-hidden="true">📞</span>
+                    <span>{{ cta_label|default(brand_phone() ~ ' 지금 전화하기') }}</span>
+                </a>
+                {% if assurance %}<span class="hero__assurance">{{ assurance }}</span>{% endif %}
+            </div>
+        </div>
+        {% if stats is defined and stats is not empty %}
+            <div class="hero__stats">
+                {% for stat in stats %}
+                    <div class="hero__stat">
+                        <div class="hero__stat-figure">{{ stat.figure }}</div>
+                        <span class="hero__stat-label">{{ stat.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</section>

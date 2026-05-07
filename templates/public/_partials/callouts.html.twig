@@ -1,0 +1,21 @@
+{# Comparison callouts — args: items (list of DataPoint), eyebrow, title #}
+{% if items is not empty %}
+    <section class="section section--alt">
+        <div class="section__inner section__inner--narrow">
+            <header class="section__header">
+                <span class="section__eyebrow">{{ eyebrow|default('인사이트') }}</span>
+                <h2 class="section__title">{{ title|default('무엇이 다른가') }}</h2>
+            </header>
+            <div class="callout-stack">
+                {% for dp in items %}
+                    <div class="callout">
+                        <span class="callout__title">{{ dp.title }}</span>
+                        <p class="callout__quote">
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value|raw }}{% endif -%}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endif %}

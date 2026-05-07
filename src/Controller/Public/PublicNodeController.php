@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Twig\Environment;
 
 #[Route(
     '/{path}',
@@ -36,6 +37,7 @@ final class PublicNodeController extends AbstractController
         RedirectRepository $redirects,
         UrlBuilder $urls,
         BreadcrumbBuilder $breadcrumbs,
+        Environment $twig,
     ): Response {
         // Canonicalise to trailing slash.
         if (!str_ends_with($request->getPathInfo(), '/')) {
@@ -74,7 +76,7 @@ final class PublicNodeController extends AbstractController
 
         return $this->render(
             'public/node.html.twig',
-            $this->buildContext($node, $nodes, $urls, $breadcrumbs, $request->getSchemeAndHttpHost()),
+            $this->buildContext($node, $nodes, $urls, $breadcrumbs, $twig, $request->getSchemeAndHttpHost()),
             $response,
         );
     }
@@ -87,6 +89,7 @@ final class PublicNodeController extends AbstractController
         ContentNodeRepository $nodes,
         UrlBuilder $urls,
         BreadcrumbBuilder $breadcrumbs,
+        Environment $twig,
         string $absoluteBaseUrl,
     ): array {
         $byKind = [];
@@ -109,6 +112,8 @@ final class PublicNodeController extends AbstractController
             'h1' => $h1,
             'template' => $template,
             'body_html' => $template->isGuide() ? $this->renderMarkdown($node->getBodyMarkdown()) : null,
+            'template_override' => $this->findTemplateOverride($node, $twig),
+            'matrix_template' => $this->findMatrixTemplate($node, $twig),
             'byKind' => $byKind,
             'parent' => $nodes->findParentOf($node),
             'siblings' => $this->findSiblings($node, $nodes),
@@ -120,6 +125,62 @@ final class PublicNodeController extends AbstractController
             'json_ld' => $this->buildJsonLd($node, $h1),
             'breadcrumbs_jsonld' => $breadcrumbs->buildJsonLd($crumbs, $absoluteBaseUrl),
         ];
+    }
+
+    /**
+     * Look for an operator-authored template override at:
+     *   templates/public/hubs/{theme-path}.html.twig
+     *
+     * Where theme-path mirrors the URL theme segments — e.g.
+     *   /tutoring/                       → hubs/tutoring.html.twig
+     *   /guides/                         → hubs/guides.html.twig
+     *   /guides/how-to-choose-tutor/     → hubs/guides/how-to-choose-tutor.html.twig
+     *
+     * Only applies to region=NULL nodes (theme hubs and individual guides).
+     * Region pages (sido/sigungu/dong) intentionally never override — uniformity
+     * across thousands of geo pages is a feature, not a bug.
+     *
+     * If found, the override wins over both the prose guide template and the
+     * default matrix render. The operator created the file explicitly, so it
+     * outranks any automatic dispatch.
+     */
+    /**
+     * Pick the matrix template for this node based on its ROOT theme.
+     *
+     *   /tutoring/seoul/...  → matrix/tutoring.html.twig (if exists)
+     *   /academy/busan/...   → matrix/academy.html.twig (if exists)
+     *   anything else        → _matrix.html.twig (generic fallback)
+     *
+     * The root theme is the right axis: region pages within one vertical (tutoring)
+     * stay uniform across regions for SEO, while different verticals (tutoring vs
+     * academy) get distinct shells to avoid near-duplicate cross-theme pages.
+     */
+    private function findMatrixTemplate(ContentNode $node, Environment $twig): string
+    {
+        $rootTheme = $node->getTheme();
+        while ($rootTheme->getParent() !== null) {
+            $rootTheme = $rootTheme->getParent();
+        }
+
+        $candidate = sprintf('public/matrix/%s.html.twig', $rootTheme->getSlug());
+
+        return $twig->getLoader()->exists($candidate) ? $candidate : 'public/_matrix.html.twig';
+    }
+
+    private function findTemplateOverride(ContentNode $node, Environment $twig): ?string
+    {
+        if ($node->getRegion() !== null) {
+            return null;
+        }
+
+        $segments = [];
+        for ($t = $node->getTheme(); $t !== null; $t = $t->getParent()) {
+            array_unshift($segments, $t->getSlug());
+        }
+
+        $candidate = sprintf('public/hubs/%s.html.twig', implode('/', $segments));
+
+        return $twig->getLoader()->exists($candidate) ? $candidate : null;
     }
 
     private function renderMarkdown(?string $markdown): string

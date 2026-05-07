@@ -1,0 +1,281 @@
+// =============================================================================
+// 허브 오버라이드 변종들 — 각 테마 허브가 시각적으로 명확히 구분되도록.
+// hub-directory : academy 허브 (디렉토리/비교 톤)
+// hub-library   : guides 허브 (지식 베이스 톤)
+// (참고: tutoring 허브는 _hub_splash.scss의 hub-splash + hub-pivot 사용)
+// =============================================================================
+
+// ─── hub-directory : 학원 허브 ─────────────────────────────────────────
+.hub-directory {
+    padding: var(--b-space-80) var(--b-space-24) var(--b-space-48);
+    background: var(--b-bg);
+    border-bottom: 1px solid var(--b-border-soft);
+
+    &__inner {
+        max-width: var(--b-container);
+        margin: 0 auto;
+        text-align: left;
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        padding: var(--b-space-4) var(--b-space-12);
+        background: var(--b-primary-soft);
+        color: var(--b-primary);
+        border-radius: var(--b-radius-sm);
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: var(--b-space-20);
+    }
+
+    &__title {
+        font-size: var(--b-text-48);
+        font-weight: var(--b-weight-bold);
+        line-height: var(--b-line-tight);
+        letter-spacing: -0.02em;
+        margin: 0 0 var(--b-space-16);
+
+        @media (max-width: 640px) { font-size: var(--b-text-32); }
+    }
+
+    &__lede {
+        font-size: var(--b-text-18);
+        color: var(--b-text-soft);
+        max-width: 42rem;
+        margin: 0 0 var(--b-space-32);
+        line-height: var(--b-line-base);
+    }
+
+    // 검색바 모양 — 인터랙션은 없고 시각적 신호만
+    &__search {
+        display: flex;
+        align-items: center;
+        gap: var(--b-space-12);
+        padding: var(--b-space-12) var(--b-space-16);
+        background: var(--b-surface);
+        border: 2px solid var(--b-border);
+        border-radius: var(--b-radius-md);
+        max-width: 40rem;
+
+        &-icon {
+            font-size: var(--b-text-20);
+        }
+
+        &-text {
+            flex: 1;
+            color: var(--b-text-soft);
+            font-size: var(--b-text-14);
+        }
+
+        &-cta {
+            padding: var(--b-space-8) var(--b-space-16);
+            background: var(--b-primary);
+            color: var(--b-text-on-dark);
+            border-radius: var(--b-radius-sm);
+            text-decoration: none;
+            font-weight: var(--b-weight-semibold);
+            font-size: var(--b-text-14);
+        }
+    }
+
+    &__regions {
+        padding: var(--b-space-64) var(--b-space-24);
+        background: var(--b-bg-soft);
+
+        .section__inner {
+            max-width: var(--b-container);
+            margin: 0 auto;
+        }
+    }
+
+    &__tiles {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--b-space-12);
+
+        li { margin: 0; }
+    }
+
+    &__tile {
+        display: flex;
+        align-items: center;
+        gap: var(--b-space-12);
+        padding: var(--b-space-20);
+        background: var(--b-surface);
+        border: 1px solid var(--b-border-soft);
+        border-radius: var(--b-radius-md);
+        text-decoration: none;
+        color: var(--b-text);
+        transition: all var(--b-duration) var(--b-easing);
+
+        &:hover {
+            border-color: var(--b-primary);
+            box-shadow: var(--b-shadow-md);
+        }
+
+        &-name {
+            font-weight: var(--b-weight-semibold);
+            font-size: var(--b-text-16);
+        }
+
+        &-meta {
+            margin-left: auto;
+            margin-right: var(--b-space-8);
+            font-size: var(--b-text-12);
+            color: var(--b-text-faint);
+        }
+
+        &-arrow {
+            color: var(--b-primary);
+            font-size: var(--b-text-18);
+        }
+    }
+}
+
+// ─── hub-library : 가이드 허브 ─────────────────────────────────────────
+.hub-library {
+    padding: var(--b-space-80) var(--b-space-24);
+    background: linear-gradient(180deg, var(--b-bg-soft) 0%, var(--b-bg) 100%);
+    text-align: center;
+
+    &__inner {
+        max-width: var(--b-container-narrow);
+        margin: 0 auto;
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        padding: var(--b-space-8) var(--b-space-20);
+        background: var(--b-bg-dark);
+        color: var(--b-text-on-dark);
+        border-radius: var(--b-radius-full);
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: var(--b-space-24);
+    }
+
+    &__title {
+        font-size: var(--b-text-56);
+        font-weight: var(--b-weight-extrabold);
+        line-height: var(--b-line-tight);
+        letter-spacing: -0.03em;
+        margin: 0 0 var(--b-space-20);
+        font-family: 'Asta Sans', serif;
+
+        @media (max-width: 640px) { font-size: var(--b-text-32); }
+    }
+
+    &__lede {
+        font-size: var(--b-text-20);
+        color: var(--b-text-soft);
+        max-width: 36rem;
+        margin: 0 auto;
+        line-height: var(--b-line-base);
+    }
+
+    // 가이드 카드 리스트
+    &__list {
+        padding: var(--b-space-48) var(--b-space-24) var(--b-space-80);
+    }
+
+    &__cards {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: var(--b-space-20);
+
+        li { margin: 0; }
+    }
+
+    &__card {
+        display: block;
+        padding: var(--b-space-32);
+        background: var(--b-surface);
+        border: 1px solid var(--b-border-soft);
+        border-radius: var(--b-radius-lg);
+        text-decoration: none;
+        color: var(--b-text);
+        transition: all var(--b-duration) var(--b-easing);
+
+        &:hover {
+            border-color: var(--b-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--b-shadow-lg);
+        }
+
+        &-tag {
+            display: inline-block;
+            padding: var(--b-space-4) var(--b-space-12);
+            background: var(--b-primary-soft);
+            color: var(--b-primary);
+            border-radius: var(--b-radius-sm);
+            font-size: var(--b-text-12);
+            font-weight: var(--b-weight-semibold);
+            margin-bottom: var(--b-space-12);
+        }
+
+        &-title {
+            font-size: var(--b-text-24);
+            font-weight: var(--b-weight-bold);
+            margin: 0 0 var(--b-space-12);
+            line-height: var(--b-line-snug);
+        }
+
+        &-lede {
+            font-size: var(--b-text-16);
+            color: var(--b-text-soft);
+            margin: 0 0 var(--b-space-20);
+            line-height: var(--b-line-base);
+        }
+
+        &-meta {
+            font-size: var(--b-text-13);
+            color: var(--b-text-faint);
+        }
+
+        &-author {
+            font-weight: var(--b-weight-semibold);
+            color: var(--b-text-soft);
+        }
+    }
+
+    // 편집 원칙 영역
+    &__principles {
+        padding: var(--b-space-64) var(--b-space-24);
+        background: var(--b-bg-soft);
+    }
+
+    &__rules {
+        display: grid;
+        gap: var(--b-space-24);
+        max-width: 40rem;
+        margin: 0;
+
+        > div {
+            padding: var(--b-space-20);
+            background: var(--b-surface);
+            border-left: 3px solid var(--b-primary);
+            border-radius: var(--b-radius-sm);
+        }
+
+        dt {
+            font-weight: var(--b-weight-bold);
+            font-size: var(--b-text-18);
+            margin-bottom: var(--b-space-8);
+        }
+
+        dd {
+            margin: 0;
+            color: var(--b-text-soft);
+            line-height: var(--b-line-base);
+        }
+    }
+}
