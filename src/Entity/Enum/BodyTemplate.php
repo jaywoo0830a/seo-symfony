@@ -10,4 +10,16 @@ enum BodyTemplate: string
     case Sido = 'sido';
     case Sigungu = 'sigungu';
     case Dong = 'dong';
+
+    case GuideLongform = 'guide_longform';
+    case GuideComparison = 'guide_comparison';
+    case GuideFaq = 'guide_faq';
+
+    public function isGuide(): bool
+    {
+        return match ($this) {
+            self::GuideLongform, self::GuideComparison, self::GuideFaq => true,
+            default => false,
+        };
+    }
 }

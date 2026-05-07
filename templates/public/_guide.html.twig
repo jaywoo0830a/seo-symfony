@@ -1,0 +1,169 @@
+{# Guide templates — Phase 1 hub/longform/comparison/faq content.
+   Differentiation comes from author voice and Markdown body, not card grids.
+   The three guide variants share scaffolding (breadcrumb, hero, body, faq, CTA)
+   but reorder/reweight sections per template. #}
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb__list">
+        {% for crumb in crumbs %}
+            <li class="breadcrumb__item">
+                {% if crumb.current %}
+                    <span class="breadcrumb__current" aria-current="page">{{ crumb.label }}</span>
+                {% else %}
+                    <a class="breadcrumb__link" href="{{ crumb.url }}">{{ crumb.label }}</a>
+                    <span class="breadcrumb__sep" aria-hidden="true">›</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+</nav>
+
+<article class="guide guide--{{ template.value }}">
+    <header class="guide__header">
+        <span class="guide__eyebrow">
+            {%- if template.value == 'guide_longform' %}심층 가이드
+            {%- elseif template.value == 'guide_comparison' %}비교 분석
+            {%- elseif template.value == 'guide_faq' %}자주 묻는 질문 모음
+            {%- endif -%}
+        </span>
+        <h1 class="guide__title">{{ h1 }}</h1>
+        {% if node.introText %}
+            <p class="guide__lede">{{ node.introText }}</p>
+        {% endif %}
+        {% if node.author %}
+            <div class="guide__byline">
+                <span class="guide__byline-author">{{ node.author.realName }}</span>
+                {% if node.lastReviewAt %}
+                    <span class="guide__byline-date">· 최근 검토 {{ node.lastReviewAt|date('Y-m-d') }}</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    </header>
+
+    {# Comparison variant: lead with comparison datapoints, then body #}
+    {% if template.value == 'guide_comparison' and byKind.comparison is not empty %}
+        <section class="guide__compare">
+            <h2 class="guide__h2">한눈에 보는 비교</h2>
+            <div class="callout-stack">
+                {% for dp in byKind.comparison %}
+                    <div class="callout">
+                        <span class="callout__title">{{ dp.title }}</span>
+                        <p class="callout__quote">
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value|raw }}{% endif -%}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {# FAQ variant: lead with FAQ; body becomes supporting context #}
+    {% if template.value == 'guide_faq' and byKind.faq is not empty %}
+        <section class="guide__faq guide__faq--lead">
+            <h2 class="guide__h2">질문과 답</h2>
+            <div class="faq">
+                {% for dp in byKind.faq %}
+                    <details class="faq__item" {% if loop.first %}open{% endif %}>
+                        <summary class="faq__question">{{ dp.title }}</summary>
+                        <div class="faq__answer">
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value }}{% endif -%}
+                        </div>
+                    </details>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if body_html %}
+        <section class="guide__body">
+            {{ body_html|raw }}
+        </section>
+    {% endif %}
+
+    {# Quantitative stats inline as supplementary cards (any guide variant) #}
+    {% if byKind.quantitative is not empty %}
+        <aside class="guide__stats">
+            <h2 class="guide__h2">관련 수치</h2>
+            <div class="stat-grid">
+                {% for dp in byKind.quantitative %}
+                    <div class="stat-grid__card">
+                        <div class="stat-grid__figure">
+                            {%- if dp.value is iterable -%}
+                                {{ dp.value|length }}
+                            {%- else -%}
+                                {{ dp.value }}
+                            {%- endif -%}
+                        </div>
+                        <span class="stat-grid__label">{{ dp.title }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </aside>
+    {% endif %}
+
+    {# Comparison variant: comparisons already shown above; longform shows them after body #}
+    {% if template.value == 'guide_longform' and byKind.comparison is not empty %}
+        <section class="guide__compare">
+            <h2 class="guide__h2">비교 포인트</h2>
+            <div class="callout-stack">
+                {% for dp in byKind.comparison %}
+                    <div class="callout">
+                        <span class="callout__title">{{ dp.title }}</span>
+                        <p class="callout__quote">
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value|raw }}{% endif -%}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {# FAQ at the end for non-FAQ variants #}
+    {% if template.value != 'guide_faq' and byKind.faq is not empty %}
+        <section class="guide__faq">
+            <h2 class="guide__h2">자주 묻는 질문</h2>
+            <div class="faq">
+                {% for dp in byKind.faq %}
+                    <details class="faq__item">
+                        <summary class="faq__question">{{ dp.title }}</summary>
+                        <div class="faq__answer">
+                            {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value }}{% endif -%}
+                        </div>
+                    </details>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {% if theme_siblings is not empty %}
+        <section class="guide__related">
+            <h2 class="guide__h2">다른 가이드도 보기</h2>
+            <ul class="guide__related-list">
+                {% for sibling in theme_siblings %}
+                    <li class="guide__related-item">
+                        <a class="guide__related-link" href="{{ urls.build(sibling) }}">
+                            <span class="guide__related-title">{{ sibling.theme.name }}</span>
+                            {% if sibling.introText %}
+                                <span class="guide__related-lede">{{ sibling.introText|striptags|slice(0, 90) }}…</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if node.theme.parent %}
+                <p class="guide__related-up">
+                    <a href="{{ urls.buildPath(node.theme.parent, null) }}">← {{ node.theme.parent.name }} 전체 보기</a>
+                </p>
+            {% endif %}
+        </section>
+    {% endif %}
+
+    <section class="guide__cta">
+        <h2 class="guide__h2">전화 한 통이면 충분합니다</h2>
+        <p>지역·과목·예산을 알려주시면 검증된 강사 후보 3명을 5분 안에 추천드립니다.</p>
+        <a class="cta cta--primary cta--lg" href="{{ brand_phone_link() }}">
+            <span class="cta__icon" aria-hidden="true">📞</span>
+            <span>{{ brand_phone() }} 지금 전화하기</span>
+        </a>
+    </section>
+</article>

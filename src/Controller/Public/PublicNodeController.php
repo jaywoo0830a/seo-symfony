@@ -13,6 +13,7 @@ use App\Repository\RedirectRepository;
 use App\Service\BreadcrumbBuilder;
 use App\Service\PathResolver;
 use App\Service\UrlBuilder;
+use League\CommonMark\GithubFlavoredMarkdownConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,21 +101,37 @@ final class PublicNodeController extends AbstractController
 
         $h1 = $this->buildH1($node);
         $crumbs = $breadcrumbs->build($node);
+        $template = $this->deriveTemplate($node);
 
         return [
             'node' => $node,
             'url' => $urls->build($node),
             'h1' => $h1,
-            'template' => $this->deriveTemplate($node),
+            'template' => $template,
+            'body_html' => $template->isGuide() ? $this->renderMarkdown($node->getBodyMarkdown()) : null,
             'byKind' => $byKind,
             'parent' => $nodes->findParentOf($node),
             'siblings' => $this->findSiblings($node, $nodes),
             'children' => $nodes->findChildrenOf($node),
+            'theme_children' => $nodes->findThemeChildrenOf($node),
+            'theme_siblings' => $nodes->findThemeSiblingsOf($node),
             'urls' => $urls,
             'crumbs' => $crumbs,
             'json_ld' => $this->buildJsonLd($node, $h1),
             'breadcrumbs_jsonld' => $breadcrumbs->buildJsonLd($crumbs, $absoluteBaseUrl),
         ];
+    }
+
+    private function renderMarkdown(?string $markdown): string
+    {
+        if ($markdown === null || trim($markdown) === '') {
+            return '';
+        }
+
+        return (string) (new GithubFlavoredMarkdownConverter([
+            'html_input' => 'escape',
+            'allow_unsafe_links' => false,
+        ]))->convert($markdown);
     }
 
     private function buildJsonLd(ContentNode $node, string $h1): string
@@ -158,6 +175,13 @@ final class PublicNodeController extends AbstractController
 
     private function deriveTemplate(ContentNode $node): BodyTemplate
     {
+        // Operator override wins — guides need explicit selection since they have no
+        // region depth signal and matrix derivation would always pick Hub for them.
+        $explicit = $node->getBodyTemplate();
+        if ($explicit !== null) {
+            return $explicit;
+        }
+
         $regionDepth = $node->getRegion()?->getDepth();
 
         return match ($regionDepth) {

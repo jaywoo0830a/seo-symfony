@@ -61,7 +61,14 @@ class ContentNodeType extends AbstractType
                 'class' => BodyTemplate::class,
                 'choice_label' => fn (BodyTemplate $t) => $t->value,
                 'required' => false,
-                'placeholder' => '— 좌표로 자동 결정 —',
+                'placeholder' => '— 좌표로 자동 결정 (지역 깊이 기반) —',
+                'help' => '가이드 변종(guide_*)을 선택하면 본문은 Markdown으로 렌더링됩니다.',
+            ])
+            ->add('bodyMarkdown', TextareaType::class, [
+                'label' => '본문 (Markdown)',
+                'required' => false,
+                'attr' => ['rows' => 20, 'style' => 'font-family: ui-monospace, monospace;'],
+                'help' => '가이드 템플릿 전용. 발행 시 가시 텍스트 3,000자 이상 + 검증된 FAQ DataPoint 3개 이상 필요. 매트릭스 템플릿(hub/sido/sigungu/dong)에서는 무시됩니다.',
             ])
             ->add('lastReviewAt', DateTimeType::class, [
                 'label' => '마지막 검토',

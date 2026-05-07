@@ -1,0 +1,296 @@
+// =============================================================================
+// 가이드 템플릿 (Phase 1 longform/comparison/faq)
+// 매트릭스 페이지(hero + section 카드 그리드)와 시각적으로 다른 레이아웃 —
+// 작가의 글이 주인공인 에세이 톤. 본문은 prose 스타일.
+// =============================================================================
+
+.guide {
+    max-width: var(--b-container-narrow);
+    margin: 0 auto;
+    padding: var(--b-space-32) var(--b-space-24) var(--b-space-64);
+
+    &__header {
+        margin-bottom: var(--b-space-48);
+        padding-bottom: var(--b-space-32);
+        border-bottom: 1px solid var(--b-border-soft);
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        font-size: var(--b-text-12);
+        font-weight: var(--b-weight-semibold);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--b-primary);
+        margin-bottom: var(--b-space-16);
+    }
+
+    &__title {
+        font-size: var(--b-text-48);
+        font-weight: var(--b-weight-extrabold);
+        line-height: var(--b-line-tight);
+        letter-spacing: -0.02em;
+        margin: 0 0 var(--b-space-20);
+
+        @media (max-width: 640px) {
+            font-size: var(--b-text-32);
+        }
+    }
+
+    &__lede {
+        font-size: var(--b-text-20);
+        line-height: var(--b-line-base);
+        color: var(--b-text-soft);
+        margin: 0 0 var(--b-space-24);
+    }
+
+    &__byline {
+        font-size: var(--b-text-14);
+        color: var(--b-text-faint);
+
+        &-author {
+            font-weight: var(--b-weight-semibold);
+            color: var(--b-text-soft);
+        }
+    }
+
+    &__h2 {
+        font-size: var(--b-text-32);
+        font-weight: var(--b-weight-bold);
+        line-height: var(--b-line-snug);
+        letter-spacing: -0.01em;
+        margin: var(--b-space-48) 0 var(--b-space-24);
+
+        @media (max-width: 640px) {
+            font-size: var(--b-text-24);
+        }
+    }
+
+    // ─── 본문 prose 스타일 — Markdown 렌더 결과 ─────────────────────
+    &__body {
+        font-size: var(--b-text-18);
+        line-height: var(--b-line-base);
+        color: var(--b-text);
+
+        h1, h2 { @extend .guide__h2; }
+
+        h3 {
+            font-size: var(--b-text-24);
+            font-weight: var(--b-weight-semibold);
+            margin: var(--b-space-32) 0 var(--b-space-16);
+        }
+
+        h4 {
+            font-size: var(--b-text-20);
+            font-weight: var(--b-weight-semibold);
+            margin: var(--b-space-24) 0 var(--b-space-12);
+        }
+
+        p {
+            margin: 0 0 var(--b-space-20);
+        }
+
+        ul, ol {
+            margin: 0 0 var(--b-space-20);
+            padding-left: var(--b-space-24);
+
+            li {
+                margin-bottom: var(--b-space-8);
+            }
+        }
+
+        blockquote {
+            margin: var(--b-space-24) 0;
+            padding: var(--b-space-16) var(--b-space-24);
+            border-left: 3px solid var(--b-primary);
+            background: var(--b-primary-soft);
+            color: var(--b-text);
+            font-style: italic;
+
+            p:last-child { margin-bottom: 0; }
+        }
+
+        code {
+            background: var(--b-bg-soft);
+            padding: 0.125em 0.375em;
+            border-radius: var(--b-radius-sm);
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: var(--b-bg-soft);
+            padding: var(--b-space-16);
+            border-radius: var(--b-radius-md);
+            overflow-x: auto;
+            margin: 0 0 var(--b-space-20);
+
+            code {
+                background: transparent;
+                padding: 0;
+            }
+        }
+
+        a {
+            color: var(--b-primary);
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+
+            &:hover { color: var(--b-primary-hover); }
+        }
+
+        strong { font-weight: var(--b-weight-semibold); }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--b-border-soft);
+            margin: var(--b-space-40) 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 0 var(--b-space-24);
+            font-size: var(--b-text-16);
+
+            th, td {
+                padding: var(--b-space-12) var(--b-space-16);
+                text-align: left;
+                border-bottom: 1px solid var(--b-border-soft);
+            }
+
+            th {
+                font-weight: var(--b-weight-semibold);
+                background: var(--b-bg-soft);
+            }
+        }
+    }
+
+    // ─── 보조 영역들 ─────────────────────────────────────────────────
+    &__compare {
+        margin: var(--b-space-48) 0;
+    }
+
+    &__faq {
+        margin: var(--b-space-48) 0;
+
+        &--lead {
+            margin-top: 0;
+        }
+    }
+
+    &__stats {
+        margin: var(--b-space-48) 0;
+        padding: var(--b-space-32);
+        background: var(--b-bg-soft);
+        border-radius: var(--b-radius-lg);
+    }
+
+    // ─── 다른 가이드 (theme_siblings) ──────────────────────────────
+    &__related {
+        margin: var(--b-space-48) 0;
+        padding: var(--b-space-32);
+        background: var(--b-bg-soft);
+        border-radius: var(--b-radius-lg);
+    }
+
+    &__related-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: var(--b-space-12);
+    }
+
+    &__related-item {
+        margin: 0;
+    }
+
+    &__related-link {
+        display: block;
+        padding: var(--b-space-16) var(--b-space-20);
+        background: var(--b-surface);
+        border: 1px solid var(--b-border-soft);
+        border-radius: var(--b-radius-md);
+        text-decoration: none;
+        color: var(--b-text);
+        transition: border-color var(--b-duration) var(--b-easing);
+
+        &:hover {
+            border-color: var(--b-primary);
+        }
+    }
+
+    &__related-title {
+        display: block;
+        font-weight: var(--b-weight-semibold);
+        font-size: var(--b-text-18);
+        color: var(--b-primary);
+        margin-bottom: var(--b-space-4);
+    }
+
+    &__related-lede {
+        display: block;
+        font-size: var(--b-text-14);
+        color: var(--b-text-soft);
+        line-height: var(--b-line-base);
+    }
+
+    &__related-up {
+        margin: var(--b-space-20) 0 0;
+        font-size: var(--b-text-14);
+
+        a {
+            color: var(--b-primary);
+            text-decoration: none;
+            &:hover { text-decoration: underline; }
+        }
+    }
+
+    &__cta {
+        margin-top: var(--b-space-64);
+        padding: var(--b-space-32);
+        text-align: center;
+        background: var(--b-primary);
+        color: var(--b-text-on-dark);
+        border-radius: var(--b-radius-xl);
+
+        h2 {
+            color: var(--b-text-on-dark);
+            margin-top: 0;
+        }
+
+        p {
+            font-size: var(--b-text-18);
+            opacity: 0.92;
+            margin-bottom: var(--b-space-24);
+        }
+    }
+}
+
+// ─── stat-grid (가이드 내부 보조 카드) ─────────────────────────────
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--b-space-20);
+
+    &__card {
+        text-align: center;
+        padding: var(--b-space-20);
+        background: var(--b-surface);
+        border-radius: var(--b-radius-md);
+    }
+
+    &__figure {
+        font-size: var(--b-text-32);
+        font-weight: var(--b-weight-extrabold);
+        color: var(--b-primary);
+        line-height: var(--b-line-tight);
+    }
+
+    &__label {
+        display: block;
+        margin-top: var(--b-space-8);
+        font-size: var(--b-text-14);
+        color: var(--b-text-soft);
+    }
+}

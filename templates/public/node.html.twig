@@ -4,12 +4,18 @@
 {% set region_label = node.region ? node.region.name : '' %}
 {% set theme_label = node.theme.name %}
 {% set keyword = (region_label ~ ' ' ~ theme_label)|trim %}
+{% set is_guide = template.isGuide() %}
 
 {% block title %}{{ keyword }} 강사 추천 — 전화 한 통이면 충분{% endblock %}
 {% block description %}{{ node.introText|default('')|striptags|slice(0, 160) }}{% endblock %}
 {% block canonical %}<link rel="canonical" href="{{ abs_url }}">{% endblock %}
 
 {% block content %}
+    {% if is_guide %}
+        {% include 'public/_guide.html.twig' %}
+        <script type="application/ld+json">{{ json_ld|raw }}</script>
+        <script type="application/ld+json">{{ breadcrumbs_jsonld|raw }}</script>
+    {% else %}
     {# ─── BREADCRUMB ─────────────────────────────────────────────── #}
     <nav class="breadcrumb" aria-label="Breadcrumb">
         <ol class="breadcrumb__list">
@@ -160,6 +166,30 @@
         </section>
     {% endif %}
 
+    {# ─── 자식 테마 카드 (예: /guides/ → 가이드 3종) ────────────── #}
+    {% if theme_children is not empty %}
+        <section class="section">
+            <div class="section__inner">
+                <header class="section__header">
+                    <span class="section__eyebrow">읽을거리</span>
+                    <h2 class="section__title">{{ theme_label }} 카테고리의 페이지</h2>
+                </header>
+                <ul class="theme-children">
+                    {% for child in theme_children %}
+                        <li class="theme-children__item">
+                            <a class="theme-children__link" href="{{ urls.build(child) }}">
+                                <span class="theme-children__title">{{ child.theme.name }}</span>
+                                {% if child.introText %}
+                                    <span class="theme-children__lede">{{ child.introText|striptags|slice(0, 110) }}…</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+    {% endif %}
+
     {# ─── FAQ ────────────────────────────────────────────────────── #}
     {% if byKind.faq is not empty %}
         <section class="section section--alt">
@@ -208,4 +238,5 @@
     {# JSON-LD (서버 사이드 생성, 실행 JS 아님) — Article + BreadcrumbList #}
     <script type="application/ld+json">{{ json_ld|raw }}</script>
     <script type="application/ld+json">{{ breadcrumbs_jsonld|raw }}</script>
+    {% endif %}
 {% endblock %}

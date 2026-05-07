@@ -2,7 +2,52 @@
 // feature-grid — "왜 우리인가" 카드
 // listing — 제공 항목 리스트 (과목, 학교 등)
 // callout — 강조 문장 (비교 데이터)
+// theme-children — 자식 테마 노드 카드 (예: /guides/ → 개별 가이드들)
 // =============================================================================
+
+.theme-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--b-space-20);
+
+    &__item { margin: 0; }
+
+    &__link {
+        display: block;
+        height: 100%;
+        padding: var(--b-space-24);
+        background: var(--b-surface);
+        border: 1px solid var(--b-border-soft);
+        border-radius: var(--b-radius-lg);
+        text-decoration: none;
+        color: var(--b-text);
+        transition: border-color var(--b-duration) var(--b-easing),
+                    transform var(--b-duration) var(--b-easing);
+
+        &:hover {
+            border-color: var(--b-primary);
+            transform: translateY(-2px);
+        }
+    }
+
+    &__title {
+        display: block;
+        font-size: var(--b-text-20);
+        font-weight: var(--b-weight-semibold);
+        color: var(--b-primary);
+        margin-bottom: var(--b-space-8);
+    }
+
+    &__lede {
+        display: block;
+        font-size: var(--b-text-14);
+        color: var(--b-text-soft);
+        line-height: var(--b-line-base);
+    }
+}
 
 // -----------------------------------------------------------------------------
 // feature-grid

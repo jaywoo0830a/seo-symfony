@@ -16,9 +16,14 @@ use App\Repository\ThemeRepository;
  *
  * URL is the inverse of UrlBuilder:
  *   /{theme-slug}/                          → (theme, region=null)
+ *   /{theme-slug}/{child-theme}/            → (child-theme, region=null)   — guides
  *   /{theme-slug}/{sido}/                   → (theme, sido)
  *   /{theme-slug}/{sido}/{sigungu}/         → (theme, sigungu)
  *   /{theme-slug}/{sido}/{sigungu}/{dong}/  → (theme, dong)
+ *
+ * Theme descent is greedy: keep matching child-theme slugs until one fails, then
+ * the remainder is the region path. Theme slugs and sido slugs don't collide in
+ * practice (sido = "seoul", child theme = "how-to-choose-tutor").
  *
  * Status filtering is the caller's job — this resolver just locates the row.
  */
@@ -42,7 +47,18 @@ final class PathResolver
             return null;
         }
 
-        $regionSegments = array_slice($segments, 1);
+        // Greedy theme descent: while the next segment matches a child of the current
+        // theme, keep walking. Once it doesn't, the remainder is region path.
+        $consumed = 1;
+        for ($n = count($segments); $consumed < $n; $consumed++) {
+            $child = $this->themes->findOneBy(['slug' => $segments[$consumed], 'parent' => $theme]);
+            if ($child === null) {
+                break;
+            }
+            $theme = $child;
+        }
+
+        $regionSegments = array_slice($segments, $consumed);
         $region = $this->walkRegionTree($regionSegments);
         if (count($regionSegments) > 0 && $region === null) {
             return null;

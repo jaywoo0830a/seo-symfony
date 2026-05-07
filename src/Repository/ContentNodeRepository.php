@@ -66,6 +66,69 @@ class ContentNodeRepository extends ServiceEntityRepository
     }
 
     /**
+     * Theme-tree children: nodes whose theme is a direct child of this node's theme,
+     * sharing the same region coordinate. Used for "navigate to sub-categories"
+     * (e.g. /guides/ → list of individual guides).
+     *
+     * @return list<ContentNode>
+     */
+    public function findThemeChildrenOf(ContentNode $node): array
+    {
+        $qb = $this->createQueryBuilder('n')
+            ->innerJoin('n.theme', 't')
+            ->addSelect('t')
+            ->where('t.parent = :parentTheme')
+            ->andWhere('n.status = :liveStatus')
+            ->setParameter('parentTheme', $node->getTheme())
+            ->setParameter('liveStatus', ContentStatus::Live)
+            ->orderBy('t.name', 'ASC');
+
+        if ($node->getRegion() === null) {
+            $qb->andWhere('n.region IS NULL');
+        } else {
+            $qb->andWhere('n.region = :region')
+                ->setParameter('region', $node->getRegion());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Theme-tree siblings: nodes whose theme is a sibling of this node's theme
+     * (same theme parent), same region coordinate, excluding self. Used for
+     * "other pages in this category" (e.g. one guide → other guides).
+     *
+     * @return list<ContentNode>
+     */
+    public function findThemeSiblingsOf(ContentNode $node): array
+    {
+        $themeParent = $node->getTheme()->getParent();
+        if ($themeParent === null) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('n')
+            ->innerJoin('n.theme', 't')
+            ->addSelect('t')
+            ->where('t.parent = :parentTheme')
+            ->andWhere('t != :selfTheme')
+            ->andWhere('n.status = :liveStatus')
+            ->setParameter('parentTheme', $themeParent)
+            ->setParameter('selfTheme', $node->getTheme())
+            ->setParameter('liveStatus', ContentStatus::Live)
+            ->orderBy('t.name', 'ASC');
+
+        if ($node->getRegion() === null) {
+            $qb->andWhere('n.region IS NULL');
+        } else {
+            $qb->andWhere('n.region = :region')
+                ->setParameter('region', $node->getRegion());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Live nodes for sitemap.xml generation.
      *
      * @return list<ContentNode>

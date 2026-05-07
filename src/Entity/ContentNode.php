@@ -45,6 +45,9 @@ class ContentNode
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $introText = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => 'Markdown body for guide templates; ignored by matrix templates'])]
+    private ?string $bodyMarkdown = null;
+
     #[ORM\Column(length: 20, enumType: BodyTemplate::class, nullable: true)]
     private ?BodyTemplate $bodyTemplate = null;
 
@@ -135,6 +138,17 @@ class ContentNode
     public function setIntroText(?string $introText): self
     {
         $this->introText = $introText;
+        return $this;
+    }
+
+    public function getBodyMarkdown(): ?string
+    {
+        return $this->bodyMarkdown;
+    }
+
+    public function setBodyMarkdown(?string $bodyMarkdown): self
+    {
+        $this->bodyMarkdown = $bodyMarkdown;
         return $this;
     }
 
