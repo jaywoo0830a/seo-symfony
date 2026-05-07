@@ -123,6 +123,38 @@
 }
 
 // -----------------------------------------------------------------------------
+// search-page — /admin/search 페이지 폼 (헤더 검색바와 별개로 결과 페이지에 노출)
+// -----------------------------------------------------------------------------
+
+.search-page {
+    display: flex;
+    gap: var(--space-8);
+    align-items: center;
+
+    &__input {
+        flex: 1 1 auto;
+        font-size: var(--text-16);
+        font-weight: var(--weight-regular);
+        color: var(--color-ink);
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-rule);
+        border-radius: var(--radius-md);
+        padding: var(--space-12) var(--space-16);
+        @include mixins.transition(border-color, box-shadow);
+
+        &::placeholder {
+            color: var(--color-faint);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--color-mark);
+            box-shadow: 0 0 0 3px var(--color-mark-soft);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
 // phase-meter — 단계별 진행 표시기
 // -----------------------------------------------------------------------------
 

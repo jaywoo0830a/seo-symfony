@@ -40,4 +40,20 @@ class RegionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<Region>
+     */
+    public function searchByText(string $query, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('LOWER(r.name) LIKE LOWER(:q) OR LOWER(r.slug) LIKE LOWER(:q) OR r.adminCode LIKE :q')
+            ->andWhere('r.depth >= 1')
+            ->setParameter('q', '%' . $query . '%')
+            ->orderBy('r.depth', 'ASC')
+            ->addOrderBy('r.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

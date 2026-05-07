@@ -1,0 +1,129 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}검색 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <header class="dashboard__header">
+            <h1 class="dashboard__title">검색</h1>
+            {% if query is empty %}
+                <p class="dashboard__subtitle">테마·지역·작성자·노드 이름 또는 노드 도입부에서 검색합니다.</p>
+            {% else %}
+                <p class="dashboard__subtitle">
+                    "<strong>{{ query }}</strong>" 검색 결과 · {{ totalCount }}건
+                </p>
+            {% endif %}
+        </header>
+
+        <form class="search-page" method="get" action="{{ path('admin_search') }}">
+            <input class="search-page__input"
+                   type="search"
+                   name="q"
+                   value="{{ query }}"
+                   placeholder="검색어"
+                   autofocus>
+            <button class="button button--primary" type="submit">검색</button>
+        </form>
+
+        {% if query is empty %}
+            {# 빈 상태 — 사용 안내만 #}
+        {% elseif totalCount == 0 %}
+            <div class="panel">
+                <div class="empty">
+                    <span class="empty__title">결과 없음</span>
+                    <span class="empty__hint">검색어를 줄이거나 다르게 표현해 보세요.</span>
+                </div>
+            </div>
+        {% else %}
+            {% if nodes is not empty %}
+                <section class="dashboard__section">
+                    <header class="dashboard__section-header">
+                        <h2 class="dashboard__section-title">노드</h2>
+                        <span class="dashboard__section-meta">{{ nodes|length }}건</span>
+                    </header>
+                    <ul class="tree">
+                        {% for node in nodes %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
+                                        {{ node.theme.name }}{% if node.region %} · {{ node.region.name }}{% else %} · 허브{% endif %}
+                                    </a>
+                                </span>
+                                <span class="tree__meta">
+                                    {{ node.status.value }} · 검증 {{ node.dataCount }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if themes is not empty %}
+                <section class="dashboard__section">
+                    <header class="dashboard__section-header">
+                        <h2 class="dashboard__section-title">테마</h2>
+                        <span class="dashboard__section-meta">{{ themes|length }}건</span>
+                    </header>
+                    <ul class="tree">
+                        {% for theme in themes %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <a class="tree__name" href="{{ path('admin_themes_show', {id: theme.id}) }}">
+                                        {{ theme.name }}
+                                    </a>
+                                </span>
+                                <span class="tree__meta">{{ theme.slug }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if regions is not empty %}
+                <section class="dashboard__section">
+                    <header class="dashboard__section-header">
+                        <h2 class="dashboard__section-title">지역</h2>
+                        <span class="dashboard__section-meta">{{ regions|length }}건</span>
+                    </header>
+                    <ul class="tree">
+                        {% for region in regions %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <a class="tree__name" href="{{ path('admin_regions_show', {id: region.id}) }}">
+                                        {{ region.name }}
+                                    </a>
+                                </span>
+                                <span class="tree__meta">
+                                    depth {{ region.depth }}{% if region.adminCode %} · {{ region.adminCode }}{% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if authors is not empty %}
+                <section class="dashboard__section">
+                    <header class="dashboard__section-header">
+                        <h2 class="dashboard__section-title">작성자</h2>
+                        <span class="dashboard__section-meta">{{ authors|length }}건</span>
+                    </header>
+                    <ul class="tree">
+                        {% for author in authors %}
+                            <li class="tree__item">
+                                <span class="tree__label">
+                                    <a class="tree__name" href="{{ path('admin_authors_show', {id: author.id}) }}">
+                                        {{ author.realName }}
+                                    </a>
+                                </span>
+                                <span class="tree__meta">
+                                    {{ author.slug }}{% if author.verifiedAt %} · 검증됨{% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

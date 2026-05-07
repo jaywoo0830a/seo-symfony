@@ -49,6 +49,40 @@
         text-transform: uppercase;
     }
 
+    &__search {
+        flex: 1 1 240px;
+        min-width: 0;
+        max-width: 320px;
+    }
+
+    &__search-input {
+        width: 100%;
+        font-size: var(--text-14);
+        font-weight: var(--weight-regular);
+        color: var(--color-ink);
+        background-color: var(--color-tint);
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
+        padding: var(--space-8) var(--space-12);
+        @include mixins.transition(background-color, border-color, box-shadow);
+
+        &::placeholder {
+            color: var(--color-faint);
+        }
+
+        &:hover {
+            background-color: var(--color-surface);
+            border-color: var(--color-rule);
+        }
+
+        &:focus {
+            outline: none;
+            background-color: var(--color-surface);
+            border-color: var(--color-mark);
+            box-shadow: 0 0 0 3px var(--color-mark-soft);
+        }
+    }
+
     &__nav {
         display: flex;
         flex-wrap: wrap;

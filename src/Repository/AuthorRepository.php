@@ -34,4 +34,18 @@ class AuthorRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<Author>
+     */
+    public function searchByText(string $query, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('LOWER(a.realName) LIKE LOWER(:q) OR LOWER(a.slug) LIKE LOWER(:q)')
+            ->setParameter('q', '%' . $query . '%')
+            ->orderBy('a.realName', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -34,4 +34,19 @@ class ThemeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<Theme>
+     */
+    public function searchByText(string $query, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('LOWER(t.name) LIKE LOWER(:q) OR LOWER(t.slug) LIKE LOWER(:q)')
+            ->setParameter('q', '%' . $query . '%')
+            ->orderBy('t.depth', 'ASC')
+            ->addOrderBy('t.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

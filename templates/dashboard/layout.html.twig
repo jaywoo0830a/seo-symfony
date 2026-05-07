@@ -29,6 +29,14 @@
                 <a class="layout__brand" href="{{ path('admin_dashboard') }}">
                     <span class="layout__brand-name">SEO 대시보드</span>
                 </a>
+                <form class="layout__search" method="get" action="{{ path('admin_search') }}" role="search">
+                    <input class="layout__search-input"
+                           type="search"
+                           name="q"
+                           value="{{ app.request.query.get('q')|default('') }}"
+                           placeholder="검색…"
+                           aria-label="검색">
+                </form>
                 <nav class="layout__nav">
                     {% for item in nav %}
                         <a class="layout__nav-link{{ app.current_route == item.route or app.current_route starts with item.route ~ '_' ? ' layout__nav-link--current' }}"

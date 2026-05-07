@@ -150,4 +150,26 @@ class ContentNodeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * Searches across joined theme name, region name, and node intro_text.
+     *
+     * @return list<ContentNode>
+     */
+    public function searchByText(string $query, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('n')
+            ->leftJoin('n.theme', 't')
+            ->leftJoin('n.region', 'r')
+            ->addSelect('t', 'r')
+            ->where('LOWER(t.name) LIKE LOWER(:q)')
+            ->orWhere('LOWER(r.name) LIKE LOWER(:q)')
+            ->orWhere('LOWER(n.introText) LIKE LOWER(:q)')
+            ->setParameter('q', '%' . $query . '%')
+            ->orderBy('n.theme', 'ASC')
+            ->addOrderBy('r.depth', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }
