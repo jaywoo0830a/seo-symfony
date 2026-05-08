@@ -291,4 +291,4 @@ Year 2 시작 시점에 *이 영역들이 필요한지* 평가하고, 필요하�
 - [03. publish-gate-design.md](03-publish-gate-design.md) — DB 트리거 방어선
 - [04. page-system-architecture.md](04-page-system-architecture.md) — 디스패처 + 오버라이드
 - [OPERATIONS.md](../../OPERATIONS.md) — 운영자의 일일/주간/분기 루틴
-- [CUSTOMIZATION.md](../../CUSTOMIZATION.md) — 입양/확장 가이드
+- [docs/contribution/](../contribution/) — 입양/확장 가이드

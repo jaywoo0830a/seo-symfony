@@ -44,7 +44,7 @@
 | 문서 | 독자 | 용도 |
 |---|---|---|
 | [docs/dev/](../dev/) | 개발자 | 왜 이렇게 설계됐는가 |
-| [CUSTOMIZATION.md](../../CUSTOMIZATION.md) | 개발자 (입양/확장) | 어디를 만져야 하는가 |
+| [docs/contribution/](../contribution/) | 개발자 (입양/확장) | 어디를 만져야 하는가 |
 | [OPERATIONS.md](../../OPERATIONS.md) | 운영자 (어드민) | 오늘 무엇을 해야 하는가 |
 | **본 디렉토리** | **LLM** | **시스템 룰 빠른 조회** |
 

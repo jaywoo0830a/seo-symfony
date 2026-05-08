@@ -283,7 +283,7 @@ templates/public/hubs/
 6. **폼 라벨** — `ContentNodeType.php`의 `choice_label` match에 추가
 7. **시드** (선택) — `SeedDemoCommand.php`에 데모 추가
 
-이 *7단계 프로토콜*이 [CUSTOMIZATION.md §4](../../CUSTOMIZATION.md)에 운영자용으로 정리되어 있습니다.
+이 *7단계 프로토콜*이 [docs/contribution/04-content-types.md §5](../contribution/04-content-types.md#5-새-콘텐츠-타입-추가하기)에 운영자용으로 정리되어 있습니다.
 
 ## 11. 다음 문서
 

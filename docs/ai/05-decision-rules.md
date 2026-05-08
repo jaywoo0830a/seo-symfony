@@ -368,4 +368,4 @@ dead:
 - 콘텐츠 타입: [04-content-types.md](04-content-types.md)
 - 용어 매핑: [06-vocabulary.md](06-vocabulary.md)
 - 운영자 워크플로우: [OPERATIONS.md](../../OPERATIONS.md)
-- 입양/확장: [CUSTOMIZATION.md](../../CUSTOMIZATION.md)
+- 입양/확장: [docs/contribution/](../contribution/)

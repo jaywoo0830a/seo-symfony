@@ -373,7 +373,7 @@ php bin/console doctrine:migrations:migrate
 
 ### Day 1~3 — 시스템 이해
 
-- [ ] [CUSTOMIZATION.md](CUSTOMIZATION.md) 정독 (구조 이해)
+- [ ] [docs/contribution/](docs/contribution/) 정독 (구조 이해)
 - [ ] [/admin/matrix](http://localhost:8000/admin/matrix) 둘러보기 (현 상태 파악)
 - [ ] DataPoint 1건 직접 추가 + 검증 (워크플로우 체험)
 - [ ] 시드 데이터로 *어떤 페이지가 나오는지* 17개 URL 직접 방문
