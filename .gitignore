@@ -25,3 +25,7 @@
 /assets/styles/brand.css
 /assets/styles/brand.css.map
 /node_modules/
+
+# docker stack secrets (committed: run/*/.env.example, run/*/compose.yaml etc.)
+/run/*/.env
+/run/*/.env.local

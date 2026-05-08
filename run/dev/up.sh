@@ -11,8 +11,9 @@ fi
 
 # Pass host UID/GID to the build so files written by the container (var/cache,
 # vendor, node_modules) are owned by the developer on disk.
-export UID="${UID:-$(id -u)}"
-export GID="${GID:-$(id -g)}"
+# (bash makes UID/GID readonly, so we use HOST_UID/HOST_GID and remap inside compose.)
+export HOST_UID="$(id -u)"
+export HOST_GID="$(id -g)"
 
 # Source .env if present so HTTP_PORT / POSTGRES_PORT overrides apply.
 if [[ -f .env ]]; then

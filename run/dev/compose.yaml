@@ -1,7 +1,7 @@
 name: seo-symfony-dev
 
-x-uid: &uid ${UID:-1000}
-x-gid: &gid ${GID:-1000}
+x-uid: &uid ${HOST_UID:-1000}
+x-gid: &gid ${HOST_GID:-1000}
 
 services:
   nginx:
@@ -44,7 +44,7 @@ services:
   node:
     image: node:24-alpine
     working_dir: /app
-    user: "${UID:-1000}:${GID:-1000}"
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     command: sh -c "npm install --no-audit --no-fund && npm run watch"
     volumes:
       - ../..:/app
