@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('styles/brand.css') }}">
 </head>
 <body>
-    {# 상단 sticky 전화 바 #}
+    {# 상단 sticky CTA 바 — navbar 슬롯은 페이지 컨텍스트와 무관하게 항상 글로벌 CTA. #}
     <header class="phone-bar">
         <div class="phone-bar__inner">
             <a class="phone-bar__brand" href="{{ path('public_home') }}">{{ brand_public_name() }}</a>
@@ -21,10 +21,7 @@
                     <a class="phone-bar__nav-link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
                 {% endfor %}
             </nav>
-            <a class="phone-bar__cta" href="{{ brand_phone_link() }}">
-                <span class="phone-bar__cta-icon" aria-hidden="true">📞</span>
-                <span>{{ brand_phone() }}</span>
-            </a>
+            {% include 'public/_partials/cta/_button.html.twig' with { cta: cta('navbar'), variant: 'navbar' } only %}
         </div>
     </header>
 

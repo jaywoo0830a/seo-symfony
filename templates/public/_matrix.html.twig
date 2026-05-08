@@ -26,6 +26,7 @@
     title_tail: region_label ? ' ' ~ theme_label : '',
     lede: node.introText,
     stats: _hero_stats,
+    body_template: template,
 } only %}
 
 {% include 'public/_partials/callouts.html.twig' with {
@@ -49,4 +50,5 @@
 
 {% include 'public/_partials/final_cta.html.twig' with {
     eyebrow: (region_label ?: '전국') ~ ' ' ~ theme_label,
+    body_template: template,
 } only %}

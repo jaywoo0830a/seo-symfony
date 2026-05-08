@@ -1,0 +1,188 @@
+// =============================================================================
+// CTA 폼 — final-cta 블록 안에 임베드되는 상담/문의 폼.
+//
+// Symfony Form의 기본 렌더(div > label + input)에 맞춰 selector 작성.
+// final-cta는 dark 배경이라 입력값/라벨은 light 톤으로.
+// =============================================================================
+
+.cta-form {
+    width: 100%;
+    max-width: 32rem;
+    margin: 0 auto;
+    text-align: left;
+
+    // ─── honeypot — 봇 차단용 hidden 필드. 사용자/스크린리더에 노출 X ────
+    // (display:none은 일부 봇이 우회하므로, 시각만 격리시키되 위치를 무한대로)
+    &__honeypot {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    // ─── 폼 본체 — Symfony가 출력하는 div > label + control 래퍼 ────────
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--b-space-16);
+    }
+
+    // 각 form_row (label + input wrapper). Symfony 기본 테마는 단순 div.
+    // 체크박스/제출 행은 아래에서 별도 처리.
+    &__form > div {
+        display: flex;
+        flex-direction: column;
+        gap: var(--b-space-8);
+    }
+
+    // ─── 라벨 ───────────────────────────────────────────────────────────
+    label {
+        font-size: var(--b-text-14);
+        font-weight: var(--b-weight-medium);
+        color: var(--b-ink-200);
+        letter-spacing: -0.005em;
+    }
+
+    // 필수 표시 (Symfony가 자동으로 .required 추가)
+    label.required::after {
+        content: ' *';
+        color: var(--b-accent-400);
+    }
+
+    // ─── 입력 컨트롤 ────────────────────────────────────────────────────
+    input[type='text'],
+    input[type='tel'],
+    input[type='email'],
+    textarea {
+        width: 100%;
+        padding: var(--b-space-12) var(--b-space-16);
+        font-size: var(--b-text-16);
+        font-family: inherit;
+        line-height: var(--b-line-base);
+        color: var(--b-text-on-dark);
+        background-color: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--b-radius-md);
+        transition: border-color var(--b-duration) var(--b-easing),
+                    background-color var(--b-duration) var(--b-easing),
+                    box-shadow var(--b-duration) var(--b-easing);
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        &:hover {
+            border-color: rgba(255, 255, 255, 0.30);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--b-accent-400);
+            background-color: rgba(255, 255, 255, 0.10);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.25);
+        }
+    }
+
+    textarea {
+        min-height: 5.5rem;
+        resize: vertical;
+    }
+
+    // ─── 동의 체크박스 행 — 체크박스 + 라벨을 가로로 ───────────────────
+    // Symfony는 checkbox row도 동일하게 div > input + label로 출력.
+    // :has로 체크박스 포함 행을 잡아 가로 정렬.
+    &__form > div:has(input[type='checkbox']) {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--b-space-12);
+        margin-top: var(--b-space-8);
+
+        input[type='checkbox'] {
+            flex-shrink: 0;
+            width: 1.125rem;
+            height: 1.125rem;
+            accent-color: var(--b-cta);
+            cursor: pointer;
+        }
+
+        label {
+            margin: 0;
+            font-size: var(--b-text-13);
+            color: var(--b-ink-300);
+            cursor: pointer;
+        }
+    }
+
+    // ─── 제출 버튼 행 — .cta--primary 스타일을 button에 직접 적용 ───────
+    &__form > div:has(button[type='submit']) {
+        align-items: center;
+        margin-top: var(--b-space-16);
+    }
+
+    button[type='submit'] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--b-space-12);
+        padding: var(--b-space-16) var(--b-space-48);
+        font-size: var(--b-text-18);
+        font-weight: var(--b-weight-bold);
+        font-family: inherit;
+        line-height: 1.2;
+        color: var(--b-text-on-dark);
+        background-color: var(--b-cta);
+        border: 2px solid var(--b-cta);
+        border-radius: var(--b-radius-full);
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+        box-shadow: var(--b-shadow-md);
+        transition: background-color var(--b-duration) var(--b-easing),
+                    border-color var(--b-duration) var(--b-easing),
+                    transform var(--b-duration) var(--b-easing),
+                    box-shadow var(--b-duration) var(--b-easing);
+
+        &:hover {
+            background-color: var(--b-cta-hover);
+            border-color: var(--b-cta-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--b-shadow-lg), var(--b-shadow-glow);
+        }
+
+        &:focus-visible {
+            outline: 3px solid var(--b-accent-300);
+            outline-offset: 3px;
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    // ─── hint (폼 아래 안내 문구) ──────────────────────────────────────
+    &__hint {
+        margin: var(--b-space-16) 0 0;
+        text-align: center;
+        font-size: var(--b-text-14);
+        color: var(--b-ink-400);
+    }
+
+    // ─── 검증 에러 메시지 (Symfony는 ul.list-unstyled를 출력) ───────────
+    ul {
+        margin: 0;
+        padding-left: var(--b-space-16);
+        list-style: none;
+
+        li {
+            font-size: var(--b-text-13);
+            color: var(--b-accent-300);
+
+            &::before {
+                content: '⚠ ';
+            }
+        }
+    }
+}

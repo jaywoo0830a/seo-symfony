@@ -158,12 +158,17 @@
         </section>
     {% endif %}
 
+    {# 가이드 final CTA — body_template 기준으로 폼/전화 분기. 가이드 변종은 cta.yaml에서 form. #}
+    {% set _guide_cta = cta('final', template) %}
     <section class="guide__cta">
-        <h2 class="guide__h2">전화 한 통이면 충분합니다</h2>
-        <p>지역·과목·예산을 알려주시면 검증된 강사 후보 3명을 5분 안에 추천드립니다.</p>
-        <a class="cta cta--primary cta--lg" href="{{ brand_phone_link() }}">
-            <span class="cta__icon" aria-hidden="true">📞</span>
-            <span>{{ brand_phone() }} 지금 전화하기</span>
-        </a>
+        <h2 class="guide__h2">
+            {{- _guide_cta.type.value == 'form' ? '맞춤 추천 받기' : '전화 한 통이면 충분합니다' -}}
+        </h2>
+        <p>
+            {{- _guide_cta.type.value == 'form'
+                ? '체크리스트를 그대로 들고 상담받고 싶다면, 아래 폼을 채워주세요. 평일 24시간 내 회신.'
+                : '지역·과목·예산을 알려주시면 검증된 강사 후보 3명을 5분 안에 추천드립니다.' -}}
+        </p>
+        {% include 'public/_partials/cta/_block_body.html.twig' with { cta: _guide_cta } only %}
     </section>
 </article>

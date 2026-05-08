@@ -1,13 +1,18 @@
 {# Hero — 모든 인자는 선택. 미전달 시 안전한 디폴트로 폴백.
-   args: eyebrow, title_main, title_highlight, title_tail, lede, cta_label, assurance, stats #}
+   args: eyebrow, title_main, title_highlight, title_tail, lede, cta_label, assurance, stats, body_template
+
+   body_template (BodyTemplate enum)이 전달되면 hero 슬롯 CTA를 그 타입 기준으로 결정.
+   미전달이면 글로벌 안전망(brand_phone)이 채택됨.
+#}
 {% set eyebrow = eyebrow is defined ? eyebrow : '' %}
 {% set title_main = title_main is defined ? title_main : '' %}
 {% set title_highlight = title_highlight is defined ? title_highlight : '' %}
 {% set title_tail = title_tail is defined ? title_tail : '' %}
 {% set lede = lede is defined ? lede : '' %}
-{% set cta_label = cta_label is defined ? cta_label : '' %}
 {% set assurance = assurance is defined ? assurance : '' %}
 {% set stats = stats is defined ? stats : [] %}
+{% set body_template = body_template is defined ? body_template : null %}
+{% set _cta = cta('hero', body_template) %}
 
 <section class="hero">
     <div class="hero__inner">
@@ -20,10 +25,7 @@
             </h1>
             {% if lede %}<p class="hero__lede">{{ lede }}</p>{% endif %}
             <div class="hero__actions">
-                <a class="cta cta--primary cta--lg" href="{{ brand_phone_link() }}">
-                    <span class="cta__icon" aria-hidden="true">📞</span>
-                    <span>{{ cta_label ?: brand_phone() ~ ' 지금 전화하기' }}</span>
-                </a>
+                {% include 'public/_partials/cta/_button.html.twig' with { cta: _cta, variant: 'primary' } only %}
                 {% if assurance %}<span class="hero__assurance">{{ assurance }}</span>{% endif %}
             </div>
         </div>

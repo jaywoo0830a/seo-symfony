@@ -1,24 +1,32 @@
-{# Final phone CTA — args: eyebrow, title, lede #}
+{# Final CTA — 페이지 마지막 CTA 블록.
+   args: eyebrow, title, lede, body_template
+
+   body_template (BodyTemplate enum)이 전달되면 final 슬롯 CTA를 그 타입 기준으로 결정.
+   결정된 CTA의 label/lede/assurances/hint를 우선 사용하되, 호출자가 명시한 값이 있으면 덮어쓰기.
+#}
+{% set body_template = body_template is defined ? body_template : null %}
+{% set _cta = cta('final', body_template) %}
+
 {% set eyebrow = eyebrow is defined ? eyebrow : '' %}
-{% set title = title is defined ? title : '전화 한 통이면 끝납니다' %}
-{% set lede = lede is defined ? lede : '지역·과목·예산을 알려주시면 검증된 강사 후보 3명을 5분 안에 추천드립니다. 통화는 무료, 매칭은 비용 없음.' %}
+{% set title = title is defined ? title : (_cta.type.value == 'form' ? '지금 바로 신청하세요' : '전화 한 통이면 끝납니다') %}
+{% set lede = lede is defined ? lede : (_cta.type.value == 'form'
+    ? '아래 폼을 채워주시면 평일 24시간 내 담당자가 연락드립니다.'
+    : '지역·과목·예산을 알려주시면 검증된 강사 후보 3명을 5분 안에 추천드립니다. 통화는 무료, 매칭은 비용 없음.') %}
 
 <section class="final-cta">
     <div class="final-cta__inner">
         {% if eyebrow %}<span class="final-cta__eyebrow">{{ eyebrow }}</span>{% endif %}
         <h2 class="final-cta__title">{{ title }}</h2>
         <p class="final-cta__lede">{{ lede }}</p>
-        <div class="final-cta__phone-block">
-            <a class="final-cta__phone-link" href="{{ brand_phone_link() }}">
-                <span class="final-cta__phone-icon" aria-hidden="true">📞</span>
-                <span>{{ brand_phone() }}</span>
-            </a>
-            <span class="final-cta__hint">{{ brand_phone_hours() }}</span>
-        </div>
-        <div class="final-cta__assurances">
-            <span class="final-cta__assurance">상담 비용 없음</span>
-            <span class="final-cta__assurance">매칭 후 환불 보장</span>
-            <span class="final-cta__assurance">강사 신원 100% 검증</span>
-        </div>
+
+        {% include 'public/_partials/cta/_block_body.html.twig' with { cta: _cta } only %}
+
+        {% if _cta.assurances is not empty %}
+            <div class="final-cta__assurances">
+                {% for a in _cta.assurances %}
+                    <span class="final-cta__assurance">{{ a }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </section>

@@ -28,6 +28,7 @@
     lede: node.introText,
     assurance: '5분 안에 강사 후보 3명 추천',
     stats: _hero_stats,
+    body_template: template,
 } only %}
 
 {% include 'public/_partials/feature_grid.html.twig' with {
@@ -56,4 +57,5 @@
 
 {% include 'public/_partials/final_cta.html.twig' with {
     eyebrow: (region_label ?: '전국') ~ ' ' ~ theme_label ~ ' 매칭',
+    body_template: template,
 } only %}

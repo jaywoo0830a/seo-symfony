@@ -1,0 +1,57 @@
+{# final_cta 블록 안쪽 본문(전화-링크 박스 또는 폼 임베드). 외곽(eyebrow/title/lede/assurances)은
+   final_cta.html.twig가 담당.
+   args:
+     cta — Cta 객체
+#}
+{% if cta.type.value == 'phone' %}
+    <div class="final-cta__phone-block">
+        <a class="final-cta__phone-link" href="tel:{{ cta.payload.phone }}">
+            <span class="final-cta__phone-icon" aria-hidden="true">📞</span>
+            <span>{{ cta.payload.phone }}</span>
+        </a>
+        {% if cta.hint %}<span class="final-cta__hint">{{ cta.hint }}</span>{% endif %}
+    </div>
+
+{% elseif cta.type.value == 'form' %}
+    {% set form_view = cta_form_view(cta.payload.form) %}
+    <div class="cta-form" id="cta-form-{{ cta.payload.form }}">
+        {{ form_start(form_view, { action: path('cta_submit', { form: cta.payload.form }), attr: { class: 'cta-form__form', novalidate: 'novalidate' } }) }}
+            {# form_widget(form_view)는 root에 wrapper div를 추가해 셀렉터 깊이가 어긋남.
+               각 행을 명시 호출해 form의 직접 자식이 row가 되도록. _token은 form_end가 자동 포함. #}
+            {{ form_row(form_view.name) }}
+            {{ form_row(form_view.phone) }}
+            {{ form_row(form_view.region) }}
+            {{ form_row(form_view.memo) }}
+            {{ form_row(form_view.hp) }}
+            {{ form_row(form_view.agree) }}
+            {{ form_row(form_view.submit) }}
+        {{ form_end(form_view) }}
+        {% if cta.hint %}<p class="cta-form__hint">{{ cta.hint }}</p>{% endif %}
+    </div>
+
+{% elseif cta.type.value == 'external' %}
+    <div class="final-cta__phone-block">
+        <a class="cta cta--primary cta--lg" href="{{ cta.payload.url }}" rel="noopener" target="_blank">
+            <span>{{ cta.label }}</span>
+        </a>
+        {% if cta.hint %}<span class="final-cta__hint">{{ cta.hint }}</span>{% endif %}
+    </div>
+
+{% elseif cta.type.value == 'email' %}
+    <div class="final-cta__phone-block">
+        <a class="cta cta--primary cta--lg" href="mailto:{{ cta.payload.email }}">
+            <span class="cta__icon" aria-hidden="true">✉️</span>
+            <span>{{ cta.label ?: cta.payload.email }}</span>
+        </a>
+        {% if cta.hint %}<span class="final-cta__hint">{{ cta.hint }}</span>{% endif %}
+    </div>
+
+{% elseif cta.type.value == 'messenger' %}
+    <div class="final-cta__phone-block">
+        <a class="cta cta--primary cta--lg" href="{{ cta.payload.url }}" rel="noopener" target="_blank">
+            <span class="cta__icon" aria-hidden="true">💬</span>
+            <span>{{ cta.label }}</span>
+        </a>
+        {% if cta.hint %}<span class="final-cta__hint">{{ cta.hint }}</span>{% endif %}
+    </div>
+{% endif %}

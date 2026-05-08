@@ -4,6 +4,10 @@
 # Files in the packages/ subdirectory configure your dependencies.
 # See also https://symfony.com/doc/current/service_container/import.html
 
+imports:
+    # CTA 매핑 테이블 — slot × BodyTemplate → Cta. cta.config 파라미터로 노출.
+    - { resource: 'cta.yaml' }
+
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters: {}
@@ -19,6 +23,13 @@ services:
             string $brandPublicName: '%env(BRAND_PUBLIC_NAME)%'
             string $brandPhone: '%env(BRAND_PHONE)%'
             string $brandPhoneHours: '%env(BRAND_PHONE_HOURS)%'
+
+            # CTA 시스템 — config/cta.yaml의 매핑 테이블 + 알림 채널 토큰.
+            # 토큰이 비어있으면 notifier는 logger 스텁 모드로 동작.
+            array $ctaConfig: '%cta.config%'
+            string $telegramBotToken: '%env(default::CTA_TELEGRAM_BOT_TOKEN)%'
+            string $telegramChatId: '%env(default::CTA_TELEGRAM_CHAT_ID)%'
+            string $discordWebhookUrl: '%env(default::CTA_DISCORD_WEBHOOK_URL)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
