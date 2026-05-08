@@ -1,0 +1,47 @@
+{# @var pager \App\Util\Paginator #}
+{% set paramName = paramName|default('page') %}
+{% if pager.totalPages > 1 %}
+    {% set baseQuery = app.request.query.all() %}
+    <nav class="pager" aria-label="페이지 이동">
+        <span class="pager__meta">
+            {{ pager.firstIndex }}–{{ pager.lastIndex }} / 총 {{ pager.total }}
+        </span>
+        <ul class="pager__list">
+            <li>
+                {% if pager.hasPrev %}
+                    <a class="pager__link" rel="prev" href="?{{ baseQuery|merge({(paramName): pager.prevPage})|url_encode }}">‹ 이전</a>
+                {% else %}
+                    <span class="pager__link pager__link--disabled" aria-disabled="true">‹ 이전</span>
+                {% endif %}
+            </li>
+            {% if pager.range(2)|first > 1 %}
+                <li><a class="pager__link" href="?{{ baseQuery|merge({(paramName): 1})|url_encode }}">1</a></li>
+                {% if pager.range(2)|first > 2 %}
+                    <li><span class="pager__ellipsis" aria-hidden="true">…</span></li>
+                {% endif %}
+            {% endif %}
+            {% for n in pager.range(2) %}
+                <li>
+                    {% if n == pager.page %}
+                        <span class="pager__link pager__link--current" aria-current="page">{{ n }}</span>
+                    {% else %}
+                        <a class="pager__link" href="?{{ baseQuery|merge({(paramName): n})|url_encode }}">{{ n }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            {% if pager.range(2)|last < pager.totalPages %}
+                {% if pager.range(2)|last < pager.totalPages - 1 %}
+                    <li><span class="pager__ellipsis" aria-hidden="true">…</span></li>
+                {% endif %}
+                <li><a class="pager__link" href="?{{ baseQuery|merge({(paramName): pager.totalPages})|url_encode }}">{{ pager.totalPages }}</a></li>
+            {% endif %}
+            <li>
+                {% if pager.hasNext %}
+                    <a class="pager__link" rel="next" href="?{{ baseQuery|merge({(paramName): pager.nextPage})|url_encode }}">다음 ›</a>
+                {% else %}
+                    <span class="pager__link pager__link--disabled" aria-disabled="true">다음 ›</span>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+{% endif %}

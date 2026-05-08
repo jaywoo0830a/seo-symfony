@@ -11,7 +11,7 @@
             </div>
         </header>
 
-        {% if authors is empty %}
+        {% if pager.isEmpty %}
             <div class="panel">
                 <div class="empty">
                     <span class="empty__title">작성자가 없습니다</span>
@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for author in authors %}
+                    {% for author in pager.items %}
                         <tr>
                             <td>{{ author.realName }}</td>
                             <td><span class="data-table__muted">@{{ author.slug }}</span></td>
@@ -44,6 +44,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {{ include('dashboard/_pager.html.twig', {pager: pager}) }}
         {% endif %}
     </div>
 {% endblock %}

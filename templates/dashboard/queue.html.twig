@@ -12,9 +12,9 @@
         <section class="dashboard__section">
             <header class="dashboard__section-header">
                 <h2 class="dashboard__section-title">강등됨 (live → noindex)</h2>
-                <span class="dashboard__section-meta">{{ demoted|length }}건</span>
+                <span class="dashboard__section-meta">{{ demoted.total }}건</span>
             </header>
-            {% if demoted is empty %}
+            {% if demoted.isEmpty %}
                 <div class="panel">
                     <div class="empty">
                         <span class="empty__title">강등된 노드 없음</span>
@@ -23,7 +23,7 @@
                 </div>
             {% else %}
                 <ul class="tree">
-                    {% for node in demoted %}
+                    {% for node in demoted.items %}
                         <li class="tree__item">
                             <span class="tree__label">
                                 <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
@@ -37,15 +37,16 @@
                         </li>
                     {% endfor %}
                 </ul>
+                {{ include('dashboard/_pager.html.twig', {pager: demoted, paramName: 'demoted_page'}) }}
             {% endif %}
         </section>
 
         <section class="dashboard__section">
             <header class="dashboard__section-header">
                 <h2 class="dashboard__section-title">90일 초과</h2>
-                <span class="dashboard__section-meta">{{ overdue|length }}건</span>
+                <span class="dashboard__section-meta">{{ overdue.total }}건</span>
             </header>
-            {% if overdue is empty %}
+            {% if overdue.isEmpty %}
                 <div class="panel">
                     <div class="empty">
                         <span class="empty__title">대상 없음</span>
@@ -53,7 +54,7 @@
                 </div>
             {% else %}
                 <ul class="tree">
-                    {% for node in overdue %}
+                    {% for node in overdue.items %}
                         <li class="tree__item">
                             <span class="tree__label">
                                 <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
@@ -66,15 +67,16 @@
                         </li>
                     {% endfor %}
                 </ul>
+                {{ include('dashboard/_pager.html.twig', {pager: overdue, paramName: 'overdue_page'}) }}
             {% endif %}
         </section>
 
         <section class="dashboard__section">
             <header class="dashboard__section-header">
                 <h2 class="dashboard__section-title">60일 초과</h2>
-                <span class="dashboard__section-meta">{{ soon|length }}건</span>
+                <span class="dashboard__section-meta">{{ soon.total }}건</span>
             </header>
-            {% if soon is empty %}
+            {% if soon.isEmpty %}
                 <div class="panel">
                     <div class="empty">
                         <span class="empty__title">대상 없음</span>
@@ -82,7 +84,7 @@
                 </div>
             {% else %}
                 <ul class="tree">
-                    {% for node in soon %}
+                    {% for node in soon.items %}
                         <li class="tree__item">
                             <span class="tree__label">
                                 <a class="tree__name" href="{{ path('admin_nodes_show', {id: node.id}) }}">
@@ -95,6 +97,7 @@
                         </li>
                     {% endfor %}
                 </ul>
+                {{ include('dashboard/_pager.html.twig', {pager: soon, paramName: 'soon_page'}) }}
             {% endif %}
         </section>
     </div>

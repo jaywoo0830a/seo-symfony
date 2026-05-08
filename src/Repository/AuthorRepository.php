@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Author;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,6 +22,12 @@ class AuthorRepository extends ServiceEntityRepository
     public function findBySlug(string $slug): ?Author
     {
         return $this->findOneBy(['slug' => $slug]);
+    }
+
+    public function indexQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.realName', 'ASC');
     }
 
     /**

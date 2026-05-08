@@ -1,0 +1,74 @@
+// =============================================================================
+// Block: pager
+// 목록 페이지의 페이지네이션 컨트롤. 데이터 테이블/트리 아래에 붙는다.
+// =============================================================================
+
+@use 'mixins';
+
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+    margin-top: var(--space-16);
+    flex-wrap: wrap;
+
+    &__meta {
+        font-size: var(--text-12);
+        color: var(--color-soft);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__list {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    &__link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2rem;
+        padding: var(--space-4) var(--space-8);
+        font-size: var(--text-12);
+        font-weight: var(--weight-medium);
+        line-height: 1.4;
+        color: var(--color-soft);
+        background-color: var(--color-surface);
+        border: var(--rule);
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-variant-numeric: tabular-nums;
+        @include mixins.transition(background-color, border-color, color);
+
+        &:hover:not(.pager__link--disabled):not(.pager__link--current) {
+            color: var(--color-mark);
+            border-color: var(--color-mark);
+            background-color: var(--color-mark-soft);
+        }
+    }
+
+    &__link--current {
+        color: var(--color-on-mark);
+        background-color: var(--color-mark);
+        border-color: var(--color-mark);
+        cursor: default;
+    }
+
+    &__link--disabled {
+        color: var(--color-faint);
+        cursor: not-allowed;
+    }
+
+    &__ellipsis {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-4) var(--space-4);
+        font-size: var(--text-12);
+        color: var(--color-faint);
+    }
+}

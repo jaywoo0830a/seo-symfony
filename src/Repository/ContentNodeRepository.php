@@ -9,6 +9,7 @@ use App\Entity\Enum\ContentStatus;
 use App\Entity\Region;
 use App\Entity\Theme;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -146,12 +147,13 @@ class ContentNodeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Nodes due for refresh queue.
-     *
-     * @return list<ContentNode>
-     */
-    public function findStale(int $daysSinceReview = 90): array
+    public function indexQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('n')
+            ->orderBy('n.id', 'DESC');
+    }
+
+    public function staleQueryBuilder(int $daysSinceReview = 90): QueryBuilder
     {
         $cutoff = new \DateTimeImmutable(sprintf('-%d days', $daysSinceReview));
 
@@ -160,9 +162,26 @@ class ContentNodeRepository extends ServiceEntityRepository
             ->andWhere('n.lastReviewAt IS NULL OR n.lastReviewAt < :cutoff')
             ->setParameter('status', ContentStatus::Live)
             ->setParameter('cutoff', $cutoff)
-            ->orderBy('n.lastReviewAt', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('n.lastReviewAt', 'ASC');
+    }
+
+    public function demotedQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('n')
+            ->where('n.status = :status')
+            ->andWhere('n.firstPublishedAt IS NOT NULL')
+            ->setParameter('status', ContentStatus::Noindex)
+            ->orderBy('n.firstPublishedAt', 'DESC');
+    }
+
+    /**
+     * Nodes due for refresh queue.
+     *
+     * @return list<ContentNode>
+     */
+    public function findStale(int $daysSinceReview = 90): array
+    {
+        return $this->staleQueryBuilder($daysSinceReview)->getQuery()->getResult();
     }
 
     /**
@@ -175,13 +194,7 @@ class ContentNodeRepository extends ServiceEntityRepository
      */
     public function findDemoted(): array
     {
-        return $this->createQueryBuilder('n')
-            ->where('n.status = :status')
-            ->andWhere('n.firstPublishedAt IS NOT NULL')
-            ->setParameter('status', ContentStatus::Noindex)
-            ->orderBy('n.firstPublishedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        return $this->demotedQueryBuilder()->getQuery()->getResult();
     }
 
     public function countDemoted(): int
