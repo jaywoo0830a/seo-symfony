@@ -1,0 +1,20 @@
+{
+	email {$ACME_EMAIL:admin@localhost}
+}
+
+{$DOMAIN:localhost} {
+	root * /var/www/html/public
+	encode zstd gzip
+
+	@static path /assets/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	php_fastcgi php:9000
+
+	file_server
+
+	log {
+		output stdout
+		format console
+	}
+}

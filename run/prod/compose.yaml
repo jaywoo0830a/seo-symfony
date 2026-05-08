@@ -1,0 +1,78 @@
+name: seo-symfony-prod
+
+services:
+  caddy:
+    build:
+      context: ../..
+      dockerfile: run/prod/Dockerfile
+      target: caddy
+    image: seo-symfony/caddy:prod
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN must be set in run/prod/.env (use a real hostname or "localhost")}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    depends_on:
+      php:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+  php:
+    build:
+      context: ../..
+      dockerfile: run/prod/Dockerfile
+      target: php
+    image: seo-symfony/php:prod
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: "0"
+      APP_SECRET: ${APP_SECRET:?APP_SECRET must be set in run/prod/.env}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in run/prod/.env}@database:5432/${POSTGRES_DB:-app}?serverVersion=16&charset=utf8
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      MAILER_DSN: ${MAILER_DSN:-null://null}
+      DEFAULT_URI: ${DEFAULT_URI:-http://localhost}
+      BRAND_ADMIN_NAME: ${BRAND_ADMIN_NAME:-SEO 대시보드}
+      BRAND_PUBLIC_NAME: ${BRAND_PUBLIC_NAME:-SEO 사이트}
+      BRAND_PHONE: ${BRAND_PHONE:-1588-1234}
+      BRAND_PHONE_HOURS: ${BRAND_PHONE_HOURS:-평일 09:00 – 21:00 · 주말 10:00 – 18:00}
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    volumes:
+      - php_cache:/var/www/html/var
+
+  database:
+    image: postgres:16.13-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in run/prod/.env}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - app
+    volumes:
+      - database_data:/var/lib/postgresql/data
+
+volumes:
+  database_data:
+  php_cache:
+  caddy_data:
+  caddy_config:
+
+networks:
+  app:
