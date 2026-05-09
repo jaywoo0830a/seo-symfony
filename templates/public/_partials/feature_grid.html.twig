@@ -1,11 +1,14 @@
-{# Feature grid — args: eyebrow, title, lede, features #}
-{% set eyebrow = eyebrow is defined ? eyebrow : '왜 우리인가' %}
-{% set title = title is defined ? title : '검증된 사람만' %}
+{# Feature grid — args: eyebrow, title, lede, features
+
+   features는 호출자가 [{icon, title, body}, ...] 형태로 직접 전달하는 것을 권장.
+   기본값은 플레이스홀더 — 도메인에 맞게 호출자에서 override하거나 이 파일의 디폴트를 수정하세요. #}
+{% set eyebrow = eyebrow is defined ? eyebrow : '특징' %}
+{% set title = title is defined ? title : '주요 특징' %}
 {% set lede = lede is defined ? lede : '' %}
 {% set features = features is defined ? features : [
-    {icon: '✓', title: '신원·자격 100% 검증', body: '학력 증빙·자격증·신분증을 모두 확인하며, 인증 마크가 표시된 강사만 매칭됩니다.'},
-    {icon: '⚡', title: '5분 매칭, 비용 0원', body: '전화 한 통으로 지역·과목·예산을 알려주시면 후보 3명을 즉시 추천드립니다. 매칭 비용 없음.'},
-    {icon: '🛡', title: '맞지 않으면 환불', body: '첫 수업 후 마음에 들지 않으면 100% 환불해드립니다. 후속 수업에 부담 없도록.'},
+    {icon: '✓', title: '특징 1', body: '도메인에 맞는 설명을 입력하세요.'},
+    {icon: '⚡', title: '특징 2', body: '도메인에 맞는 설명을 입력하세요.'},
+    {icon: '🛡', title: '특징 3', body: '도메인에 맞는 설명을 입력하세요.'},
 ] %}
 
 <section class="section">

@@ -7,34 +7,35 @@
 #   final  : 페이지 하단 마무리 영역 (전체 블록 — 폼 임베드 가능)
 #
 # 룰 매칭:
-#   match에 fnmatch 패턴 사용. 'guide_*' 같은 와일드카드 가능.
+#   match에 fnmatch 패턴 사용. 'guide' 같은 정확 일치, 와일드카드도 가능.
 #   첫 매칭 룰이 채택됨 (위에서 아래로 평가).
 #   '*' 는 모든 BodyTemplate에 매치 (안전망).
+#
+# 라벨/assurance/hint는 *플레이스홀더*입니다. 자신의 도메인에 맞게 교체하세요.
 
 parameters:
   cta.config:
     ctas:
       brand_phone:
         type: phone
-        label: '지금 상담받기'
+        label: '지금 문의하기'
         payload:
           phone: '%env(BRAND_PHONE)%'
         hint: '%env(BRAND_PHONE_HOURS)%'
         assurances:
-          - '상담 비용 없음'
-          - '매칭 후 환불 보장'
-          - '강사 신원 100% 검증'
+          - '문의 무료'
+          - '평일 24시간 내 회신'
 
       guide_consult_form:
         type: form
-        label: '맞춤 추천 받기'
+        label: '상담 요청'
         payload:
           form: consult
         hint: '평일 24시간 내 회신'
         assurances:
-          - '상담 비용 없음'
-          - '익명 상담 가능'
-          - '개인정보는 매칭 직후 즉시 파기'
+          - '문의 무료'
+          - '익명 문의 가능'
+          - '개인정보는 즉시 파기'
 
     slots:
       navbar:

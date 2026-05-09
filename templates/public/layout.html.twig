@@ -32,10 +32,10 @@
         <div class="site-foot__inner">
             <div>
                 <div class="site-foot__brand">{{ brand_public_name() }}</div>
-                <p class="site-foot__tagline">전국 지역별 검증된 강사·교육 서비스를 매칭하는 플랫폼입니다.</p>
+                <p class="site-foot__tagline">{{ brand_public_name() }} 사이트입니다. footer 카피를 도메인에 맞게 수정하세요 (templates/public/layout.html.twig).</p>
             </div>
             <div>
-                <div class="site-foot__col-title">서비스</div>
+                <div class="site-foot__col-title">테마</div>
                 <ul class="site-foot__list">
                     {% for theme in top_themes() %}
                         <li class="site-foot__list-item">
@@ -45,13 +45,13 @@
                 </ul>
             </div>
             <div>
-                <div class="site-foot__col-title">상담 / 문의</div>
+                <div class="site-foot__col-title">문의</div>
                 <a class="site-foot__phone" href="{{ brand_phone_link() }}">{{ brand_phone() }}</a>
                 <p class="site-foot__tagline" style="margin-top: 0.5rem;">{{ brand_phone_hours() }}</p>
             </div>
         </div>
         <div class="site-foot__legal">
-            <span>© {{ brand_public_name() }} · 데모</span>
+            <span>© {{ brand_public_name() }}</span>
             <span><a href="{{ path('public_sitemap') }}">sitemap</a></span>
         </div>
     </footer>

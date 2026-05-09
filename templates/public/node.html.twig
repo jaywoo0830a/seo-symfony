@@ -18,7 +18,7 @@
 {% set is_report = template.isReport() %}
 {% set is_case_study = template.isCaseStudy() %}
 
-{% block title %}{{ keyword }} 강사 추천 — 전화 한 통이면 충분{% endblock %}
+{% block title %}{{ keyword }} — {{ brand_public_name() }}{% endblock %}
 {% block description %}{{ node.introText|default('')|striptags|slice(0, 160) }}{% endblock %}
 {% block canonical %}<link rel="canonical" href="{{ abs_url }}">{% endblock %}
 

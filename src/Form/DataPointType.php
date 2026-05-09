@@ -27,7 +27,7 @@ class DataPointType extends AbstractType
                     DataPointKind::Quantitative => '정량 (quantitative) — 숫자·통계',
                     DataPointKind::Qualitative => '정성 (qualitative) — 목록·분포',
                     DataPointKind::Comparison => '비교 (comparison) — 차별 인사이트',
-                    DataPointKind::CaseStudy => '사례 (case) — 매칭 사례·후기',
+                    DataPointKind::CaseStudy => '사례 (case) — 인용·후기',
                     DataPointKind::Faq => 'FAQ (faq) — 질문·답변',
                 },
             ])
