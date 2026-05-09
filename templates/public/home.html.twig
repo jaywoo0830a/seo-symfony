@@ -12,7 +12,9 @@
         {% if themes is not empty %}
             <ul class="link-list">
                 {% for theme in themes %}
-                    <li><a href="/{{ theme.slug }}/">{{ theme.name }}</a></li>
+                    <li class="link-list__item">
+                        <a class="link-list__link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
+                    </li>
                 {% endfor %}
             </ul>
         {% endif %}

@@ -1,6 +1,6 @@
 // =============================================================================
 // 리셋 + 베이스 타이포그래피.
-// 토큰만 사용 (개별 색/숫자 박지 않음).
+// 모두 토큰 변수만 사용. 매직 숫자 없음.
 // =============================================================================
 
 @use 'tokens' as *;
@@ -14,26 +14,26 @@ body {
     background: color('bg');
     color: color('text');
     font-family: $font-sans;
-    font-size: $base-font-size;
+    font-size: $fs-md;
     line-height: $line-base;
     -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    margin: 0 0 space(3);
+    margin: 0 0 $space-3;
     line-height: $line-tight;
 }
 
-h1 { font-size: fs(3); }
-h2 { font-size: fs(2); }
-h3 { font-size: fs(1); }
-h4 { font-size: fs(0); }
+h1 { font-size: $fs-2xl; }
+h2 { font-size: $fs-xl; }
+h3 { font-size: $fs-lg; }
+h4 { font-size: $fs-md; }
 
 p, ul, ol, dl, dd, figure, blockquote {
-    margin: 0 0 space(4);
+    margin: 0 0 $space-4;
 }
 
-ul, ol { padding-left: space(5); }
+ul, ol { padding-left: $space-5; }
 
 a {
     color: color('primary');

@@ -5,20 +5,9 @@
 {% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
 
 {% block content %}
-    <section class="final-cta">
-        <div class="final-cta__inner">
-            <span class="final-cta__eyebrow">접수 완료</span>
-            <h1 class="final-cta__title">신청이 접수되었습니다</h1>
-            <p class="final-cta__lede">
-                평일 24시간 내에 담당자가 연락드립니다. 급하시면 아래 번호로 직접 연락 주셔도 됩니다.
-            </p>
-            <div class="final-cta__phone-block">
-                <a class="final-cta__phone-link" href="{{ brand_phone_link() }}">
-                    <span class="final-cta__phone-icon" aria-hidden="true">📞</span>
-                    <span>{{ brand_phone() }}</span>
-                </a>
-                <span class="final-cta__hint">{{ brand_phone_hours() }}</span>
-            </div>
-        </div>
-    </section>
+    <main class="page page--narrow">
+        <h1>접수되었습니다</h1>
+        <p class="lede">담당자가 연락드릴 예정입니다.</p>
+        <p><a href="{{ path('public_home') }}">← 홈으로</a></p>
+    </main>
 {% endblock %}

@@ -3,7 +3,7 @@
 
 {% if cta.type.value == 'phone' %}
     <a class="cta cta--primary" href="tel:{{ cta.payload.phone }}">{{ cta.label ?: cta.payload.phone }}</a>
-    {% if cta.hint %}<p class="cta-hint">{{ cta.hint }}</p>{% endif %}
+    {% if cta.hint %}<p class="cta-block__hint">{{ cta.hint }}</p>{% endif %}
 
 {% elseif cta.type.value == 'form' %}
     {% set form_view = cta_form_view(cta.payload.form) %}
@@ -17,7 +17,7 @@
             {{ form_row(form_view.agree) }}
             {{ form_row(form_view.submit) }}
         {{ form_end(form_view) }}
-        {% if cta.hint %}<p class="cta-hint">{{ cta.hint }}</p>{% endif %}
+        {% if cta.hint %}<p class="cta-block__hint">{{ cta.hint }}</p>{% endif %}
     </div>
 
 {% elseif cta.type.value == 'external' %}

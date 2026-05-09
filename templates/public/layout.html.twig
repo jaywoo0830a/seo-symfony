@@ -13,7 +13,7 @@
         <a class="site-head__brand" href="{{ path('public_home') }}">{{ brand_public_name() }}</a>
         <nav class="site-head__nav">
             {% for theme in top_themes() %}
-                <a href="/{{ theme.slug }}/">{{ theme.name }}</a>
+                <a class="site-head__nav-link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
             {% endfor %}
         </nav>
     </header>
@@ -22,7 +22,7 @@
 
     <footer class="site-foot">
         <span>© {{ brand_public_name() }}</span>
-        <a href="{{ path('public_sitemap') }}">sitemap</a>
+        <a class="site-foot__link" href="{{ path('public_sitemap') }}">sitemap</a>
     </footer>
 </body>
 </html>

@@ -1,24 +1,33 @@
 // =============================================================================
-// 디자인 토큰 — SCSS 맵 + 액세서 함수 + 믹스인.
+// 디자인 토큰 — 단일 베이스(2px) 기반 정수 배수 척도.
+// 모든 스칼라가 $unit의 정수 배수로 정의되어 그리드 정합성이 보장됩니다.
+// 변수로 노출되어 IDE 자동완성으로 재사용 가능.
+//
 // 자신의 브랜드로 입양할 때 *이 파일만* 수정하면 전체 톤이 따라옵니다.
 // =============================================================================
 
 @use 'sass:map';
-@use 'sass:math';
 
-// ─── 색 팔레트 ────────────────────────────────────────────────────────
-// 의미 키 기반. 톤을 바꾸려면 여기만 수정.
+// ─── 베이스 단위 ──────────────────────────────────────────────────────
+// 모든 스칼라 토큰의 출발점. 변경하면 전체가 비례 조정됨.
+$unit: 0.125rem; // 2px
+
+@function scale($n) {
+    @return $unit * $n;
+}
+
+// ─── 색 팔레트 (의미 키 기반) ─────────────────────────────────────────
 $colors: (
-    'bg':         #ffffff,
-    'bg-soft':    #fafafa,
-    'text':       #1a1a1a,
-    'text-soft':  #555555,
-    'text-faint': #888888,
-    'border':     #e5e5e5,
-    'border-soft':#efefef,
-    'primary':    #1f6feb,
-    'primary-dk': #155bbf,
-    'on-primary': #ffffff,
+    'bg':           #ffffff,
+    'bg-soft':      #fafafa,
+    'text':         #1a1a1a,
+    'text-soft':    #555555,
+    'text-faint':   #888888,
+    'border':       #e5e5e5,
+    'border-soft':  #efefef,
+    'primary':      #1f6feb,
+    'primary-dk':   #155bbf,
+    'on-primary':   #ffffff,
 );
 
 @function color($name) {
@@ -28,45 +37,50 @@ $colors: (
     @return map.get($colors, $name);
 }
 
-// ─── 공간 척도 (4px 베이스) ──────────────────────────────────────────
-// space(1) = 0.25rem, space(4) = 1rem, space(8) = 2rem
-$space-unit: 0.25rem;
+// ─── 공간 척도 (모두 $unit의 배수) ────────────────────────────────────
+// 인접 단계 간 비율 약 1.5~2배. 모두 정수 배수.
+$space-1:  scale(2);    // 4px
+$space-2:  scale(4);    // 8px
+$space-3:  scale(6);    // 12px
+$space-4:  scale(8);    // 16px
+$space-5:  scale(12);   // 24px
+$space-6:  scale(16);   // 32px
+$space-7:  scale(24);   // 48px
+$space-8:  scale(32);   // 64px
+$space-9:  scale(48);   // 96px
+$space-10: scale(64);   // 128px
 
-@function space($n) {
-    @return $space-unit * $n;
-}
+// ─── 타입 척도 (모두 $unit의 배수) ────────────────────────────────────
+// 14 / 16 / 20 / 24 / 32 — 본문 + 4단계 제목.
+$fs-sm:    scale(7);    // 14px — 보조 텍스트
+$fs-md:    scale(8);    // 16px — 본문 기본
+$fs-lg:    scale(10);   // 20px — h3 / lede
+$fs-xl:    scale(12);   // 24px — h2
+$fs-2xl:   scale(16);   // 32px — h1
+$fs-3xl:   scale(20);   // 40px — display
 
-// ─── 타입 척도 (modular scale, 1.2 비율) ──────────────────────────────
-// fs(0) = 1rem (베이스), fs(1) = 1.2rem, fs(2) = 1.44rem, fs(-1) = 0.833rem
-$base-font-size: 1rem;
-$type-ratio: 1.2;
+$line-base:  1.6;
+$line-tight: 1.25;
 
-@function fs($step) {
-    @return $base-font-size * math.pow($type-ratio, $step);
-}
-
-// ─── 레이아웃 ──────────────────────────────────────────────────────────
-$container-wide: 60rem;
-$container-narrow: 40rem;
-$radius: 4px;
+// ─── 라운드 / 컨테이너 (모두 $unit의 배수) ────────────────────────────
+$radius:           scale(2);    // 4px
+$radius-lg:        scale(4);    // 8px
+$container-narrow: scale(320);  // 640px (40rem)
+$container-wide:   scale(480);  // 960px (60rem)
 
 // ─── 폰트 스택 ────────────────────────────────────────────────────────
 $font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 $font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-// ─── 라인 높이 ────────────────────────────────────────────────────────
-$line-base: 1.6;
-$line-tight: 1.25;
-
 // ─── 믹스인 ──────────────────────────────────────────────────────────
 @mixin container($max: $container-wide) {
     max-width: $max;
     margin-inline: auto;
-    padding-inline: space(4);
+    padding-inline: $space-4;
 }
 
-@mixin focus-ring($color: color('primary')) {
-    outline: 2px solid $color;
+@mixin focus-ring($c: color('primary')) {
+    outline: 2px solid $c;
     outline-offset: 2px;
 }
 
@@ -77,8 +91,6 @@ $line-tight: 1.25;
 }
 
 // ─── CSS 변수 export ──────────────────────────────────────────────────
-// 외부 컴포넌트(어드민 등)에서 동일 색을 참조해야 할 때 :root에서 접근 가능.
-// 사용 예: var(--c-primary), var(--c-text)
 :root {
     @each $name, $value in $colors {
         --c-#{$name}: #{$value};

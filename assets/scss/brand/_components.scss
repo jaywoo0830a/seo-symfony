@@ -1,25 +1,24 @@
 // =============================================================================
-// 미니멀 컴포넌트 — 빈 스타터가 동작하기 위한 최소 스타일.
-// 모두 토큰(색/공간/타입)만 참조. 개별 값 박지 않음.
+// 미니멀 컴포넌트 — 모두 BEM, 모두 토큰 변수만 사용.
 // =============================================================================
 
 @use 'tokens' as *;
 
-// ─── 페이지 셸 ────────────────────────────────────────────────────────
+// ─── .page : 페이지 본문 셸 ────────────────────────────────────────────
 .page {
     @include container;
-    padding-block: space(8) space(12);
+    padding-block: $space-7 $space-9;
 
     &--narrow { max-width: $container-narrow; }
 }
 
-// ─── 사이트 헤더/푸터 ─────────────────────────────────────────────────
+// ─── .site-head : 사이트 상단 ──────────────────────────────────────────
 .site-head {
     @include container;
     display: flex;
     align-items: center;
-    gap: space(5);
-    padding-block: space(3);
+    gap: $space-5;
+    padding-block: $space-3;
     border-bottom: 1px solid color('border');
     flex-wrap: wrap;
 
@@ -31,133 +30,149 @@
 
     &__nav {
         display: flex;
-        gap: space(4);
+        gap: $space-4;
         flex: 1;
         flex-wrap: wrap;
+    }
 
-        a {
-            color: color('text-soft');
-            text-decoration: none;
-            &:hover { color: color('text'); }
-        }
+    &__nav-link {
+        color: color('text-soft');
+        text-decoration: none;
+
+        &:hover { color: color('text'); }
     }
 }
 
+// ─── .site-foot : 사이트 하단 ──────────────────────────────────────────
 .site-foot {
     @include container;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: space(2);
-    padding-block: space(5);
-    margin-top: space(16);
+    gap: $space-2;
+    padding-block: $space-5;
+    margin-top: $space-10;
     border-top: 1px solid color('border');
-    font-size: fs(-1);
+    font-size: $fs-sm;
     color: color('text-soft');
 
-    a { color: inherit; }
+    &__link { color: inherit; }
 }
 
-// ─── breadcrumb (인라인 마크업용) ──────────────────────────────────────
+// ─── .crumbs : breadcrumb (인라인) ─────────────────────────────────────
 .crumbs {
     display: flex;
     flex-wrap: wrap;
-    gap: space(1);
-    margin-bottom: space(4);
-    font-size: fs(-1);
+    gap: $space-1;
+    margin-bottom: $space-4;
+    font-size: $fs-sm;
     color: color('text-soft');
 
-    a { color: inherit; }
-    [aria-current='page'] { color: color('text'); font-weight: 600; }
-    [aria-hidden='true'] { color: color('text-faint'); }
+    &__link { color: inherit; }
+    &__current { color: color('text'); font-weight: 600; }
+    &__sep { color: color('text-faint'); }
 }
 
-// ─── prose article ────────────────────────────────────────────────────
+// ─── .article : prose 컨테이너 (guide/essay/report/case-study 공통) ────
 .article {
-    > header { margin-bottom: space(6); }
+    &__header { margin-bottom: $space-6; }
 
-    .lede {
-        font-size: fs(1);
+    &__lede {
+        font-size: $fs-lg;
         color: color('text-soft');
     }
 
-    .byline {
-        font-size: fs(-1);
+    &__byline {
+        font-size: $fs-sm;
         color: color('text-soft');
 
         strong { color: color('text'); }
     }
-}
 
-.lede { font-size: fs(1); color: color('text-soft'); }
-.byline { font-size: fs(-1); color: color('text-soft'); }
+    // Markdown 렌더 결과
+    &__body {
+        h2 { font-size: $fs-lg; margin-top: $space-7; }
+        h3 { font-size: $fs-md; margin-top: $space-6; }
 
-// 본문 (Markdown 렌더 결과). h2/h3/p/ul/blockquote/table 등 일반화.
-.prose {
-    h2 { font-size: fs(1); margin-top: space(8); }
-    h3 { font-size: fs(0); margin-top: space(6); }
-
-    blockquote {
-        margin: space(4) 0;
-        padding-left: space(4);
-        border-left: 3px solid color('border');
-        color: color('text-soft');
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: space(4) 0;
-        font-size: fs(-1);
-
-        th, td {
-            padding: space(2);
-            text-align: left;
-            border-bottom: 1px solid color('border-soft');
+        blockquote {
+            margin: $space-4 0;
+            padding-left: $space-4;
+            border-left: 3px solid color('border');
+            color: color('text-soft');
         }
 
-        th {
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: $space-4 0;
+            font-size: $fs-sm;
+
+            th, td {
+                padding: $space-2;
+                text-align: left;
+                border-bottom: 1px solid color('border-soft');
+            }
+
+            th {
+                background: color('bg-soft');
+                font-weight: 600;
+            }
+        }
+
+        code {
             background: color('bg-soft');
-            font-weight: 600;
+            padding: 0 $space-1;
+            border-radius: $radius;
         }
-    }
-
-    code {
-        background: color('bg-soft');
-        padding: 0 space(1);
-        border-radius: $radius;
     }
 }
 
-// ─── 블록 / 리스트 ────────────────────────────────────────────────────
-.block { margin-block: space(6); }
+// ─── .lede : 단일 블록 (article 외부에서도 사용) ───────────────────────
+.lede {
+    font-size: $fs-lg;
+    color: color('text-soft');
+}
 
+// ─── .byline : 단일 블록 ──────────────────────────────────────────────
+.byline {
+    font-size: $fs-sm;
+    color: color('text-soft');
+
+    strong { color: color('text'); }
+}
+
+// ─── .link-list : 단순 링크 리스트 ─────────────────────────────────────
 .link-list {
     @include reset-list;
 
-    li { padding: space(1) 0; }
-    a { color: color('primary'); }
+    &__item { padding: $space-1 0; }
+    &__link { color: color('primary'); }
 }
 
+// ─── .data-list : 데이터 항목 리스트 (key + value) ─────────────────────
 .data-list {
     @include reset-list;
 
-    li {
-        padding: space(2) 0;
+    &__item {
+        padding: $space-2 0;
         border-bottom: 1px solid color('border-soft');
     }
+
+    &__key { font-weight: 600; }
 }
 
-// ─── CTA ─────────────────────────────────────────────────────────────
+// ─── .cta : 인라인 CTA 버튼 ────────────────────────────────────────────
 .cta {
     display: inline-block;
-    padding: space(2) space(4);
+    padding: $space-2 $space-4;
     border: 1px solid color('border');
     border-radius: $radius;
     background: color('bg');
     color: color('text');
     text-decoration: none;
     font: inherit;
+
+    &:focus-visible { @include focus-ring; }
 
     &--primary {
         background: color('primary');
@@ -166,33 +181,40 @@
 
         &:hover { background: color('primary-dk'); border-color: color('primary-dk'); }
     }
-
-    &:focus-visible { @include focus-ring; }
 }
 
-.cta-block { padding-block: space(6); }
-.cta-hint { font-size: fs(-1); color: color('text-soft'); margin-top: space(2); }
+// ─── .cta-block : CTA section wrapper ──────────────────────────────────
+.cta-block {
+    padding-block: $space-6;
 
+    &__hint {
+        font-size: $fs-sm;
+        color: color('text-soft');
+        margin-top: $space-2;
+    }
+}
+
+// ─── .cta-form : 문의 폼 ──────────────────────────────────────────────
 .cta-form {
     display: grid;
-    gap: space(3);
-    max-width: 28rem;
+    gap: $space-3;
+    max-width: $container-narrow;
 
-    label { font-weight: 600; font-size: fs(-1); }
+    label { font-weight: 600; font-size: $fs-sm; }
 
     input[type='text'],
     input[type='tel'],
     input[type='email'],
     textarea {
         width: 100%;
-        padding: space(2);
+        padding: $space-2;
         border: 1px solid color('border');
         border-radius: $radius;
         font: inherit;
     }
 
     button[type='submit'] {
-        padding: space(2) space(4);
+        padding: $space-2 $space-4;
         background: color('primary');
         color: color('on-primary');
         border: 1px solid color('primary');
@@ -203,13 +225,13 @@
         &:hover { background: color('primary-dk'); border-color: color('primary-dk'); }
     }
 
-    // honeypot — 화면에서 숨김
-    .cta-form__honeypot { position: absolute; left: -10000px; }
+    &__honeypot { position: absolute; left: -10000px; }
+    &__hint { font-size: $fs-sm; color: color('text-soft'); }
 }
 
-// ─── details/summary (자연스러운 FAQ) ─────────────────────────────────
+// ─── details/summary (FAQ) — 네이티브 요소이므로 BEM 미적용 ────────────
 details {
-    padding: space(2) 0;
+    padding: $space-2 0;
     border-bottom: 1px solid color('border-soft');
 
     summary {
@@ -217,5 +239,8 @@ details {
         cursor: pointer;
     }
 
-    > div { margin-top: space(2); color: color('text-soft'); }
+    > div {
+        margin-top: $space-2;
+        color: color('text-soft');
+    }
 }

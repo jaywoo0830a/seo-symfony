@@ -4,25 +4,29 @@
     {% if crumbs is not empty %}
         <nav class="crumbs" aria-label="Breadcrumb">
             {% for crumb in crumbs %}
-                {% if crumb.current %}<span aria-current="page">{{ crumb.label }}</span>
-                {% else %}<a href="{{ crumb.url }}">{{ crumb.label }}</a><span aria-hidden="true">›</span>{% endif %}
+                {% if crumb.current %}
+                    <span class="crumbs__current" aria-current="page">{{ crumb.label }}</span>
+                {% else %}
+                    <a class="crumbs__link" href="{{ crumb.url }}">{{ crumb.label }}</a>
+                    <span class="crumbs__sep" aria-hidden="true">›</span>
+                {% endif %}
             {% endfor %}
         </nav>
     {% endif %}
 
     <article class="article">
-        <header>
+        <header class="article__header">
             <h1>{{ h1 }}</h1>
             {% if node.author %}
-                <p class="byline">
+                <p class="article__byline">
                     <strong>{{ node.author.realName }}</strong>
                     {% if node.firstPublishedAt %} · 발행 {{ node.firstPublishedAt|date('Y-m-d') }}{% endif %}
                     {% if node.lastReviewAt and node.lastReviewAt != node.firstPublishedAt %} · 검토 {{ node.lastReviewAt|date('Y-m-d') }}{% endif %}
                 </p>
             {% endif %}
-            {% if node.introText %}<p class="lede">{{ node.introText }}</p>{% endif %}
+            {% if node.introText %}<p class="article__lede">{{ node.introText }}</p>{% endif %}
         </header>
 
-        {% if body_html %}<div class="prose">{{ body_html|raw }}</div>{% endif %}
+        {% if body_html %}<div class="article__body">{{ body_html|raw }}</div>{% endif %}
     </article>
 </main>
