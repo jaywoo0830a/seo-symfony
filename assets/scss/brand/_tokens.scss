@@ -1,186 +1,30 @@
 // =============================================================================
-// 브랜드 랜딩 — 디자인 토큰
-// 대시보드와 완전히 독립. 대시보드 토큰을 참조하지 않음.
-// =============================================================================
-
-@use 'sass:map';
-
-// -----------------------------------------------------------------------------
-// 간격 (랜딩은 generous spacing)
-// -----------------------------------------------------------------------------
-
-$spacing: (
-    2:   0.125rem,
-    4:   0.25rem,
-    8:   0.5rem,
-    12:  0.75rem,
-    16:  1rem,
-    20:  1.25rem,
-    24:  1.5rem,
-    32:  2rem,
-    40:  2.5rem,
-    48:  3rem,
-    64:  4rem,
-    80:  5rem,
-    96:  6rem,
-    128: 8rem,
-    160: 10rem,
-);
-
-// -----------------------------------------------------------------------------
-// 타입 스케일 (랜딩은 dramatic — 대시보드보다 큼)
-// -----------------------------------------------------------------------------
-
-$text: (
-    12: 0.75rem,
-    14: 0.875rem,
-    16: 1rem,
-    18: 1.125rem,
-    20: 1.25rem,
-    24: 1.5rem,
-    32: 2rem,
-    40: 2.5rem,
-    48: 3rem,
-    56: 3.5rem,
-    64: 4rem,
-    72: 4.5rem,
-);
-
-$weight: (
-    regular:   400,
-    medium:    500,
-    semibold:  600,
-    bold:      700,
-    extrabold: 800,
-);
-
-$line: (
-    tight: 1.1,
-    snug:  1.3,
-    base:  1.55,
-);
-
-// -----------------------------------------------------------------------------
-// 모서리 — 대시보드보다 약간 더 둥글게 (친근한 느낌)
-// -----------------------------------------------------------------------------
-
-$radius: (
-    sm:  0.375rem,
-    md:  0.625rem,
-    lg:  0.875rem,
-    xl:  1.25rem,
-    full: 9999px,
-);
-
-// -----------------------------------------------------------------------------
-// 컬러 — 신뢰의 블루 + 행동 유도의 오렌지
-// -----------------------------------------------------------------------------
-
-$brand: (
-    50:  #eff6ff,
-    100: #dbeafe,
-    200: #bfdbfe,
-    300: #93c5fd,
-    400: #60a5fa,
-    500: #2563eb,   // primary
-    600: #1d4ed8,
-    700: #1e40af,
-    800: #1e3a8a,
-    900: #172554,
-);
-
-$accent: (
-    50:  #fff7ed,
-    100: #ffedd5,
-    300: #fdba74,
-    500: #f97316,   // CTA orange — "지금 전화" 유도
-    600: #ea580c,
-    700: #c2410c,
-);
-
-$ink: (
-    0:   #ffffff,
-    50:  #f8fafc,
-    100: #f1f5f9,
-    200: #e2e8f0,
-    300: #cbd5e1,
-    400: #94a3b8,
-    500: #64748b,
-    600: #475569,
-    700: #334155,
-    800: #1e293b,
-    900: #0f172a,
-);
-
-// -----------------------------------------------------------------------------
-// 그림자 (depth)
-// -----------------------------------------------------------------------------
-
-$shadow: (
-    sm: 0 1px 2px rgba(15, 23, 42, 0.06),
-    md: (0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06)),
-    lg: (0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.06)),
-    xl: (0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05)),
-    glow: 0 0 0 6px rgba(249, 115, 22, 0.15),
-);
-
-// =============================================================================
-// CSS 커스텀 프로퍼티 출력
+// 디자인 토큰 — 미니멀 베이스라인.
+// 자신의 브랜드 가이드에 맞춰 이 파일만 교체하면 전체 톤이 바뀝니다.
 // =============================================================================
 
 :root {
-    @each $name, $value in $spacing {
-        --b-space-#{$name}: #{$value};
-    }
-    @each $name, $value in $text {
-        --b-text-#{$name}: #{$value};
-    }
-    @each $name, $value in $weight {
-        --b-weight-#{$name}: #{$value};
-    }
-    @each $name, $value in $line {
-        --b-line-#{$name}: #{$value};
-    }
-    @each $name, $value in $radius {
-        --b-radius-#{$name}: #{$value};
-    }
-    @each $shade, $color in $brand {
-        --b-brand-#{$shade}: #{$color};
-    }
-    @each $shade, $color in $accent {
-        --b-accent-#{$shade}: #{$color};
-    }
-    @each $shade, $color in $ink {
-        --b-ink-#{$shade}: #{$color};
-    }
-    @each $name, $value in $shadow {
-        --b-shadow-#{$name}: #{$value};
-    }
+    // 색
+    --b-bg: #ffffff;
+    --b-bg-soft: #fafafa;
+    --b-text: #1a1a1a;
+    --b-text-soft: #555555;
+    --b-text-faint: #888888;
+    --b-text-on-dark: #ffffff;
+    --b-border: #e5e5e5;
+    --b-border-soft: #efefef;
+    --b-primary: #1f6feb;       // 링크/액센트
+    --b-primary-soft: #eaf3ff;
+    --b-cta: #1f6feb;           // 메인 CTA (primary와 같음 — 도메인에 맞춰 분리하세요)
+    --b-cta-hover: #155bbf;
 
-    // 의미적 별칭
-    --b-bg:           var(--b-ink-0);
-    --b-bg-soft:      var(--b-ink-50);
-    --b-bg-dark:      var(--b-ink-900);
-    --b-surface:      var(--b-ink-0);
-    --b-text:         var(--b-ink-900);
-    --b-text-soft:    var(--b-ink-600);
-    --b-text-faint:   var(--b-ink-400);
-    --b-text-on-dark: var(--b-ink-0);
+    // 레이아웃
+    --b-container: 60rem;
+    --b-container-narrow: 44rem;
+    --b-radius: 4px;
 
-    --b-primary:        var(--b-brand-600);
-    --b-primary-hover:  var(--b-brand-700);
-    --b-primary-soft:   var(--b-brand-50);
-
-    --b-cta:            var(--b-accent-500);
-    --b-cta-hover:      var(--b-accent-600);
-    --b-cta-soft:       var(--b-accent-50);
-
-    --b-border:         var(--b-ink-200);
-    --b-border-soft:    var(--b-ink-100);
-
-    --b-easing:         cubic-bezier(0.16, 1, 0.3, 1);
-    --b-duration:       240ms;
-
-    --b-container:      72rem;
-    --b-container-narrow: 56rem;
+    // 타이포 (시스템 폰트)
+    --b-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --b-line-base: 1.6;
+    --b-line-tight: 1.25;
 }

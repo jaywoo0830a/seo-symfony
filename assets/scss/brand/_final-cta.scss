@@ -1,116 +1,35 @@
 // =============================================================================
-// final-cta — 마지막 행동 유도 (큰 전화 버튼)
+// final-cta
 // =============================================================================
 
 .final-cta {
-    background:
-        radial-gradient(circle at 75% 25%, rgba(249, 115, 22, 0.18), transparent 55%),
-        radial-gradient(circle at 18% 82%, rgba(37, 99, 235, 0.18), transparent 55%),
-        var(--b-bg-dark);
-    color: var(--b-text-on-dark);
-    padding-block: var(--b-space-96);
+    padding: 3rem 1rem;
+    background: var(--b-bg-soft);
 
     &__inner {
-        width: 100%;
         max-width: var(--b-container-narrow);
-        margin-inline: auto;
-        padding-inline: var(--b-space-24);
+        margin: 0 auto;
         text-align: center;
     }
 
-    &__eyebrow {
-        font-size: var(--b-text-12);
-        font-weight: var(--b-weight-bold);
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--b-accent-300);
-        margin-bottom: var(--b-space-16);
-    }
+    &__eyebrow { display: block; font-size: 0.875rem; color: var(--b-text-soft); margin-bottom: 0.5rem; }
+    &__title { margin: 0 0 0.5rem; font-size: 1.5rem; }
+    &__lede { color: var(--b-text-soft); margin: 0 0 1.5rem; }
 
-    &__title {
-        font-size: clamp(var(--b-text-32), 4vw, var(--b-text-56));
-        font-weight: var(--b-weight-extrabold);
-        line-height: var(--b-line-tight);
-        letter-spacing: -0.03em;
-        margin-bottom: var(--b-space-16);
-    }
-
-    &__lede {
-        font-size: var(--b-text-18);
-        line-height: var(--b-line-base);
-        color: var(--b-ink-300);
-        max-width: 50ch;
-        margin: 0 auto var(--b-space-48);
-    }
-
-    &__phone-block {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--b-space-16);
-    }
-
-    &__phone-link {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--b-space-16);
-        padding: var(--b-space-24) var(--b-space-48);
-        background-color: var(--b-cta);
-        color: var(--b-text-on-dark);
-        border-radius: var(--b-radius-full);
-        font-size: clamp(var(--b-text-24), 3vw, var(--b-text-32));
-        font-weight: var(--b-weight-extrabold);
-        font-variant-numeric: tabular-nums;
-        letter-spacing: -0.02em;
-        text-decoration: none;
-        box-shadow: var(--b-shadow-lg), var(--b-shadow-glow);
-        transition: transform var(--b-duration) var(--b-easing),
-                    box-shadow var(--b-duration) var(--b-easing),
-                    background-color var(--b-duration) var(--b-easing);
-
-        &:hover {
-            transform: translateY(-2px) scale(1.02);
-            background-color: var(--b-cta-hover);
-        }
-
-        &:focus-visible {
-            outline: 4px solid var(--b-accent-300);
-            outline-offset: 4px;
-        }
-    }
-
-    &__phone-icon {
-        font-size: 1.25em;
-        line-height: 1;
-    }
-
-    &__hint {
-        font-size: var(--b-text-14);
-        color: var(--b-ink-400);
-        margin-top: var(--b-space-8);
-    }
+    &__phone-block { margin: 1rem 0; }
+    &__phone-link { font-size: 1.5rem; font-weight: 700; color: var(--b-primary); text-decoration: none; }
+    &__phone-icon { margin-right: 0.5rem; }
+    &__hint { display: block; margin-top: 0.5rem; font-size: 0.875rem; color: var(--b-text-soft); }
 
     &__assurances {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--b-space-24);
         justify-content: center;
-        margin-top: var(--b-space-48);
-        padding-top: var(--b-space-32);
-        border-top: 1px solid var(--b-ink-700);
+        gap: 0.75rem;
+        margin-top: 1rem;
+        font-size: 0.875rem;
+        color: var(--b-text-soft);
     }
 
-    &__assurance {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--b-space-8);
-        font-size: var(--b-text-14);
-        color: var(--b-ink-300);
-
-        &::before {
-            content: '✓';
-            color: var(--b-accent-500);
-            font-weight: var(--b-weight-bold);
-        }
-    }
+    &__assurance::before { content: '✓ '; color: var(--b-primary); }
 }

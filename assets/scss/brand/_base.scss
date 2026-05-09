@@ -1,60 +1,24 @@
 // =============================================================================
-// 베이스 (브랜드 전용)
+// 베이스 — 리셋 + body
 // =============================================================================
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-html {
-    font-size: 1rem;
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-}
+html { -webkit-text-size-adjust: 100%; }
 
 body {
     margin: 0;
-    background-color: var(--b-bg);
+    background: var(--b-bg);
     color: var(--b-text);
-    font-family: "Asta Sans", sans-serif;
-    font-size: var(--b-text-16);
-    font-weight: var(--b-weight-regular);
+    font-family: var(--b-font-sans);
+    font-size: 16px;
     line-height: var(--b-line-base);
-    letter-spacing: -0.01em;
-    word-break: keep-all;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6,
-p, ul, ol, dl, dd, figure {
-    margin: 0;
-}
-
-ul, ol { padding: 0; list-style: none; }
-img, svg { display: block; max-width: 100%; height: auto; }
+h1, h2, h3, h4, h5, h6 { line-height: var(--b-line-tight); margin: 0 0 0.75rem; }
+p, ul, ol, dl, dd, figure { margin: 0 0 1rem; }
+ul, ol { padding-left: 1.25rem; }
+img, svg { max-width: 100%; height: auto; }
+a { color: var(--b-primary); }
 button { font: inherit; color: inherit; }
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-::selection {
-    background-color: var(--b-brand-100);
-    color: var(--b-brand-800);
-}
-
-// 컨테이너 유틸
-.container {
-    width: 100%;
-    max-width: var(--b-container);
-    margin-inline: auto;
-    padding-inline: var(--b-space-24);
-}
-
-.container--narrow {
-    max-width: var(--b-container-narrow);
-}

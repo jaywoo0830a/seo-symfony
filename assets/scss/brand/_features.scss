@@ -1,231 +1,114 @@
 // =============================================================================
-// feature-grid — "왜 우리인가" 카드
-// listing — 제공 항목 리스트 (과목, 학교 등)
-// callout — 강조 문장 (비교 데이터)
-// theme-children — 자식 테마 노드 카드 (예: /guides/ → 개별 가이드들)
+// feature-grid / listing / theme-children / stat-grid / callouts / data-list
+// 페이지에서 재사용되는 작은 컴포넌트들
 // =============================================================================
-
-.theme-children {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--b-space-20);
-
-    &__item { margin: 0; }
-
-    &__link {
-        display: block;
-        height: 100%;
-        padding: var(--b-space-24);
-        background: var(--b-surface);
-        border: 1px solid var(--b-border-soft);
-        border-radius: var(--b-radius-lg);
-        text-decoration: none;
-        color: var(--b-text);
-        transition: border-color var(--b-duration) var(--b-easing),
-                    transform var(--b-duration) var(--b-easing);
-
-        &:hover {
-            border-color: var(--b-primary);
-            transform: translateY(-2px);
-        }
-    }
-
-    &__title {
-        display: block;
-        font-size: var(--b-text-20);
-        font-weight: var(--b-weight-semibold);
-        color: var(--b-primary);
-        margin-bottom: var(--b-space-8);
-    }
-
-    &__lede {
-        display: block;
-        font-size: var(--b-text-14);
-        color: var(--b-text-soft);
-        line-height: var(--b-line-base);
-    }
-}
-
-// -----------------------------------------------------------------------------
-// feature-grid
-// -----------------------------------------------------------------------------
 
 .feature-grid {
     display: grid;
-    gap: var(--b-space-24);
-    grid-template-columns: 1fr;
-
-    @media (min-width: 48rem) {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 64rem) {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
 
     &__card {
-        padding: var(--b-space-32);
-        background-color: var(--b-bg);
+        padding: 1.25rem;
         border: 1px solid var(--b-border);
-        border-radius: var(--b-radius-xl);
-        transition: transform var(--b-duration) var(--b-easing),
-                    box-shadow var(--b-duration) var(--b-easing),
-                    border-color var(--b-duration) var(--b-easing);
-
-        &:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--b-shadow-lg);
-            border-color: var(--b-brand-200);
-        }
+        border-radius: var(--b-radius);
     }
 
-    &__icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--b-space-48);
-        height: var(--b-space-48);
-        margin-bottom: var(--b-space-20);
-        background-color: var(--b-primary-soft);
-        color: var(--b-primary);
-        border-radius: var(--b-radius-md);
-        font-size: var(--b-text-20);
-        font-weight: var(--b-weight-bold);
-    }
-
-    &__title {
-        font-size: var(--b-text-20);
-        font-weight: var(--b-weight-bold);
-        margin-bottom: var(--b-space-12);
-        letter-spacing: -0.015em;
-    }
-
-    &__body {
-        font-size: var(--b-text-16);
-        line-height: var(--b-line-base);
-        color: var(--b-text-soft);
-    }
+    &__icon { font-size: 1.5rem; line-height: 1; margin-bottom: 0.5rem; }
+    &__title { margin: 0 0 0.25rem; font-size: 1.0625rem; }
+    &__body { margin: 0; color: var(--b-text-soft); font-size: 0.9375rem; }
 }
 
-// -----------------------------------------------------------------------------
-// listing — 키-값 리스트 (qualitative DataPoint)
-// -----------------------------------------------------------------------------
-
 .listing {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: grid;
-    gap: var(--b-space-16);
-
-    @media (min-width: 48rem) {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
 
     &__item {
-        padding: var(--b-space-24);
-        background-color: var(--b-bg);
+        padding: 1rem;
         border: 1px solid var(--b-border);
-        border-radius: var(--b-radius-lg);
+        border-radius: var(--b-radius);
     }
 
-    &__title {
-        font-size: var(--b-text-14);
-        font-weight: var(--b-weight-semibold);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--b-text-soft);
-        margin-bottom: var(--b-space-8);
-    }
-
-    &__body {
-        font-size: var(--b-text-16);
-        line-height: var(--b-line-base);
-        color: var(--b-text);
-    }
+    &__title { margin: 0 0 0.25rem; font-size: 1rem; }
+    &__body { margin: 0 0 0.5rem; color: var(--b-text-soft); font-size: 0.9375rem; }
 
     &__tags {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--b-space-8);
-        margin: 0;
+        gap: 0.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0;
     }
 
     &__tag {
-        padding: var(--b-space-4) var(--b-space-12);
-        background-color: var(--b-primary-soft);
-        color: var(--b-primary);
-        border-radius: var(--b-radius-full);
-        font-size: var(--b-text-14);
-        font-weight: var(--b-weight-medium);
+        font-size: 0.75rem;
+        padding: 0.125rem 0.5rem;
+        background: var(--b-bg-soft);
+        border-radius: var(--b-radius);
     }
 
-    &__pairs {
-        display: grid;
-        gap: var(--b-space-8);
-        margin: 0;
-    }
-
-    &__pair {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: var(--b-space-12);
-        padding-block: var(--b-space-4);
-        border-bottom: 1px dashed var(--b-border-soft);
-
-        &:last-child { border-bottom: 0; }
-    }
-
-    &__pair-key {
-        font-size: var(--b-text-14);
-        color: var(--b-text-soft);
-    }
-
-    &__pair-val {
-        font-size: var(--b-text-14);
-        font-weight: var(--b-weight-semibold);
-        color: var(--b-text);
-        text-align: right;
-    }
+    &__pairs { margin: 0.5rem 0 0; }
+    &__pair { display: flex; gap: 0.5rem; font-size: 0.875rem; }
+    &__pair-key { color: var(--b-text-soft); }
 }
 
-// -----------------------------------------------------------------------------
-// callout — 비교 데이터 (강조 인용 박스)
-// -----------------------------------------------------------------------------
+.theme-children {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 
-.callout {
-    display: flex;
-    flex-direction: column;
-    gap: var(--b-space-12);
-    padding: var(--b-space-32);
-    background:
-        linear-gradient(135deg, var(--b-primary-soft) 0%, var(--b-bg) 100%);
-    border-radius: var(--b-radius-xl);
-    border-left: 4px solid var(--b-primary);
-
-    @media (min-width: 48rem) {
-        padding: var(--b-space-40);
+    &__item {
+        padding: 1rem;
+        border: 1px solid var(--b-border);
+        border-radius: var(--b-radius);
     }
 
-    &__title {
-        font-size: var(--b-text-12);
-        font-weight: var(--b-weight-bold);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--b-primary);
+    &__link { color: var(--b-text); text-decoration: none; }
+    &__title { display: block; font-weight: 600; }
+    &__lede { display: block; margin-top: 0.25rem; color: var(--b-text-soft); font-size: 0.9375rem; }
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+
+    &__card {
+        padding: 1rem;
+        background: var(--b-bg-soft);
+        border-radius: var(--b-radius);
+        text-align: center;
     }
 
-    &__quote {
-        font-size: clamp(var(--b-text-18), 2vw, var(--b-text-24));
-        line-height: var(--b-line-snug);
-        font-weight: var(--b-weight-semibold);
-        color: var(--b-text);
-        letter-spacing: -0.015em;
-    }
+    &__figure { font-size: 1.5rem; font-weight: 700; }
+    &__label { font-size: 0.875rem; color: var(--b-text-soft); }
 }
 
 .callout-stack {
     display: grid;
-    gap: var(--b-space-16);
+    gap: 0.75rem;
 }
+
+.callout {
+    padding: 1rem;
+    background: var(--b-bg-soft);
+    border-left: 3px solid var(--b-primary);
+    border-radius: var(--b-radius);
+
+    &__title { font-weight: 600; }
+    &__quote { margin: 0.25rem 0 0; color: var(--b-text-soft); }
+}
+
+.data-list__items { list-style: disc; padding-left: 1.25rem; margin: 0; }
+.data-list__nested { margin: 0; }
+.data-list__nested dt { font-weight: 600; }
+.data-list__nested dd { margin: 0 0 0.25rem; color: var(--b-text-soft); }
+.data-list__empty { color: var(--b-text-faint); }
