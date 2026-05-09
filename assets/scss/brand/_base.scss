@@ -1,6 +1,9 @@
 // =============================================================================
-// 베이스 — 리셋 + body
+// 리셋 + 베이스 타이포그래피.
+// 토큰만 사용 (개별 색/숫자 박지 않음).
 // =============================================================================
+
+@use 'tokens' as *;
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -8,17 +11,45 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
     margin: 0;
-    background: var(--b-bg);
-    color: var(--b-text);
-    font-family: var(--b-font-sans);
-    font-size: 16px;
-    line-height: var(--b-line-base);
+    background: color('bg');
+    color: color('text');
+    font-family: $font-sans;
+    font-size: $base-font-size;
+    line-height: $line-base;
     -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 { line-height: var(--b-line-tight); margin: 0 0 0.75rem; }
-p, ul, ol, dl, dd, figure { margin: 0 0 1rem; }
-ul, ol { padding-left: 1.25rem; }
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 space(3);
+    line-height: $line-tight;
+}
+
+h1 { font-size: fs(3); }
+h2 { font-size: fs(2); }
+h3 { font-size: fs(1); }
+h4 { font-size: fs(0); }
+
+p, ul, ol, dl, dd, figure, blockquote {
+    margin: 0 0 space(4);
+}
+
+ul, ol { padding-left: space(5); }
+
+a {
+    color: color('primary');
+    &:focus-visible { @include focus-ring; }
+}
+
 img, svg { max-width: 100%; height: auto; }
-a { color: var(--b-primary); }
-button { font: inherit; color: inherit; }
+
+button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    &:focus-visible { @include focus-ring; }
+}
+
+code, kbd, samp, pre {
+    font-family: $font-mono;
+    font-size: 0.9375em;
+}

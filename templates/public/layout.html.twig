@@ -9,48 +9,20 @@
     <link rel="stylesheet" href="{{ asset('styles/brand.css') }}">
 </head>
 <body>
-    {# 상단 sticky CTA 바 — navbar 슬롯은 페이지 컨텍스트와 무관하게 항상 글로벌 CTA. #}
-    <header class="phone-bar">
-        <div class="phone-bar__inner">
-            <a class="phone-bar__brand" href="{{ path('public_home') }}">{{ brand_public_name() }}</a>
-            <nav class="phone-bar__nav">
-                {% for theme in top_themes() %}
-                    <a class="phone-bar__nav-link" href="/{{ theme.slug }}/">{{ theme.name }}</a>
-                {% endfor %}
-            </nav>
-            {% include 'public/_partials/cta/_button.html.twig' with { cta: cta('navbar'), variant: 'navbar' } only %}
-        </div>
+    <header class="site-head">
+        <a class="site-head__brand" href="{{ path('public_home') }}">{{ brand_public_name() }}</a>
+        <nav class="site-head__nav">
+            {% for theme in top_themes() %}
+                <a href="/{{ theme.slug }}/">{{ theme.name }}</a>
+            {% endfor %}
+        </nav>
     </header>
 
     {% block content %}{% endblock %}
 
-    {# 하단 footer #}
     <footer class="site-foot">
-        <div class="site-foot__inner">
-            <div>
-                <div class="site-foot__brand">{{ brand_public_name() }}</div>
-                <p class="site-foot__tagline">{{ brand_public_name() }} 사이트입니다. footer 카피를 도메인에 맞게 수정하세요 (templates/public/layout.html.twig).</p>
-            </div>
-            <div>
-                <div class="site-foot__col-title">테마</div>
-                <ul class="site-foot__list">
-                    {% for theme in top_themes() %}
-                        <li class="site-foot__list-item">
-                            <a href="/{{ theme.slug }}/">{{ theme.name }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div>
-                <div class="site-foot__col-title">문의</div>
-                <a class="site-foot__phone" href="{{ brand_phone_link() }}">{{ brand_phone() }}</a>
-                <p class="site-foot__tagline" style="margin-top: 0.5rem;">{{ brand_phone_hours() }}</p>
-            </div>
-        </div>
-        <div class="site-foot__legal">
-            <span>© {{ brand_public_name() }}</span>
-            <span><a href="{{ path('public_sitemap') }}">sitemap</a></span>
-        </div>
+        <span>© {{ brand_public_name() }}</span>
+        <a href="{{ path('public_sitemap') }}">sitemap</a>
     </footer>
 </body>
 </html>

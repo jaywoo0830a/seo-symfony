@@ -1,30 +1,86 @@
 // =============================================================================
-// 디자인 토큰 — 미니멀 베이스라인.
-// 자신의 브랜드 가이드에 맞춰 이 파일만 교체하면 전체 톤이 바뀝니다.
+// 디자인 토큰 — SCSS 맵 + 액세서 함수 + 믹스인.
+// 자신의 브랜드로 입양할 때 *이 파일만* 수정하면 전체 톤이 따라옵니다.
 // =============================================================================
 
+@use 'sass:map';
+@use 'sass:math';
+
+// ─── 색 팔레트 ────────────────────────────────────────────────────────
+// 의미 키 기반. 톤을 바꾸려면 여기만 수정.
+$colors: (
+    'bg':         #ffffff,
+    'bg-soft':    #fafafa,
+    'text':       #1a1a1a,
+    'text-soft':  #555555,
+    'text-faint': #888888,
+    'border':     #e5e5e5,
+    'border-soft':#efefef,
+    'primary':    #1f6feb,
+    'primary-dk': #155bbf,
+    'on-primary': #ffffff,
+);
+
+@function color($name) {
+    @if not map.has-key($colors, $name) {
+        @error 'unknown color: #{$name}. Available: #{map.keys($colors)}';
+    }
+    @return map.get($colors, $name);
+}
+
+// ─── 공간 척도 (4px 베이스) ──────────────────────────────────────────
+// space(1) = 0.25rem, space(4) = 1rem, space(8) = 2rem
+$space-unit: 0.25rem;
+
+@function space($n) {
+    @return $space-unit * $n;
+}
+
+// ─── 타입 척도 (modular scale, 1.2 비율) ──────────────────────────────
+// fs(0) = 1rem (베이스), fs(1) = 1.2rem, fs(2) = 1.44rem, fs(-1) = 0.833rem
+$base-font-size: 1rem;
+$type-ratio: 1.2;
+
+@function fs($step) {
+    @return $base-font-size * math.pow($type-ratio, $step);
+}
+
+// ─── 레이아웃 ──────────────────────────────────────────────────────────
+$container-wide: 60rem;
+$container-narrow: 40rem;
+$radius: 4px;
+
+// ─── 폰트 스택 ────────────────────────────────────────────────────────
+$font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+$font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+// ─── 라인 높이 ────────────────────────────────────────────────────────
+$line-base: 1.6;
+$line-tight: 1.25;
+
+// ─── 믹스인 ──────────────────────────────────────────────────────────
+@mixin container($max: $container-wide) {
+    max-width: $max;
+    margin-inline: auto;
+    padding-inline: space(4);
+}
+
+@mixin focus-ring($color: color('primary')) {
+    outline: 2px solid $color;
+    outline-offset: 2px;
+}
+
+@mixin reset-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+// ─── CSS 변수 export ──────────────────────────────────────────────────
+// 외부 컴포넌트(어드민 등)에서 동일 색을 참조해야 할 때 :root에서 접근 가능.
+// 사용 예: var(--c-primary), var(--c-text)
 :root {
-    // 색
-    --b-bg: #ffffff;
-    --b-bg-soft: #fafafa;
-    --b-text: #1a1a1a;
-    --b-text-soft: #555555;
-    --b-text-faint: #888888;
-    --b-text-on-dark: #ffffff;
-    --b-border: #e5e5e5;
-    --b-border-soft: #efefef;
-    --b-primary: #1f6feb;       // 링크/액센트
-    --b-primary-soft: #eaf3ff;
-    --b-cta: #1f6feb;           // 메인 CTA (primary와 같음 — 도메인에 맞춰 분리하세요)
-    --b-cta-hover: #155bbf;
-
-    // 레이아웃
-    --b-container: 60rem;
-    --b-container-narrow: 44rem;
-    --b-radius: 4px;
-
-    // 타이포 (시스템 폰트)
-    --b-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --b-line-base: 1.6;
-    --b-line-tight: 1.25;
+    @each $name, $value in $colors {
+        --c-#{$name}: #{$value};
+    }
 }

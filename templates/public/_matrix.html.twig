@@ -1,54 +1,54 @@
-{# 제네릭 매트릭스 fallback — matrix/{theme-slug}.html.twig가 없을 때 사용.
+{# 제네릭 매트릭스 fallback — matrix/{theme-slug}.html.twig 가 없을 때 사용.
+   *블랭크 스타터*용 최소 마크업. 도메인에 맞춰 자유롭게 덮어쓰세요. #}
 
-   카피는 의도적으로 *테마 색채 없이* 작성됨. 새 테마를 추가했는데 전용 매트릭스를
-   아직 안 만들었어도 망가지지 않게. 실제 운영에서는 모든 루트 테마마다
-   matrix/*.html.twig 를 갖추는 것을 권장.
+<main class="page page--narrow">
+    {% if crumbs is not empty %}
+        <nav class="crumbs" aria-label="Breadcrumb">
+            {% for crumb in crumbs %}
+                {% if crumb.current %}
+                    <span aria-current="page">{{ crumb.label }}</span>
+                {% else %}
+                    <a href="{{ crumb.url }}">{{ crumb.label }}</a>
+                    <span aria-hidden="true">›</span>
+                {% endif %}
+            {% endfor %}
+        </nav>
+    {% endif %}
 
-   사용 가능한 컨텍스트 (PublicNodeController가 주입):
-     node, byKind, theme_children, theme_siblings, urls, crumbs,
-     region_label, theme_label, keyword
-#}
+    <h1>{{ keyword }}</h1>
+    {% if node.introText %}<p class="lede">{{ node.introText }}</p>{% endif %}
 
-{% include 'public/_partials/breadcrumb.html.twig' %}
+    {% for kind, points in byKind %}
+        {% if points is not empty %}
+            <section class="block">
+                <h2>{{ kind }}</h2>
+                <ul class="data-list">
+                    {% for dp in points %}
+                        <li>
+                            <strong>{{ dp.title }}</strong>
+                            {% include 'public/_value.html.twig' with { value: dp.value } only %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+    {% endfor %}
 
-{% set _hero_stats = [] %}
-{% for dp in byKind.quantitative|slice(0, 3) %}
-    {% set _hero_stats = _hero_stats|merge([{
-        figure: dp.value is iterable ? dp.value|length : dp.value,
-        label: dp.title,
-    }]) %}
-{% endfor %}
+    {% if theme_children is not empty %}
+        <section class="block">
+            <h2>{{ theme_label }} 하위 페이지</h2>
+            <ul class="link-list">
+                {% for child in theme_children %}
+                    <li><a href="{{ urls.build(child) }}">{{ child.theme.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
 
-{% include 'public/_partials/hero.html.twig' with {
-    eyebrow: keyword ~ ' 정보',
-    title_main: region_label ? '' : theme_label,
-    title_highlight: region_label,
-    title_tail: region_label ? ' ' ~ theme_label : '',
-    lede: node.introText,
-    stats: _hero_stats,
-    body_template: template,
-} only %}
-
-{% include 'public/_partials/callouts.html.twig' with {
-    items: byKind.comparison,
-    eyebrow: (region_label ?: '시장') ~ ' 인사이트',
-    title: keyword ~ '의 특징',
-} only %}
-
-{% include 'public/_partials/listing.html.twig' with {
-    items: byKind.qualitative,
-    title: keyword ~ '에서 다루는 것',
-} only %}
-
-{% include 'public/_partials/theme_children.html.twig' with {
-    items: theme_children,
-    urls: urls,
-    title: theme_label ~ ' 카테고리의 페이지',
-} only %}
-
-{% include 'public/_partials/faq.html.twig' with {items: byKind.faq} only %}
-
-{% include 'public/_partials/final_cta.html.twig' with {
-    eyebrow: (region_label ?: '전국') ~ ' ' ~ theme_label,
-    body_template: template,
-} only %}
+    {% set _final_cta = cta('final', template) %}
+    {% if _final_cta %}
+        <section class="block cta-block">
+            {% include 'public/_partials/cta/_block_body.html.twig' with { cta: _final_cta } only %}
+        </section>
+    {% endif %}
+</main>

@@ -1,24 +1,12 @@
 // =============================================================================
-// 브랜드 랜딩 — SCSS 엔트리
+// 브랜드 SCSS 엔트리.
+// 빈 스타터 — 토큰/베이스/미니멀 컴포넌트만. 자신의 도메인 톤으로 확장하세요.
 //
-// 대시보드의 app.scss와 완전히 독립. 출력: assets/styles/brand.css
-//
-// Build:  npm run build       (양쪽 다 빌드)
+// Build:  npm run build
 // Watch:  npm run watch
+// Output: assets/styles/brand.css
 // =============================================================================
 
 @use 'tokens';
 @use 'base';
-@use 'chrome';
-@use 'button';
-@use 'breadcrumb';
-@use 'hero';
-@use 'section';
-@use 'features';
-@use 'faq';
-@use 'final-cta';
-@use 'cta-form';
-@use 'home';
-@use 'guide';
-@use 'essay';
-@use 'authority';
+@use 'components';

@@ -1,77 +1,27 @@
-{# 에세이 prose 템플릿 — 가이드(_guide.html.twig)와 다른 *에디토리얼* 톤.
+{# Essay — BodyTemplate::Essay. 미니멀 에디토리얼 prose. #}
 
-   각 에세이는 *독립*된 글. 변종 구분 없음 — 카테고리 라벨도 단일.
-   작성자 byline + drop cap + 차분한 reading flow가 시그니처.
-#}
-
-{% include 'public/_partials/breadcrumb.html.twig' %}
-
-<article class="essay">
-    <header class="essay__header">
-        <div class="essay__meta-top">
-            <span class="essay__category">에세이</span>
-            {% if node.lastReviewAt %}
-                <time class="essay__date" datetime="{{ node.lastReviewAt|date('c') }}">
-                    {{ node.lastReviewAt|date('Y. m. d.') }}
-                </time>
-            {% endif %}
-        </div>
-
-        <h1 class="essay__title">{{ h1 }}</h1>
-
-        {% if node.introText %}
-            <p class="essay__lede">{{ node.introText }}</p>
-        {% endif %}
-
-        {% if node.author %}
-            <div class="essay__byline">
-                <span class="essay__byline-label">글</span>
-                <span class="essay__byline-name">{{ node.author.realName }}</span>
-                {% if node.author.credentials %}
-                    <span class="essay__byline-credit">{{ node.author.credentials|striptags|slice(0, 60) }}</span>
-                {% endif %}
-            </div>
-        {% endif %}
-    </header>
-
-    {% if body_html %}
-        <div class="essay__body">
-            {{ body_html|raw }}
-        </div>
-    {% endif %}
-
-    {# 본문 후 인용/포인트 박스 — comparison DataPoint를 활용 #}
-    {% if byKind.comparison is not empty %}
-        <aside class="essay__pulls">
-            {% for dp in byKind.comparison|slice(0, 2) %}
-                <blockquote class="essay__pull">
-                    <span class="essay__pull-quote">
-                        {%- if dp.value is iterable %}{{ dp.value|join(', ') }}{% else %}{{ dp.value|raw }}{% endif -%}
-                    </span>
-                    <cite class="essay__pull-source">— {{ dp.title }}</cite>
-                </blockquote>
+<main class="page page--narrow">
+    {% if crumbs is not empty %}
+        <nav class="crumbs" aria-label="Breadcrumb">
+            {% for crumb in crumbs %}
+                {% if crumb.current %}<span aria-current="page">{{ crumb.label }}</span>
+                {% else %}<a href="{{ crumb.url }}">{{ crumb.label }}</a><span aria-hidden="true">›</span>{% endif %}
             {% endfor %}
-        </aside>
+        </nav>
     {% endif %}
 
-    {# 형제 에세이 — theme_siblings #}
-    {% if theme_siblings is not empty %}
-        <section class="essay__related">
-            <h2 class="essay__related-title">함께 읽기</h2>
-            <ul class="essay__related-list">
-                {% for sibling in theme_siblings %}
-                    <li>
-                        <a class="essay__related-link" href="{{ urls.build(sibling) }}">
-                            <span class="essay__related-name">{{ sibling.theme.name }}</span>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if node.theme.parent %}
-                <p class="essay__related-up">
-                    <a href="{{ urls.buildPath(node.theme.parent, null) }}">← {{ node.theme.parent.name }} 전체 보기</a>
+    <article class="article">
+        <header>
+            <h1>{{ h1 }}</h1>
+            {% if node.introText %}<p class="lede">{{ node.introText }}</p>{% endif %}
+            {% if node.author %}
+                <p class="byline">
+                    <strong>{{ node.author.realName }}</strong>
+                    {% if node.lastReviewAt %} · {{ node.lastReviewAt|date('Y-m-d') }}{% endif %}
                 </p>
             {% endif %}
-        </section>
-    {% endif %}
-</article>
+        </header>
+
+        {% if body_html %}<div class="prose">{{ body_html|raw }}</div>{% endif %}
+    </article>
+</main>

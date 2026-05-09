@@ -1,56 +1,22 @@
 {% extends 'public/layout.html.twig' %}
 
 {% block title %}{{ brand_public_name() }}{% endblock %}
-{% block description %}{{ brand_public_name() }} — programmatic SEO 사이트의 빈 스타터입니다.{% endblock %}
+{% block description %}{{ brand_public_name() }}{% endblock %}
 {% block canonical %}<link rel="canonical" href="{{ url('public_home') }}">{% endblock %}
 
 {% block content %}
-    <section class="hero">
-        <div class="hero__inner">
-            <div>
-                <span class="hero__eyebrow">Welcome</span>
-                <h1 class="hero__title">
-                    {{ brand_public_name() }}
-                </h1>
-                <p class="hero__lede">
-                    이 페이지는 빈 스타터의 기본 화면입니다. 어드민에서 첫 테마와 콘텐츠 노드를 추가하면, 추가된 테마가 아래에 카드로 자동 표시됩니다.
-                </p>
-                <div class="hero__actions">
-                    <a class="cta cta--primary cta--lg" href="{{ path('admin_dashboard') }}">
-                        <span>어드민으로 이동</span>
-                    </a>
-                    <span class="hero__assurance">README.md의 첫 입양 체크리스트 참고</span>
-                </div>
-            </div>
-        </div>
-    </section>
+    <main class="page page--narrow">
+        <h1>{{ brand_public_name() }}</h1>
+        <p class="lede">programmatic SEO 빈 스타터입니다. 어드민에서 첫 테마와 콘텐츠 노드를 추가하세요.</p>
 
-    <section class="section section--alt">
-        <div class="section__inner">
-            <header class="section__header">
-                <span class="section__eyebrow">테마</span>
-                <h2 class="section__title">발행된 테마</h2>
-                <p class="section__lede">루트 테마(parent IS NULL)가 자동 표시됩니다. 어드민 → 테마 → 새 테마로 추가하세요.</p>
-            </header>
-            {% if themes is not empty %}
-                <ul class="home-themes">
-                    {% for theme in themes %}
-                        <li>
-                            <a class="home-themes__card" href="/{{ theme.slug }}/">
-                                <span class="home-themes__name">{{ theme.name }}</span>
-                                {% if theme.description %}
-                                    <span class="home-themes__desc">{{ theme.description }}</span>
-                                {% endif %}
-                                <span class="home-themes__more">살펴보기 →</span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="section__lede" style="text-align:center;opacity:.6;">
-                    아직 발행된 테마가 없습니다.
-                </p>
-            {% endif %}
-        </div>
-    </section>
+        {% if themes is not empty %}
+            <ul class="link-list">
+                {% for theme in themes %}
+                    <li><a href="/{{ theme.slug }}/">{{ theme.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <p><a href="{{ path('admin_dashboard') }}">어드민 →</a></p>
+    </main>
 {% endblock %}
