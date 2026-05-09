@@ -9,7 +9,13 @@
       "Bash(php bin/console doctrine:schema:validate)",
       "Bash(php bin/console dbal:run-sql \"SELECT 'theme' AS t, COUNT\\(*\\) FROM theme UNION ALL SELECT 'region', COUNT\\(*\\) FROM region UNION ALL SELECT 'author', COUNT\\(*\\) FROM author\")",
       "Bash(php bin/console doctrine:database:drop --force --if-exists)",
-      "Bash(php bin/console doctrine:database:create)"
+      "Bash(php bin/console doctrine:database:create)",
+      "Bash(curl -sS -o /dev/null -w \"home:        HTTP %{http_code}\\\\n\" http://localhost:8080/)",
+      "Bash(curl -sS -o /dev/null -w \"login:       HTTP %{http_code}\\\\n\" http://localhost:8080/login)",
+      "Bash(git -C /home/rlawjddn/projects/seo-symfony add assets/scss/brand templates/public)",
+      "Bash(git -C /home/rlawjddn/projects/seo-symfony commit -m ' *)",
+      "Bash(git -C /home/rlawjddn/projects/seo-symfony tag -a v0.1.4 -m ' *)",
+      "Bash(git -C /home/rlawjddn/projects/seo-symfony push origin v0.1.4)"
     ]
   }
 }
