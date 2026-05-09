@@ -9,7 +9,7 @@
 | [01-premise.md](01-premise.md) | 시스템 전제와 5가지 불변성 | 시스템의 *왜*를 답할 때 |
 | [02-entities.md](02-entities.md) | 5개 엔티티 + 제약 + 강제 위치 | 엔티티 관련 결정 |
 | [03-page-derivation.md](03-page-derivation.md) | 데이터 → 페이지 도출 룰 | 렌더링/오버라이드 결정 |
-| [04-content-types.md](04-content-types.md) | 10개 BodyTemplate 카탈로그 | 콘텐츠 타입 선택 |
+| [04-content-types.md](04-content-types.md) | 5개 BodyTemplate 카탈로그 | 콘텐츠 타입 선택 |
 | [05-decision-rules.md](05-decision-rules.md) | Q&A 형식 결정 룰 | "X일 때 어떻게 해야?" 답변 |
 | [06-vocabulary.md](06-vocabulary.md) | 한국어 ↔ 영문 ↔ 코드 ↔ DB 매핑 | 용어 통합 |
 

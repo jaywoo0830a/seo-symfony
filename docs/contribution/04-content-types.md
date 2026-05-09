@@ -1,23 +1,20 @@
 # 04. 콘텐츠 타입 (BodyTemplate)
 
-## 1. 변종 카탈로그
+## 1. 패밀리 카탈로그
 
-[BodyTemplate enum](../../src/Entity/Enum/BodyTemplate.php) 10개:
+[BodyTemplate enum](../../src/Entity/Enum/BodyTemplate.php) 5개:
 
-| 변종 | 자동/수동 | 발행 게이트 | 톤 |
+| 패밀리 | 자동/수동 | 발행 게이트 | 톤 |
 |---|---|---|---|
-| `Hub` | 자동 (region 깊이 0) | data_count ≥ 5 | 매트릭스 |
-| `Sido` | 자동 (region 깊이 1) | data_count ≥ 5 | 매트릭스 |
-| `Sigungu` | 자동 (region 깊이 2) | data_count ≥ 5 | 매트릭스 |
-| `Dong` | 자동 (region 깊이 3) | data_count ≥ 5 | 매트릭스 |
-| `GuideLongform` | 수동 | body 3,000자+ AND verified FAQ ≥ 3 | how-to 심층 |
-| `GuideComparison` | 수동 | 위와 동일 | how-to 비교 |
-| `GuideFaq` | 수동 | 위와 동일 | how-to FAQ 중심 |
+| `Matrix` | 자동 (bodyTemplate=NULL → 기본) | data_count ≥ 5 | 매트릭스 |
+| `Guide` | 수동 | body 3,000자+ AND verified FAQ ≥ 3 | how-to |
 | `Essay` | 수동 | body 3,000자+ | 에디토리얼 |
 | `Report` | 수동 | body 5,000자+ | 데이터 보고서 |
 | `CaseStudy` | 수동 | body 1,500자+ | 사례 연구 |
 
-발행 게이트는 [최신 마이그레이션](../../migrations/)의 `fn_publish_gate` PostgreSQL 함수에 정의. 모든 prose 변종은 추가로 `intro_text` 비어있지 않음 + verified author 필수.
+발행 게이트는 [최신 마이그레이션](../../migrations/)의 `fn_publish_gate` PostgreSQL 함수에 정의. 모든 prose 패밀리는 추가로 `intro_text` 비어있지 않음 + verified author 필수.
+
+매트릭스 자식 변종(시도/시군구/동)은 enum 값에 박지 않습니다. 같은 `Matrix` 패밀리로 렌더되고 시각 차이는 `region.depth`와 데이터에서 자연스럽게 나옵니다. 가이드 안의 sub-kind(심층/비교/FAQ)도 같은 이유로 enum에 두지 않습니다 — 차이는 작성자 보이스와 Markdown 본문이 만듭니다.
 
 상세 카탈로그(렌더 시그니처, 사용처): [docs/ai/04-content-types.md](../ai/04-content-types.md).
 
@@ -26,18 +23,10 @@
 [PublicNodeController::deriveTemplate()](../../src/Controller/Public/PublicNodeController.php):
 
 ```
-if node.bodyTemplate is set explicitly:
-    return node.bodyTemplate                  // 운영자 명시 우선
-else:
-    return match (region.depth):              // 자동 결정 (매트릭스만)
-        null/0 → Hub
-        1      → Sido
-        2      → Sigungu
-        3      → Dong
-        _      → Hub
+return node.bodyTemplate ?? Matrix
 ```
 
-매트릭스 변종은 region 깊이로 자동 결정되므로 운영자가 직접 설정할 필요가 없습니다. Prose 변종(guide/essay/report/case_study)은 *반드시 명시*해야 합니다 — 그렇지 않으면 region=null 노드가 자동으로 `Hub`이 되어 매트릭스 게이트를 받습니다.
+매트릭스 페이지는 `bodyTemplate`을 비워두면 됩니다 (혹은 명시적으로 `Matrix` 선택). Prose 패밀리(Guide/Essay/Report/CaseStudy)는 *반드시 명시*해야 합니다 — 그렇지 않으면 자동으로 `Matrix`가 되어 매트릭스 게이트(data_count ≥ 5)를 받습니다.
 
 ## 3. 게이트 분기 — DB 함수가 강제
 
@@ -58,7 +47,7 @@ else:
 
 ## 5. 새 콘텐츠 타입 추가하기
 
-새 BodyTemplate 변종(예: `Interview`)을 추가하려면 7곳을 만집니다. 순서대로:
+새 BodyTemplate 패밀리(예: `Interview`)를 추가하려면 7곳을 만집니다. 순서대로:
 
 ### 5.1 enum
 
@@ -134,18 +123,18 @@ BodyTemplate::Interview => '인터뷰 (interview)',
 
 ## 6. 가벼운 대안 — enum 안 만지기
 
-새 콘텐츠 *타입*이 시각적으로 비슷하면 enum 안 늘리고 **자식 테마 + 기존 변종**으로 해결:
+새 콘텐츠 *타입*이 시각적으로 비슷하면 enum 안 늘리고 **자식 테마 + 기존 패밀리**로 해결:
 
 - `contents` 아래 자식 테마 `parent-tip` 만들고 `body_template = essay` 사용
 - 모든 page-level 자유는 `hubs/contents/parent-tip.html.twig` 오버라이드로
 
 **enum 추가가 정당한 경우**:
 
-- 발행 게이트 임계값이 *기존 변종과 다름*
+- 발행 게이트 임계값이 *기존 패밀리와 다름*
 - 시각 시그니처가 *기존 템플릿과 명확히 다름* (drop cap vs 인용 박스 등)
-- 사용처(테마)가 *기존 변종으로는 표현 불가능*
+- 사용처(테마)가 *기존 패밀리로는 표현 불가능*
 
-세 조건 모두 *거짓*이면: 기존 변종 사용하면 됩니다. 새 변종 추가는 *시스템 복잡도 증가*이므로 정당화가 필요합니다 — [docs/ai/04-content-types.md §9](../ai/04-content-types.md#9-셀프-검증-체크리스트).
+세 조건 모두 *거짓*이면: 기존 패밀리 사용하면 됩니다. 새 패밀리 추가는 *시스템 복잡도 증가*이므로 정당화가 필요합니다 — [docs/ai/04-content-types.md §9](../ai/04-content-types.md#9-셀프-검증-체크리스트). 같은 패밀리 안에서 sub-kind를 갈라야 한다는 충동도 같은 기준으로 통제하세요 — *시각 구조가 실제로 다른가*만이 정당화 사유입니다.
 
 ## 관련 문서
 

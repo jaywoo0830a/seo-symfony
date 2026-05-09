@@ -78,28 +78,21 @@ region_path(r) = r의 시도부터 r까지 slug를 "/"로 연결 (전국 노드�
 
 ```
 1. node.bodyTemplate 명시되어 있음? → 그것 사용
-2. region.depth로 자동 매핑:
-   - NULL/0 → Hub
-   - 1     → Sido
-   - 2     → Sigungu
-   - 3     → Dong
+2. 명시 안 됨 → Matrix (기본값)
 ```
+
+지역 깊이(시도/시군구/동)는 *enum 값에 박지 않음* — 같은 `Matrix`로 렌더되고 시각 차이는 데이터(region.depth)에서 자연스럽게 나옴.
 
 ### 4.2 룰 표
 
 | 조건 | 결과 |
 |---|---|
 | `node.bodyTemplate` 명시 | 그 값 (운영자 의도 우선) |
-| `region IS NULL AND theme.parent IS NULL` AND 명시 안됨 | `Hub` |
-| `region.depth = 1` AND 명시 안됨 | `Sido` |
-| `region.depth = 2` AND 명시 안됨 | `Sigungu` |
-| `region.depth = 3` AND 명시 안됨 | `Dong` |
+| 명시 안 됨 | `Matrix` |
 
 ### 4.3 prose 변종은 명시 필수
 
-`Essay`, `Report`, `CaseStudy`, `Guide*`는 region 깊이로 자동 결정 *안 됨*. 운영자가 명시해야 함.
-
-자식 테마 페이지(region=NULL, theme.parent != NULL)는 자동 결정 결과가 `Hub`이므로, prose 변종을 원하면 *반드시 명시*.
+`Guide`, `Essay`, `Report`, `CaseStudy`는 자동 결정 *안 됨*. 운영자가 명시해야 함. 명시하지 않으면 `Matrix`로 떨어짐.
 
 ### 4.4 코드
 
@@ -173,7 +166,7 @@ region_path(r) = r의 시도부터 r까지 slug를 "/"로 연결 (전국 노드�
 
 | body_template | 템플릿 파일 |
 |---|---|
-| `guide_longform`, `guide_comparison`, `guide_faq` | `_guide.html.twig` (내부 분기) |
+| `guide` | `_guide.html.twig` |
 | `essay` | `_essay.html.twig` |
 | `report` | `_report.html.twig` |
 | `case_study` | `_case_study.html.twig` |

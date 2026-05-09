@@ -196,34 +196,26 @@ templates/public/hubs/
 
 ## 7. 콘텐츠 타입의 prose 템플릿
 
-각 prose 변종은 *고정된 템플릿 파일*에 매핑됩니다:
+각 prose 패밀리는 *고정된 템플릿 파일*에 1:1 매핑됩니다:
 
 | BodyTemplate | 템플릿 파일 | 핵심 시각 시그니처 |
 |---|---|---|
-| `guide_longform/comparison/faq` | [_guide.html.twig](../../templates/public/_guide.html.twig) | 체크리스트, FAQ 강조, 강한 CTA |
+| `guide` | [_guide.html.twig](../../templates/public/_guide.html.twig) | 체크리스트, FAQ 강조, 강한 CTA |
 | `essay` | [_essay.html.twig](../../templates/public/_essay.html.twig) | drop cap, byline, 차분한 reading flow |
 | `report` | [_report.html.twig](../../templates/public/_report.html.twig) | 시리즈 헤더, 핵심 수치 박스, 인용 안내 |
 | `case_study` | [_case_study.html.twig](../../templates/public/_case_study.html.twig) | Before/After, 학생 프로필 박스, 증언 인용 |
 
-### 7.1 왜 한 변종 = 한 파일이 아닌가 (가이드의 경우)
+### 7.1 가이드는 sub-kind 없이 단일 패밀리
 
-`_guide.html.twig`는 *내부적으로 3개 가이드 변종 처리*:
+이전엔 `guide_longform` / `guide_comparison` / `guide_faq` 3종으로 갈렸으나 *통합*. sub-kind는 의도적으로 두지 않고, 차이는 *작성자 보이스와 Markdown 본문*이 만든다. 시각 구조는 단일 흐름:
 
-```twig
-{% if template.value == 'guide_comparison' %}
-    {# 비교 박스를 본문 위로 #}
-{% elseif template.value == 'guide_faq' %}
-    {# FAQ를 본문 위로, 첫 항목 자동 펼침 #}
-{% else %}
-    {# 본문 → FAQ 끝에 #}
-{% endif %}
+```
+hero → body → 보조 수치 → 비교 콜아웃 → FAQ → 형제 가이드 → CTA
 ```
 
-대안: `_guide_longform.html.twig`, `_guide_comparison.html.twig`, `_guide_faq.html.twig` 3파일.
-- 단점: 80% 같은 코드 3번 복사. 한 곳 수정 시 3곳 수정.
-- 선택된 옵션의 단점: 한 파일 안 분기 로직 복잡.
+비교 데이터(comparison DataPoint)나 FAQ DataPoint가 없으면 해당 섹션은 자동 생략. 슬러그별로 시각이 크게 달라야 하면 [`hubs/guides/{slug}.html.twig`](../../templates/public/hubs/guides/) 오버라이드로 처리.
 
-내부 분기를 받아들인 트레이드오프. 변종이 *5개 이상*으로 늘면 분리 검토 필요.
+**왜 sub-kind 안 두는가**: 분류는 끝없이 갈라지고(checklist/decision/pitfall/workflow/primer 등) 각 sub-kind는 결국 시각·구조가 거의 같다. 분류 enum은 *시각 구조가 실제로 다른* 경우에만 정당하고, 가이드 안에서는 그 기준을 만족하지 못한다고 판단했다. 필요해지면 그때 도입.
 
 ## 8. 컨텍스트 변수 — 모든 템플릿이 받는 것
 

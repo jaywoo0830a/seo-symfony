@@ -48,8 +48,8 @@
 
 | body_template | 게이트 경로 | 요건 |
 |---|---|---|
-| `hub`, `sido`, `sigungu`, `dong` (또는 NULL) | matrix | `data_count >= 5` |
-| `guide_*` | guide | `body_markdown >= 3000자` AND `verified FAQ >= 3` |
+| `matrix` (또는 NULL) | matrix | `data_count >= 5` |
+| `guide` | guide | `body_markdown >= 3000자` AND `verified FAQ >= 3` |
 | `essay` | essay | `body_markdown >= 3000자` |
 | `report` | report | `body_markdown >= 5000자` |
 | `case_study` | case_study | `body_markdown >= 1500자` |

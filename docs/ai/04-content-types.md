@@ -1,43 +1,37 @@
 # 04. 콘텐츠 타입 카탈로그
 
-10개 BodyTemplate 변종의 *완전한 룰*. 각 변종에 대해: 자동 결정 여부, 발행 게이트, 템플릿 파일, 의도된 사용처.
+5개 BodyTemplate 패밀리의 *완전한 룰*. 각 패밀리에 대해: 자동 결정 여부, 발행 게이트, 템플릿 파일, 의도된 사용처.
 
 ## 0. 카탈로그 한눈에
 
-| 변종 | 자동/수동 | 발행 게이트 | 템플릿 파일 | 톤 |
+| 패밀리 | 자동/수동 | 발행 게이트 | 템플릿 파일 | 톤 |
 |---|---|---|---|---|
-| `Hub` | 자동 (region=NULL/0) | data_count ≥ 5 | matrix/{theme}.html.twig | 매트릭스 |
-| `Sido` | 자동 (region.depth=1) | data_count ≥ 5 | matrix/{theme}.html.twig | 매트릭스 |
-| `Sigungu` | 자동 (region.depth=2) | data_count ≥ 5 | matrix/{theme}.html.twig | 매트릭스 |
-| `Dong` | 자동 (region.depth=3) | data_count ≥ 5 | matrix/{theme}.html.twig | 매트릭스 |
-| `GuideLongform` | **수동** | body 3,000자+ AND verified FAQ ≥ 3 | _guide.html.twig | how-to 심층 |
-| `GuideComparison` | **수동** | 위와 동일 | _guide.html.twig | how-to 비교 |
-| `GuideFaq` | **수동** | 위와 동일 | _guide.html.twig | how-to FAQ 중심 |
+| `Matrix` | 자동 (bodyTemplate=NULL → 기본) | data_count ≥ 5 | matrix/{theme}.html.twig | 매트릭스 |
+| `Guide` | **수동** | body 3,000자+ AND verified FAQ ≥ 3 | _guide.html.twig | how-to |
 | `Essay` | **수동** | body 3,000자+ | _essay.html.twig | 에디토리얼 |
 | `Report` | **수동** | body 5,000자+ | _report.html.twig | 학술 |
 | `CaseStudy` | **수동** | body 1,500자+ | _case_study.html.twig | 증거형 |
 
-**공통 게이트** (모든 변종): `intro_text` 비어있지 않음 + `author.verified_at IS NOT NULL`.
+**공통 게이트** (모든 패밀리): `intro_text` 비어있지 않음 + `author.verified_at IS NOT NULL`.
 
-## 1. 매트릭스 변종 (Hub/Sido/Sigungu/Dong)
+## 1. Matrix (지역 매트릭스)
 
 ### 1.1 자동 결정 룰
 
 ```
-region IS NULL OR depth=0  → Hub
-region.depth = 1           → Sido
-region.depth = 2           → Sigungu
-region.depth = 3           → Dong
+node.bodyTemplate IS NULL → Matrix (기본값)
 ```
+
+지역 깊이(시도/시군구/동)는 enum 값에 박지 않음. 같은 `Matrix` 패밀리로 렌더되고, 시각 차이는 `region.depth`와 `byKind` 데이터에서 자연스럽게 나옴.
 
 ### 1.2 의도된 사용처
 
-| 변종 | URL 예 | 키워드 의도 |
-|---|---|---|
-| Hub | `/tutoring/` | 광역 ("과외 추천") |
-| Sido | `/tutoring/seoul/` | 시도 광역 ("서울 과외") |
-| Sigungu | `/tutoring/seoul/gangnam-gu/` | 시군구 ("강남 과외") |
-| Dong | `/tutoring/seoul/gangnam-gu/daechi-dong/` | 동 단위 ("대치동 과외") |
+| URL 예 | 키워드 의도 |
+|---|---|
+| `/tutoring/` | 광역 ("과외 추천") |
+| `/tutoring/seoul/` | 시도 광역 ("서울 과외") |
+| `/tutoring/seoul/gangnam-gu/` | 시군구 ("강남 과외") |
+| `/tutoring/seoul/gangnam-gu/daechi-dong/` | 동 단위 ("대치동 과외") |
 
 ### 1.3 발행 게이트
 
@@ -56,17 +50,19 @@ region.depth = 3           → Dong
 
 매트릭스 셸은 `templates/public/matrix/{root-theme.slug}.html.twig` 우선, 없으면 `_matrix.html.twig` fallback.
 
-## 2. 가이드 변종 (Guide*)
+## 2. Guide (가이드)
 
-### 2.1 3개 변종
+### 2.1 단일 패밀리
 
-| 변종 | 의도 | 시각 시그니처 |
-|---|---|---|
-| `GuideLongform` | 심층 how-to | 본문 → callouts → FAQ → CTA |
-| `GuideComparison` | 비교 분석 | callouts(비교) → 본문 → FAQ → CTA |
-| `GuideFaq` | FAQ 중심 | FAQ(첫 항목 펼침) → 본문 → callouts → CTA |
+이전엔 `GuideLongform` / `GuideComparison` / `GuideFaq` 3종으로 갈렸으나 *통합됨*. sub-kind는 의도적으로 두지 않고, 차이는 *작성자 보이스와 Markdown 본문*이 만든다. 시각 구조는 단일 흐름:
 
-### 2.2 공통 발행 게이트
+```
+hero → body → 보조 수치 → 비교 콜아웃 → FAQ → 형제 가이드 → CTA
+```
+
+비교 데이터(comparison DataPoint)나 FAQ DataPoint가 없으면 해당 섹션은 자동 생략.
+
+### 2.2 발행 게이트
 
 | 게이트 | 임계값 |
 |---|---|
@@ -81,15 +77,12 @@ region.depth = 3           → Dong
 
 ### 2.4 렌더링
 
-[_guide.html.twig](../../templates/public/_guide.html.twig)가 내부적으로 3변종 분기.
+[_guide.html.twig](../../templates/public/_guide.html.twig). 슬러그별 오버라이드는 `templates/public/hubs/guides/{slug}.html.twig`로 가능.
 
 ### 2.5 사용처
 
-- 정보형 가이드 ("과외 강사 선택법")
-- 비교 분석 ("과외 vs 학원")
-- 모음 페이지 ("자주 묻는 질문")
-
-테마: `guides/` 아래 자식 테마로.
+- `guides/` 아래 자식 테마
+- 정보형 가이드, 비교 분석, FAQ 모음 등 *모두 같은 패밀리* — 형식 차이는 본문에서 표현
 
 ## 3. Essay (에세이)
 
@@ -198,48 +191,44 @@ E-E-A-T의 *Experience* 직격. 익명화된 실제 사례.
 ```
 1. 노드의 좌표 결정 (theme, region)
 2. 콘텐츠 타입 결정:
-   - 매트릭스 페이지? → bodyTemplate 비워둠 (자동 결정)
-   - prose 콘텐츠? → bodyTemplate 명시 (Essay/Report/CaseStudy/Guide*)
+   - 매트릭스 페이지? → bodyTemplate 비워둠 (또는 명시적으로 Matrix)
+   - prose 콘텐츠? → bodyTemplate 명시 (Guide/Essay/Report/CaseStudy)
 3. body_markdown 입력 (prose만)
 4. DataPoint 입력 (해당 타입의 게이트 만족하도록)
 5. status='live' 시도 → 트리거가 게이트 검증
 ```
 
-## 7. 변종별 게이트 비교 표
+## 7. 패밀리별 게이트 비교 표
 
-| 변종 | data_count | body_markdown 길이 | FAQ 수 | intro_text | author |
+| 패밀리 | data_count | body_markdown 길이 | FAQ 수 | intro_text | author |
 |---|---|---|---|---|---|
-| Hub/Sido/Sigungu/Dong | ≥ 5 | — | — | 필수 | verified |
-| GuideLongform | — | ≥ 3,000 | ≥ 3 | 필수 | verified |
-| GuideComparison | — | ≥ 3,000 | ≥ 3 | 필수 | verified |
-| GuideFaq | — | ≥ 3,000 | ≥ 3 | 필수 | verified |
+| Matrix | ≥ 5 | — | — | 필수 | verified |
+| Guide | — | ≥ 3,000 | ≥ 3 | 필수 | verified |
 | Essay | — | ≥ 3,000 | — | 필수 | verified |
 | Report | — | ≥ 5,000 | — | 필수 | verified |
 | CaseStudy | — | ≥ 1,500 | — | 필수 | verified |
 
 **공통**: 부모가 live (region 있을 때).
 
-## 8. 변종 선택 결정 룰
+## 8. 패밀리 선택 결정 룰
 
-| 콘텐츠 의도 | 선택할 변종 |
+| 콘텐츠 의도 | 선택할 패밀리 |
 |---|---|
-| 지역 페이지 (자동) | (비워둠 → 자동) |
-| how-to 가이드 (단일 글, 깊음) | GuideLongform |
-| 두 옵션 비교 가이드 | GuideComparison |
-| 질문 모음 가이드 | GuideFaq |
+| 지역 페이지 (자동) | (비워둠 → Matrix) |
+| how-to 가이드 (심층/비교/FAQ 모두 포함) | Guide |
 | 작가의 목소리 (오피니언/에세이) | Essay |
 | 자체 데이터 분기 보고서 | Report |
 | 익명 사례 연구 | CaseStudy |
 
 ## 9. 셀프 검증 체크리스트
 
-새 콘텐츠 타입을 추가하려는 경우, 다음 중 *최소 하나*가 참이어야 정당함:
+새 콘텐츠 패밀리를 추가하려는 경우, 다음 중 *최소 하나*가 참이어야 정당함:
 
-- [ ] 발행 게이트 임계값이 *기존 변종과 다름* (예: 더 짧거나 다른 데이터 요구)
+- [ ] 발행 게이트 임계값이 *기존 패밀리와 다름* (예: 더 짧거나 다른 데이터 요구)
 - [ ] 시각 시그니처가 *기존 템플릿과 명확히 다름* (drop cap vs 인용 박스 vs 표 등)
-- [ ] 사용처(테마)가 *기존 변종으로는 표현 불가능*
+- [ ] 사용처(테마)가 *기존 패밀리로는 표현 불가능*
 
-세 조건 모두 *거짓*이면: 기존 변종을 사용하면 됨. 새 변종 추가는 *시스템 복잡도 증가*이므로 정당화 필요.
+세 조건 모두 *거짓*이면: 기존 패밀리를 사용하면 됨. 새 패밀리 추가는 *시스템 복잡도 증가*이므로 정당화 필요. 같은 패밀리 안에서 sub-kind를 갈라야 한다는 충동도 같은 기준으로 통제 — *시각 구조가 실제로 다른가*만이 정당화 사유.
 
 ## 10. 관련 룰
 

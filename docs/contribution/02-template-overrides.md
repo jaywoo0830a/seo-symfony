@@ -68,12 +68,12 @@
 
 | body_template | 템플릿 |
 |---|---|
-| `guide_longform`, `guide_comparison`, `guide_faq` | [_guide.html.twig](../../templates/public/_guide.html.twig) (변종별 내부 분기) |
+| `guide` | [_guide.html.twig](../../templates/public/_guide.html.twig) |
 | `essay` | [_essay.html.twig](../../templates/public/_essay.html.twig) |
 | `report` | [_report.html.twig](../../templates/public/_report.html.twig) |
 | `case_study` | [_case_study.html.twig](../../templates/public/_case_study.html.twig) |
 
-이 파일을 직접 수정하면 *해당 콘텐츠 타입의 모든 페이지*에 일괄 반영됩니다. 새 prose 변종이 필요하면 [04-content-types.md §확장 패턴](04-content-types.md#새-콘텐츠-타입-추가하기) 참조.
+이 파일을 직접 수정하면 *해당 콘텐츠 타입의 모든 페이지*에 일괄 반영됩니다. 새 prose 패밀리가 필요하면 [04-content-types.md §확장 패턴](04-content-types.md#새-콘텐츠-타입-추가하기) 참조.
 
 ## 4. 파셜 라이브러리
 

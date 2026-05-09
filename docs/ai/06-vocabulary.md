@@ -26,16 +26,13 @@
 
 | 한국어 | 영문 | enum case | DB 값 | 게이트 임계값 |
 |---|---|---|---|---|
-| 허브 | Hub | `BodyTemplate::Hub` | `'hub'` | data_count ≥ 5 |
-| 시도 | Sido | `BodyTemplate::Sido` | `'sido'` | data_count ≥ 5 |
-| 시군구 | Sigungu | `BodyTemplate::Sigungu` | `'sigungu'` | data_count ≥ 5 |
-| 동 | Dong | `BodyTemplate::Dong` | `'dong'` | data_count ≥ 5 |
-| 가이드 (심층) | GuideLongform | `BodyTemplate::GuideLongform` | `'guide_longform'` | body 3,000자+ AND FAQ 3+ |
-| 가이드 (비교) | GuideComparison | `BodyTemplate::GuideComparison` | `'guide_comparison'` | 위와 동일 |
-| 가이드 (FAQ) | GuideFaq | `BodyTemplate::GuideFaq` | `'guide_faq'` | 위와 동일 |
+| 매트릭스 | Matrix | `BodyTemplate::Matrix` | `'matrix'` | data_count ≥ 5 |
+| 가이드 | Guide | `BodyTemplate::Guide` | `'guide'` | body 3,000자+ AND FAQ 3+ |
 | 에세이 | Essay | `BodyTemplate::Essay` | `'essay'` | body 3,000자+ |
 | 데이터 리포트 | Report | `BodyTemplate::Report` | `'report'` | body 5,000자+ |
 | 사례 연구 | CaseStudy | `BodyTemplate::CaseStudy` | `'case_study'` | body 1,500자+ |
+
+`bodyTemplate IS NULL` 은 `Matrix` 의 기본값으로 해석됨 (deriveTemplate 의 fallback). 매트릭스 자식 변종(시도/시군구/동)은 enum 값에 박지 않고, 시각 차이는 `region.depth`와 데이터에서 자연스럽게 나옴.
 
 ## 4. DataPoint kind (DataPointKind enum)
 
@@ -93,7 +90,7 @@
 
 | 용어 A | 용어 B | 차이 |
 |---|---|---|
-| BodyTemplate.Hub | 테마 허브 | 전자는 enum 값, 후자는 페이지 종류. 테마 허브는 BodyTemplate.Hub로 자동 결정되지만 명시 변경 가능. |
+| BodyTemplate.Matrix | 테마 허브 | 전자는 enum 값(매트릭스 패밀리), 후자는 페이지 종류(region=NULL). 테마 허브는 보통 Matrix 패밀리로 자동 결정되지만 명시 변경 가능. |
 | BodyTemplate.CaseStudy | DataPointKind::CaseStudy | 전자는 페이지 타입(사례 연구 페이지), 후자는 데이터 종류(인용/사례 박스). 다른 개념. |
 | status='noindex' | status='dead' | noindex = 일시 강등, 회복 가능. dead = 영구 폐기, Redirect 자동 등록. |
 | 카니발리제이션 | 사일로 침범 | 전자는 키워드 충돌 (같은 검색어를 두 페이지가 노림). 후자는 구조 충돌 (다른 테마로 직접 링크). |
@@ -104,8 +101,8 @@
 
 | 게이트 경로 | 적용 body_template | 임계값 |
 |---|---|---|
-| matrix | hub, sido, sigungu, dong (또는 NULL) | data_count ≥ 5 |
-| guide | guide_longform, guide_comparison, guide_faq | body 3,000자+ AND FAQ 3+ |
+| matrix | matrix (또는 NULL) | data_count ≥ 5 |
+| guide | guide | body 3,000자+ AND FAQ 3+ |
 | essay | essay | body 3,000자+ |
 | report | report | body 5,000자+ |
 | case_study | case_study | body 1,500자+ |

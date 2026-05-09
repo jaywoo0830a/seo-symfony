@@ -22,7 +22,7 @@ LLM이 받을 흔한 질문에 대한 *직접적 답변 룰*. 자연어 설명�
 ```
 1. /admin/themes/new → parent='guides' 선택, slug 입력
 2. /admin/nodes/new → theme=새_자식_테마, region=비움
-3. body_template = GuideLongform/GuideComparison/GuideFaq 명시
+3. body_template = Guide 명시
 4. body_markdown 작성 (3,000자+)
 5. /admin/nodes/{id}/datapoints/new → kind=faq 3개+ 추가하고 verify
 6. status=live 변경 → 트리거가 게이트 검증

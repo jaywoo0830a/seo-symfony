@@ -52,7 +52,7 @@ parameters:
         - { match: '*',         cta: brand_phone }
 
       final:
-        - { match: 'guide_*',   cta: guide_consult_form }
+        - { match: 'guide',     cta: guide_consult_form }
         - { match: '*',         cta: brand_phone }
 ```
 
@@ -60,14 +60,14 @@ parameters:
 
 1. 페이지 진입 → 슬롯 + 페이지의 `BodyTemplate`이 [CtaResolver](../../src/Cta/CtaResolver.php)에 입력
 2. `slots.<slot>` 의 룰들을 위에서 아래로 평가
-3. `match`는 `fnmatch` 패턴 — `'guide_*'`, `'essay'`, `'*'` 등
+3. `match`는 `fnmatch` 패턴 — `'guide'`, `'essay'`, `'*'` 등 (와일드카드도 사용 가능)
 4. 첫 매칭 룰의 `cta` 키로 `ctas.<key>` 조회
 5. 매칭 실패 시 `brand_phone` 안전 디폴트
 
 ```
-fnmatch('guide_*',  'guide_longform') → true   → guide_consult_form
-fnmatch('guide_*',  'hub')             → false
-fnmatch('*',        'hub')             → true   → brand_phone
+fnmatch('guide',  'guide')   → true   → guide_consult_form
+fnmatch('guide',  'matrix')  → false
+fnmatch('*',      'matrix')  → true   → brand_phone
 ```
 
 ## 2. 슬롯 카탈로그

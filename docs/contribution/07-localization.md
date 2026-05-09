@@ -28,35 +28,14 @@ private const COUNTIES_BY_STATE = [
 
 ## 2. 깊이 단계가 다를 때
 
-깊이 단계가 한국과 다르면 (예: 미국 = 주/카운티 2단계만) [BodyTemplate enum](../../src/Entity/Enum/BodyTemplate.php)의 `Sido/Sigungu/Dong` 변종 이름 자체가 의미와 안 맞을 수 있습니다.
+깊이 단계가 한국과 다르면 (예: 미국 = 주/카운티 2단계만) **BodyTemplate enum 자체는 손볼 필요가 없습니다**. 매트릭스 자식 변종(시도/시군구/동)은 의도적으로 enum에 박지 않았습니다 — 모두 같은 `BodyTemplate::Matrix` 패밀리로 렌더되고, 시각 차이는 `region.depth`와 데이터에서 자연스럽게 나옵니다.
 
-### 옵션 A — 변종 이름 유지하고 매핑만 변경
+손볼 곳은 다음 두 가지뿐:
 
-가장 가벼운 방식. enum case는 그대로 두고 `deriveTemplate()`의 깊이 매핑만 조정:
+1. **RegionFixtures** — 깊이별 행정구역 데이터 교체 (위 §1)
+2. **매트릭스 셸 카피** — `templates/public/matrix/{theme}.html.twig` 안에서 깊이별 헤더·카드 텍스트가 한국어로 박힌 부분 ("시도 단위 시급" 등) 번역. `region.depth` 값으로 분기하면 됨
 
-```php
-// PublicNodeController::deriveTemplate()
-return match ($regionDepth) {
-    null, 0 => BodyTemplate::Hub,
-    1 => BodyTemplate::Sido,      // 의미: state
-    2 => BodyTemplate::Sigungu,   // 의미: county
-    // depth 3 안 씀
-    default => BodyTemplate::Hub,
-};
-```
-
-이 방식의 단점: enum 이름이 한국어 어원이라 외국 개발자에게 어색함.
-
-### 옵션 B — 변종 이름까지 변경
-
-깔끔하지만 마이그레이션 + 시드 데이터 + 폼 라벨 모두 손봐야 함:
-
-1. [BodyTemplate.php](../../src/Entity/Enum/BodyTemplate.php) — `case Sido = 'sido';` → `case StateLevel = 'state_level';` 등
-2. 새 마이그레이션 — `body_template` 컬럼의 enum 값 변환 (`UPDATE content_node SET body_template = 'state_level' WHERE body_template = 'sido';`)
-3. `fn_publish_gate` 함수의 CASE 문 업데이트
-4. [PublicNodeController::deriveTemplate()](../../src/Controller/Public/PublicNodeController.php) 매핑 변경
-5. [ContentNodeType](../../src/Form/ContentNodeType.php)의 choice_label match 업데이트
-6. [SeedDemoCommand](../../src/Command/SeedDemoCommand.php) 시드 데이터의 BodyTemplate 참조 업데이트
+[deriveTemplate()](../../src/Controller/Public/PublicNodeController.php)는 단순히 `bodyTemplate ?? Matrix` 한 줄이므로 깊이 단계와 무관하게 그대로 작동합니다.
 
 ## 3. 카피 / 톤
 
@@ -87,17 +66,18 @@ slug → 실제 한글 이름 매핑은 `Region.name` 컬럼이 담당하므로 
 
 ```
 1. RegionFixtures 통째로 교체 (영문 slug + 현지어 name)
-2. BodyTemplate 깊이 매핑 결정 (옵션 A or B 위 §2)
+2. matrix/*.html.twig 카피 번역 (깊이별 헤더·카드 텍스트 포함)
 3. cta.yaml의 라벨/문구 번역
-4. matrix/*.html.twig 카피 번역
-5. hubs/*.html.twig 오버라이드 번역
-6. .env BRAND_* 값 현지화
-7. SeedDemoCommand 데모 데이터 도메인 맞게 (또는 시드 안 쓰고 직접 입력)
-8. 폰트 — 현지어 지원 여부 확인 (Asta Sans는 라틴/한글; CJK·아랍어는 다른 폰트 필요)
+4. hubs/*.html.twig 오버라이드 번역
+5. .env BRAND_* 값 현지화
+6. SeedDemoCommand 데모 데이터 도메인 맞게 (또는 시드 안 쓰고 직접 입력)
+7. 폰트 — 현지어 지원 여부 확인 (Asta Sans는 라틴/한글; CJK·아랍어는 다른 폰트 필요)
 ```
+
+BodyTemplate enum은 손댈 필요 없음 — 깊이 단계와 무관하게 작동.
 
 ## 관련 문서
 
 - 페이지 시스템: [01-page-system.md](01-page-system.md)
-- 콘텐츠 타입 (변종 카탈로그): [04-content-types.md](04-content-types.md)
+- 콘텐츠 타입 (패밀리 카탈로그): [04-content-types.md](04-content-types.md)
 - 시드/픽스처: [08-platform.md §시드--샘플-데이터](08-platform.md#시드--샘플-데이터)

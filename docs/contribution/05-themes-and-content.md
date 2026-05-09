@@ -74,7 +74,7 @@ DataPoint URL은 *노드에 nested* — 부모 노드 컨텍스트 안에서만 
 ```
 1. /admin/themes/new → parent='guides' 선택, slug 입력
 2. /admin/nodes/new → theme=새_자식_테마, region=비움
-3. body_template = GuideLongform/GuideComparison/GuideFaq 명시
+3. body_template = Guide 명시
 4. body_markdown 작성 (3,000자+)
 5. /admin/nodes/{id}/datapoints/new → kind=faq 3개+ 추가하고 verify
 6. status='live' 변경 → 트리거가 게이트 검증
