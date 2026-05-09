@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>seo-symfony 프레임워크 개발 가이드</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/htmlasitis@0.1.0/htmlasitis.css">
+
+  <style>
+    :root {
+      --hai-font-body: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --hai-font-mono: "Roboto Mono", "SF Mono", Monaco, Consolas, monospace;
+      --hai-font-size-body: 10.5pt;
+      --hai-line-height-body: 1.6;
+    }
+
+    body { word-break: keep-all; }
+    code, pre { word-break: break-all; }
+    table { width: 100%; }
+    th, td { vertical-align: top; }
+    .hai-page h2 + table,
+    .hai-page h3 + table { margin-top: 4px; }
+    .hai-cover h1 { font-weight: 800; }
+    .hai-divider h1 { font-weight: 700; }
+    .small-table { font-size: 9.5pt; }
+    .small-table th, .small-table td { padding: 4px 8px; }
+  </style>
+</head>
+<body>
+
+  <!-- ======================================================== -->
+  <!-- p1: Cover                                                -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-cover">
+    <div class="hai-cover-volume">개발 가이드 · 1판</div>
+    <h1>seo-symfony<br>프레임워크<br>개발 가이드</h1>
+    <div class="hai-cover-subtitle">
+      입양·확장을 위한 실무 핸드북
+    </div>
+    <div class="hai-cover-author">2026</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p2: Part 1 Divider                                       -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-divider">
+    <h1>1부 시작하기</h1>
+    <div class="hai-divider-subtitle">
+      이 프레임워크가 무엇이고 왜 존재하는지,<br>
+      그리고 5분 안에 어떻게 띄우는지.
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p3: 1장. 이 프레임워크는 무엇인가                          -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>1장. 이 프레임워크는 무엇인가</h1>
+
+    <p>
+      <strong>seo-symfony</strong>는 다(多)테마 × 지역 SEO 사이트를 12개월에 걸쳐
+      구축·운영하기 위한 Symfony 기반 코드베이스다. 운영자는 페이지가 아니라
+      <em>데이터</em>만 만진다. URL · HTML · 사이트맵 · 리다이렉트는 모두 코드가
+      자동 생성한다.
+    </p>
+
+    <h2>해결하는 문제</h2>
+
+    <p>
+      "테마 × 지역" 매트릭스 키워드 사이트를 손으로 만들면 6개월쯤 충돌이 시작된다.
+      같은 키워드를 두 페이지가 노릴 때 서로의 순위를 깎아먹고
+      (<em>카니발리제이션</em>), 데이터 없는 빈 페이지가 사이트 전체 도메인 권위를
+      깎는다. 이 코드베이스는 그 충돌을 <strong>DB 트리거</strong>와
+      <strong>5개 엔티티</strong>로 사전 차단한다.
+    </p>
+
+    <h2>핵심 한 문장</h2>
+
+    <div class="hai-callout">
+      사이트맵은 그리는 것이 아니라 <strong>데이터 모델로부터 결정론적으로
+      도출되는 것</strong>이다. 운영자는 5개 엔티티 중 3개만 만진다.
+    </div>
+
+    <h2>이 책이 다루는 것</h2>
+
+    <ul>
+      <li>5개 엔티티 데이터 모델과 그 근거</li>
+      <li>페이지·템플릿·CTA 시스템 사용법</li>
+      <li>새 콘텐츠 타입·테마·로케일 추가</li>
+      <li>운영자가 매일 보는 5개 사이트맵 뷰</li>
+    </ul>
+
+    <div class="hai-page-number">— 1 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p4: 2장. 5분 입양 — Quick Start                            -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>2장. 5분 입양 — Quick Start</h1>
+
+    <p>
+      이 절차를 따르면 17개 데모 페이지가 뜨는 완성된 사이트를 받는다. 입양 후
+      세부 커스터마이즈는 4부에서 다룬다.
+    </p>
+
+    <h2>1. 환경 변수</h2>
+
+<pre><code>cp .env .env.local
+# .env.local에서 BRAND_*, DATABASE_URL 수정</code></pre>
+
+    <h2>2. DB 초기화 + 시드</h2>
+
+<pre><code>php bin/console doctrine:database:drop --force --if-exists
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate --no-interaction
+php bin/console doctrine:fixtures:load --no-interaction
+php bin/console app:admin:create me@example.com &lt;password&gt;
+php bin/console app:seed:demo</code></pre>
+
+    <h2>3. 자산 빌드 + 서버</h2>
+
+<pre><code>npm install &amp;&amp; npm run build
+php -S 127.0.0.1:8000 -t public</code></pre>
+
+    <h2>첫 입양 체크리스트</h2>
+
+    <ol>
+      <li><code>.env.local</code>에 <code>BRAND_*</code> 4개 + <code>DATABASE_URL</code></li>
+      <li>컬러 토큰 변경 → <code>npm run build</code></li>
+      <li>관리자 계정 생성 + 데모 콘텐츠 시드</li>
+      <li>도메인이 한국 외라면 14장(로컬라이제이션)</li>
+      <li>브랜드 톤이 다르면 매트릭스 셸 변경 (9장)</li>
+      <li>CTA 정책 검토 — 사이트 전반 전화 vs 가이드 페이지 폼 (10장)</li>
+    </ol>
+
+    <div class="hai-page-number">— 2 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p5: 3장. 핵심 개념 한눈에                                  -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>3장. 핵심 개념 한눈에</h1>
+
+    <p>
+      이 책의 모든 내용은 <strong>5 / 5 / 5</strong> 세 묶음에서 출발한다.
+      이 표 한 페이지를 외우면 나머지 챕터의 80%가 따라온다.
+    </p>
+
+    <h2>5개 엔티티</h2>
+
+    <table class="small-table">
+      <tr><th>엔티티</th><th>역할</th><th>운영 빈도</th></tr>
+      <tr><td><code>Theme</code></td><td>분류 축 (테마 트리, depth 0~2)</td><td>분기 1회 이하</td></tr>
+      <tr><td><code>Region</code></td><td>분류 축 (지역 트리, depth 0~3)</td><td>도입 시 1회</td></tr>
+      <tr><td><code>Author</code></td><td>E-E-A-T 신뢰 신호의 원천</td><td>분기 1회</td></tr>
+      <tr><td><code>ContentNode</code></td><td><strong>페이지의 추상 단위 (1행 = 1 URL)</strong></td><td>매일</td></tr>
+      <tr><td><code>DataPoint</code></td><td>페이지를 페이지답게 만드는 재료</td><td>매일</td></tr>
+    </table>
+
+    <h2>5가지 불변성</h2>
+
+    <table class="small-table">
+      <tr><th>#</th><th>불변성</th><th>강제 위치</th></tr>
+      <tr><td>1</td><td>같은 (theme, region) 좌표 위 페이지 정확히 1개</td><td>DB UNIQUE</td></tr>
+      <tr><td>2</td><td>verified DataPoint 5 미만이면 live 불가</td><td>트리거</td></tr>
+      <tr><td>3</td><td>부모가 live 아니면 자식 live 불가</td><td>트리거</td></tr>
+      <tr><td>4</td><td>작성자 미검증이면 live 불가</td><td>트리거</td></tr>
+      <tr><td>5</td><td>dead 노드는 자동으로 Redirect 행 생성</td><td>트리거</td></tr>
+    </table>
+
+    <h2>5가지 게이트 경로 (BodyTemplate)</h2>
+
+    <p>
+      <code>matrix</code> · <code>guide</code> · <code>essay</code> ·
+      <code>report</code> · <code>case_study</code>. 각각 매트릭스 페이지,
+      가이드형 콘텐츠, 에세이, 데이터 리포트, 케이스 스터디. 7장에서 자세히.
+    </p>
+
+    <div class="hai-callout">
+      이 세 묶음을 못 외워도 된다. 단, <strong>운영자가 데이터만 만진다</strong>는
+      원칙은 외워야 한다. URL과 HTML은 코드가 만든다.
+    </div>
+
+    <div class="hai-page-number">— 3 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p6: Part 2 Divider                                       -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-divider">
+    <h1>2부 아키텍처 이해</h1>
+    <div class="hai-divider-subtitle">
+      왜 이 5개 엔티티인가, 페이지는 어떻게 도출되는가,<br>
+      발행 게이트는 왜 DB에서 강제하는가.
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p7: 4장. 데이터 모델의 근거 (1/2)                          -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>4장. 데이터 모델의 근거</h1>
+
+    <p>
+      이 시스템에는 정확히 <strong>5개 엔티티</strong>가 있고, 더 많지도 적지도
+      않다. 더 적으면 카니발리제이션을 막지 못하고, 더 많으면 운영자가
+      매일 결정해야 할 항목이 폭발한다.
+    </p>
+
+    <h2>왜 ContentNode가 따로 있는가</h2>
+
+    <p>
+      한 가지 흔한 오해: "Theme와 Region이 좌표축이라면 그 교차점은 그냥 SQL JOIN
+      아닌가?" 답은 <strong>아니다</strong>. 페이지에는 좌표 외에도 작성자, 본문
+      도입글, 5개의 verified 데이터, 발행 상태, KPI 스냅샷이 매달려야 한다. 이것을
+      놓을 곳이 <code>ContentNode</code>다.
+    </p>
+
+    <h2>왜 (theme, region) UNIQUE인가</h2>
+
+    <p>
+      이 한 줄의 제약(<code>UNIQUE(theme_id, region_id)</code>)이 카니발리제이션을
+      DB 레벨에서 차단한다. 같은 좌표를 가리키는 두 페이지가 INSERT조차 되지 않는다.
+      어드민 UI나 API에서 검사하지 않는다 — 그곳들은 우회 가능하기 때문이다.
+    </p>
+
+    <div class="hai-example hai-example-bad">
+      <div class="hai-example-label">안 되는 모델</div>
+      Theme, Region에 직접 본문/상태/저자 컬럼을 붙임 → 한 좌표가 여러 페이지를
+      만들거나, 빈 좌표가 페이지로 발행됨.
+    </div>
+
+    <div class="hai-example hai-example-good">
+      <div class="hai-example-label">이 모델</div>
+      좌표축(Theme/Region)은 분류만, 페이지 단위는 ContentNode 한 행, 재료는
+      DataPoint N행. 좌표가 있어도 ContentNode 행이 없으면 URL이 없다.
+    </div>
+
+    <div class="hai-page-number">— 4 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p8: 4장. 데이터 모델 — ERD 골격 (2/2)                      -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>4장. 데이터 모델 — ERD 골격</h1>
+
+    <p>
+      5개 엔티티의 관계는 다음과 같다. <code>Theme</code>·<code>Region</code>은
+      자기 참조 트리, <code>ContentNode</code>는 두 트리의 교차점, <code>DataPoint</code>
+      는 노드에 매달린 재료, <code>Redirect</code>는 무덤 관리.
+    </p>
+
+<pre><code>THEME ─┐                       AUTHOR
+       │self                       │
+       └──&gt; THEME                  │
+                                   ▼
+THEME ────────────&gt; CONTENT_NODE ────── REGION
+                          │                 │self
+                          ▼                 └──&gt; REGION
+                     DATA_POINT</code></pre>
+
+    <h2>핵심 컬럼만</h2>
+
+    <table class="small-table">
+      <tr><th>엔티티</th><th>주요 컬럼</th><th>제약</th></tr>
+      <tr>
+        <td><code>Theme</code></td>
+        <td>slug, parent_id, depth</td>
+        <td>depth ≤ 2</td>
+      </tr>
+      <tr>
+        <td><code>Region</code></td>
+        <td>slug, parent_id, depth, admin_code</td>
+        <td>depth ≤ 3</td>
+      </tr>
+      <tr>
+        <td><code>Author</code></td>
+        <td>real_name, credentials, verified_at</td>
+        <td>verified_at NULL이면 발행 차단</td>
+      </tr>
+      <tr>
+        <td><code>ContentNode</code></td>
+        <td>theme_id, region_id, status, data_count, intro_text, body_template_id</td>
+        <td><strong>UNIQUE(theme_id, region_id)</strong></td>
+      </tr>
+      <tr>
+        <td><code>DataPoint</code></td>
+        <td>node_id, kind, value(JSONB), verified</td>
+        <td>verified=true만 data_count에 반영</td>
+      </tr>
+    </table>
+
+    <div class="hai-annotation">
+      <div class="hai-annotation-label">참고</div>
+      <code>kind</code>는 5종: <code>quantitative</code>, <code>qualitative</code>,
+      <code>comparison</code>, <code>case</code>, <code>faq</code>. 발행 게이트는
+      이 중 quant 1+, qual 3+, comparison 1+, 합계 5+를 요구한다.
+    </div>
+
+    <div class="hai-page-number">— 5 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p9: 5장. 페이지는 어떻게 도출되는가 (1/2)                  -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>5장. 페이지는 어떻게 도출되는가</h1>
+
+    <p>
+      URL은 손으로 만들지 않는다. <code>(theme, region)</code> 좌표를 받는
+      함수의 출력이다. 다음 의사코드 한 줄이 전체 URL 시스템이다.
+    </p>
+
+<pre><code>url(node) = "/" + theme_path(node.theme)
+          + "/" + region_path(node.region) + "/"</code></pre>
+
+    <h2>경로 함수의 결과</h2>
+
+    <table class="small-table">
+      <tr><th><code>theme.slug</code> 경로</th><th><code>region.slug</code> 경로</th><th>생성 URL</th></tr>
+      <tr><td>tutoring</td><td>(NULL)</td><td><code>/tutoring/</code></td></tr>
+      <tr><td>tutoring</td><td>seoul</td><td><code>/tutoring/seoul/</code></td></tr>
+      <tr><td>tutoring</td><td>seoul/gangnam-gu</td><td><code>/tutoring/seoul/gangnam-gu/</code></td></tr>
+      <tr><td>tutoring</td><td>seoul/gangnam-gu/daechi-dong</td><td><code>/tutoring/seoul/gangnam-gu/daechi-dong/</code></td></tr>
+      <tr><td>guides/how-to-choose-tutor</td><td>(NULL)</td><td><code>/guides/how-to-choose-tutor/</code></td></tr>
+    </table>
+
+    <h2>이 함수가 보장하는 5가지</h2>
+
+    <ol>
+      <li>같은 콘텐츠를 가리키는 두 URL이 존재할 수 없다 (canonical 자동 해결)</li>
+      <li>중복 URL이 INSERT 시점에 DB에서 거부된다</li>
+      <li>URL 깊이 = 권위 단계, 부모가 자식의 prefix</li>
+      <li><code>sitemap.xml</code>이 SQL 한 줄 출력이다</li>
+      <li>운영자는 URL을 모르고도 데이터만 입력하면 된다</li>
+    </ol>
+
+    <div class="hai-callout">
+      금지: 쿼리스트링 URL(<code>?theme=...&amp;region=...</code>),
+      지역 우선 순서(<code>/seoul/tutoring/</code>), 깊이 5 이상.
+    </div>
+
+    <div class="hai-page-number">— 6 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p10: 5장. 4종 페이지 템플릿 (2/2)                          -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>5장. 4종 페이지 템플릿</h1>
+
+    <p>
+      페이지 템플릿은 단 4종이다. 1만 개 페이지가 있어도 4종으로 충분하다.
+      운영자는 템플릿을 고르지 않는다 — 코드가 <code>theme.depth</code>와
+      <code>region.depth</code>로부터 자동 결정한다.
+    </p>
+
+    <h2>4종 카탈로그</h2>
+
+    <table class="small-table">
+      <tr><th>템플릿 ID</th><th>적용 깊이</th><th>핵심 차이</th></tr>
+      <tr><td><code>T_HUB</code></td><td>0~1 (사이트 루트, 테마 허브)</td><td>하위 트리 시각화 + 토픽 권위 강조</td></tr>
+      <tr><td><code>T_SIDO</code></td><td>2 (시도)</td><td>하위 시군구 매트릭스 + 광역 데이터</td></tr>
+      <tr><td><code>T_SIGUNGU</code></td><td>3 (시군구)</td><td>표준 10섹션, §5 비중 큼</td></tr>
+      <tr><td><code>T_DONG</code></td><td>4 (동)</td><td>표준 10섹션 + 인근 동 비교 강조</td></tr>
+    </table>
+
+    <h2>자동 결정 함수</h2>
+
+<pre><code>template = decide_template(theme.depth, region.depth)</code></pre>
+
+    <table class="small-table">
+      <tr><th>theme.depth</th><th>region.depth</th><th>결과</th></tr>
+      <tr><td>0 (루트)</td><td>NULL</td><td><code>T_HUB</code></td></tr>
+      <tr><td>1 (테마 허브)</td><td>NULL</td><td><code>T_HUB</code></td></tr>
+      <tr><td>1~2</td><td>1 (시도)</td><td><code>T_SIDO</code></td></tr>
+      <tr><td>1~2</td><td>2 (시군구)</td><td><code>T_SIGUNGU</code></td></tr>
+      <tr><td>1~2</td><td>3 (동)</td><td><code>T_DONG</code></td></tr>
+    </table>
+
+    <p>
+      이 함수가 결정론적이므로, 같은 좌표에는 항상 같은 템플릿이 적용된다.
+      운영자가 잘못 선택해서 사일로가 흐트러지는 일이 일어나지 않는다.
+    </p>
+
+    <div class="hai-page-number">— 7 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p11: 6장. 발행 게이트의 설계 (1/2)                         -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>6장. 발행 게이트의 설계</h1>
+
+    <p>
+      Month 2~3에 운영자에게 가장 강하게 오는 유혹은 <em>"오늘만 데이터 4개로
+      발행할까?"</em>다. 그 한 번이 사이트 전체의 도메인 권위를 깎는다. 이 시스템은
+      그 결정을 운영자에게 맡기지 않는다 — DB 트리거가 거부한다.
+    </p>
+
+    <h2><code>canPublish(node)</code> — 발행의 유일한 기준</h2>
+
+<pre><code>function canPublish(node):
+    if node.dataCount &lt; 5:                  return false
+    if not node.introText:                  return false
+    if not node.author or
+       not node.author.verified_at:         return false
+    if node.region != null and
+       node.parent.status != 'live':        return false
+    if hasCanonicalCollision(node):         return false
+    return true</code></pre>
+
+    <h2>왜 코드가 아니라 DB에서 강제하는가</h2>
+
+    <table class="small-table">
+      <tr><th>방어선</th><th>장점</th><th>한계</th></tr>
+      <tr><td>UI 검증</td><td>즉각 피드백</td><td>API 직접 호출로 우회</td></tr>
+      <tr><td>API 레이어</td><td>모든 클라이언트 보호</td><td>SQL 콘솔로 우회</td></tr>
+      <tr><td><strong>DB 트리거</strong></td><td><strong>최종 방어선, 우회 불가</strong></td><td>지연된 피드백</td></tr>
+    </table>
+
+    <div class="hai-callout">
+      비상 우회 기능은 <strong>처음부터 만들지 않는다</strong>. 비상 우회 버튼은
+      곧 일상 우회 버튼이 된다.
+    </div>
+
+    <div class="hai-page-number">— 8 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p12: 6장. 7개 트리거 (2/2)                                 -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>6장. 7개 무결성 트리거</h1>
+
+    <p>
+      DB가 코드를 거치지 않고도 무결성을 지키는 7개 트리거의 카탈로그.
+      이 중 하나라도 빠지면 Month 2~3 충돌 시기에 사이트가 무너진다.
+    </p>
+
+    <table class="small-table">
+      <tr><th>트리거</th><th>시점</th><th>동작</th></tr>
+      <tr>
+        <td><code>fn_publish_gate</code></td>
+        <td>BEFORE UPDATE content_node</td>
+        <td><code>status='live'</code>인데 게이트 미통과면 거부</td>
+      </tr>
+      <tr>
+        <td><code>fn_refresh_data_count</code></td>
+        <td>AFTER ins/upd/del data_point</td>
+        <td>부모 <code>data_count</code> 재계산</td>
+      </tr>
+      <tr>
+        <td><code>fn_unique_theme_region</code></td>
+        <td>BEFORE INSERT content_node</td>
+        <td>좌표 중복 거부</td>
+      </tr>
+      <tr>
+        <td><code>fn_parent_live_check</code></td>
+        <td>BEFORE UPDATE content_node</td>
+        <td>부모 미발행이면 자식 live 거부</td>
+      </tr>
+      <tr>
+        <td><code>fn_dead_cascade_redirect</code></td>
+        <td>AFTER UPDATE content_node</td>
+        <td>dead 전이 시 Redirect 자동 생성</td>
+      </tr>
+      <tr>
+        <td><code>fn_region_depth_check</code></td>
+        <td>BEFORE ins/upd region</td>
+        <td>parent NULL인데 depth&gt;0 거부</td>
+      </tr>
+      <tr>
+        <td><code>fn_theme_depth_check</code></td>
+        <td>BEFORE ins/upd theme</td>
+        <td>depth &gt; 2 거부</td>
+      </tr>
+    </table>
+
+    <div class="hai-annotation">
+      <div class="hai-annotation-label">팁</div>
+      마이그레이션에 이 트리거들이 들어 있다. 입양 시 마이그레이션을
+      건너뛰지 말고 반드시 적용하라. 트리거 없는 DB는 이 프레임워크가 아니다.
+    </div>
+
+    <div class="hai-page-number">— 9 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p13: 7장. 콘텐츠 타입 (1/2)                                -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>7장. 콘텐츠 타입 — 10개 BodyTemplate</h1>
+
+    <p>
+      <code>ContentNode.body_template_id</code>는 페이지의 본문 구조를 결정하는
+      <strong>BodyTemplate</strong>을 가리킨다. 시스템은 10종을 기본 제공한다.
+    </p>
+
+    <table class="small-table">
+      <tr><th>BodyTemplate</th><th>용도</th><th>게이트 경로</th></tr>
+      <tr><td><code>matrix_default</code></td><td>매트릭스 페이지(테마×지역)</td><td>matrix</td></tr>
+      <tr><td><code>matrix_compact</code></td><td>데이터 적은 매트릭스</td><td>matrix</td></tr>
+      <tr><td><code>guide_long</code></td><td>긴 가이드 (5,000자+)</td><td>guide</td></tr>
+      <tr><td><code>guide_short</code></td><td>짧은 가이드 (1,500~2,500자)</td><td>guide</td></tr>
+      <tr><td><code>essay</code></td><td>에세이형 콘텐츠</td><td>essay</td></tr>
+      <tr><td><code>report_quant</code></td><td>정량 데이터 리포트</td><td>report</td></tr>
+      <tr><td><code>report_compare</code></td><td>비교 분석 리포트</td><td>report</td></tr>
+      <tr><td><code>case_study</code></td><td>실제 사례</td><td>case_study</td></tr>
+      <tr><td><code>faq_focus</code></td><td>FAQ 중심 페이지</td><td>guide</td></tr>
+      <tr><td><code>author_profile</code></td><td>작성자 소개</td><td>(게이트 없음)</td></tr>
+    </table>
+
+    <h2>지정 우선순위</h2>
+
+    <p>
+      운영자가 <code>ContentNode.body_template</code>을 명시하면 그것이
+      쓰인다. 비워두면 코드가 <code>region.depth</code>를 보고 자동 결정한다.
+      대부분의 매트릭스 페이지는 비워둔다.
+    </p>
+
+    <div class="hai-page-number">— 10 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p14: 7장. 5가지 게이트 경로 (2/2)                          -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>7장. 5가지 게이트 경로</h1>
+
+    <p>
+      모든 BodyTemplate은 다음 5개 게이트 경로 중 하나를 사용한다. 게이트 경로는
+      "이 페이지를 발행하려면 어떤 데이터가 얼마나 필요한가"를 정의한다.
+    </p>
+
+    <table class="small-table">
+      <tr><th>경로</th><th>요구 데이터</th><th>적용 BodyTemplate</th></tr>
+      <tr>
+        <td><code>matrix</code></td>
+        <td>quant ≥ 1, qual ≥ 3, comparison ≥ 1, 합계 ≥ 5</td>
+        <td>matrix_default, matrix_compact</td>
+      </tr>
+      <tr>
+        <td><code>guide</code></td>
+        <td>qual ≥ 4, faq ≥ 3, intro_text 필수</td>
+        <td>guide_*, faq_focus</td>
+      </tr>
+      <tr>
+        <td><code>essay</code></td>
+        <td>본문 길이 ≥ 1500자, intro_text 필수</td>
+        <td>essay</td>
+      </tr>
+      <tr>
+        <td><code>report</code></td>
+        <td>quant ≥ 5 또는 comparison ≥ 3</td>
+        <td>report_quant, report_compare</td>
+      </tr>
+      <tr>
+        <td><code>case_study</code></td>
+        <td>case ≥ 1 (verified), 출처 필수</td>
+        <td>case_study</td>
+      </tr>
+    </table>
+
+    <h2>핵심 원칙</h2>
+
+    <div class="hai-callout">
+      게이트 경로는 단순히 "5개 이상"이 아니라 <strong>5개 이상이면서
+      그 구성이 §3·§4·§5(정량·정성·비교)를 모두 포함</strong>해야 한다.
+      이 합이 자연스럽게 5를 넘게 설계되어 있다.
+    </div>
+
+    <p>
+      게이트 경로 변경은 7단계의 첫 번째 결정이다. 새 콘텐츠 타입을 추가할 때
+      먼저 어느 경로를 쓸지 정하고 시작한다 (11장 참고).
+    </p>
+
+    <div class="hai-page-number">— 11 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p15: Part 3 Divider                                      -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-divider">
+    <h1>3부 페이지·템플릿 작업</h1>
+    <div class="hai-divider-subtitle">
+      페이지 렌더 파이프라인, 5단계 템플릿 오버라이드,<br>
+      CTA 시스템, 새 콘텐츠 타입 추가하기.
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p16: 8장. 페이지 시스템 (1/2)                              -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>8장. 페이지 시스템</h1>
+
+    <p>
+      URL 하나가 어떻게 한 페이지로 변환되는지의 전체 파이프라인.
+      어디를 만질지 정하기 전에 이 흐름을 이해해야 한다.
+    </p>
+
+    <h2>4가지 페이지 유형</h2>
+
+    <table class="small-table">
+      <tr><th>유형</th><th>URL 패턴</th><th>좌표 조건</th></tr>
+      <tr><td>루트</td><td><code>/</code></td><td>없음 (PublicHomeController)</td></tr>
+      <tr><td>테마 허브</td><td><code>/{theme}/</code></td><td>region IS NULL AND theme.parent IS NULL</td></tr>
+      <tr><td>지역 페이지</td><td><code>/{theme}/{sido}/.../</code></td><td>region IS NOT NULL</td></tr>
+      <tr><td>자식 테마</td><td><code>/{parent}/{child}/</code></td><td>region IS NULL AND theme.parent IS NOT NULL</td></tr>
+    </table>
+
+    <h2>좌표 → 노드 매핑</h2>
+
+    <p>
+      <code>PublicNodeController</code>는 모든 비-루트 URL을 받고,
+      <code>PathResolver</code>로 좌표(theme + region)를 ContentNode 행에
+      매핑한다. 매칭 실패 시 404, <code>status='dead'</code>이면
+      Redirect 테이블 조회 후 301.
+    </p>
+
+    <h2>템플릿 컨텍스트</h2>
+
+    <p>
+      <code>PublicNodeController::buildContext()</code>가 모든 템플릿에 주입하는
+      변수: <code>node</code>, <code>url</code>, <code>h1</code>,
+      <code>template</code>(BodyTemplate enum), <code>body_html</code>,
+      <code>byKind</code>(DataPoint를 kind별 그룹화, verified만), <code>parent</code>·<code>siblings</code>·<code>children</code>,
+      <code>theme_children</code>·<code>theme_siblings</code>, <code>urls</code>(UrlBuilder),
+      <code>crumbs</code>, <code>json_ld</code>·<code>breadcrumbs_jsonld</code>.
+    </p>
+
+    <div class="hai-page-number">— 12 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p17: 8장. 디스패처 우선순위 (2/2)                          -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>8장. 디스패처 우선순위</h1>
+
+    <p>
+      <code>node.html.twig</code>는 분기 로직만 담는 디스패처다. 어떤 템플릿으로
+      렌더할지 다음 우선순위로 결정한다. <strong>첫 매칭에서 멈춘다 — 위가 아래를 이긴다.</strong>
+    </p>
+
+    <h2>매칭 순서</h2>
+
+<pre><code>1. template_override 파일 존재?  → 사용 (이하 무시)
+   templates/public/hubs/{theme-path}.html.twig
+   조건: region IS NULL (지역 페이지는 절대 오버라이드 불가)
+
+2. body_template == guide_*?     → _guide.html.twig
+3. body_template == essay?       → _essay.html.twig
+4. body_template == report?      → _report.html.twig
+5. body_template == case_study?  → _case_study.html.twig
+
+6. 그 외 (지역 페이지 + 오버라이드 없는 매트릭스 허브)
+   → matrix_template
+     = templates/public/matrix/{root-theme-slug}.html.twig
+       (없으면 _matrix.html.twig 제네릭 fallback)</code></pre>
+
+    <h2>캐시 헤더</h2>
+
+<pre><code>Cache-Control: public, max-age=300, s-maxage=1800
+Last-Modified: {node.last_review_at or first_published_at}</code></pre>
+
+    <p>
+      브라우저 5분 / CDN 30분. <code>If-Modified-Since</code>로 304 가능.
+      무효화 트리거는 <code>last_review_at</code> 변경.
+    </p>
+
+    <div class="hai-callout">
+      이 우선순위는 외워두거나 자주 참조할 가치가 있다.
+      이것이 <strong>시스템 전체의 외형 통제 규칙</strong>이다.
+    </div>
+
+    <div class="hai-page-number">— 13 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p18: 9장. 5단계 템플릿 오버라이드 — 개관 (1/3)              -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>9장. 5단계 템플릿 오버라이드 — 개관</h1>
+
+    <p>
+      같은 페이지의 외형을 어디까지 자유롭게 바꿀 수 있는가는 어느 단계를
+      건드리는지에 따라 결정된다. 자율도 큰 것부터:
+    </p>
+
+    <table class="small-table">
+      <tr><th>단계</th><th>경로</th><th>영향 범위</th></tr>
+      <tr><td>1. 단일 페이지</td><td><code>hubs/{path}.html.twig</code></td><td>1개 URL</td></tr>
+      <tr><td>2. 매트릭스 셸</td><td><code>matrix/{theme}.html.twig</code></td><td>한 테마의 N개</td></tr>
+      <tr><td>3. Prose 템플릿</td><td><code>_guide.html.twig</code> 등</td><td>그 타입의 모든 페이지</td></tr>
+      <tr><td>4. 공유 파셜</td><td><code>_partials/*.html.twig</code></td><td>위 모두에 영향</td></tr>
+      <tr><td>5. 루트 페이지</td><td><code>home.html.twig</code></td><td>"/" 한 페이지</td></tr>
+    </table>
+
+    <h2>의도 → 편집 대상</h2>
+
+    <table class="small-table">
+      <tr><th>변경 의도</th><th>편집 대상</th></tr>
+      <tr><td>한 페이지만 다르게</td><td>hubs/{path}</td></tr>
+      <tr><td>한 테마의 모든 지역 페이지</td><td>matrix/{slug}</td></tr>
+      <tr><td>모든 매트릭스 페이지</td><td>_matrix 또는 _partials/*</td></tr>
+      <tr><td>한 콘텐츠 타입 (가이드 전체)</td><td>_guide</td></tr>
+      <tr><td>CTA만 (전체)</td><td>config/cta.yaml</td></tr>
+      <tr><td>CTA만 (가이드만)</td><td>cta.yaml의 slots.* 룰</td></tr>
+      <tr><td>발행 요건 변경</td><td>새 마이그레이션으로 fn_publish_gate</td></tr>
+    </table>
+
+    <div class="hai-page-number">— 14 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p19: 9장. 단일 페이지 + 매트릭스 셸 (2/3)                  -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>9장. 단일 페이지 + 매트릭스 셸</h1>
+
+    <h2>1. 단일 페이지 오버라이드</h2>
+
+    <p>
+      경로: <code>templates/public/hubs/{theme-path}.html.twig</code>.
+      예: <code>/tutoring/</code> → <code>hubs/tutoring.html.twig</code>.
+      <strong>제약</strong>: <code>region IS NULL</code>인 노드에만 적용된다 —
+      지역 페이지는 절대 오버라이드 불가. 균일성이 SEO 자산이기 때문이다.
+    </p>
+
+<pre><code>{# templates/public/hubs/my-special-page.html.twig #}
+{% include 'public/_partials/breadcrumb.html.twig' %}
+
+&lt;section class="hub-splash"&gt;
+    &lt;h1&gt;{{ h1 }}&lt;/h1&gt;
+    {% if body_html %}{{ body_html|raw }}{% endif %}
+&lt;/section&gt;
+
+{% include 'public/_partials/final_cta.html.twig' with {
+    title: '여기서 결정하세요',
+    body_template: template,
+} only %}</code></pre>
+
+    <h2>2. 매트릭스 셸 — 테마 단위</h2>
+
+    <p>
+      경로: <code>templates/public/matrix/{root-theme-slug}.html.twig</code>.
+      같은 루트 테마 안의 모든 매트릭스 페이지가 이 셸을 공유한다. 없으면
+      <code>_matrix.html.twig</code> 제네릭 fallback.
+    </p>
+
+    <table class="small-table">
+      <tr><th>현재 보유</th><th>톤</th></tr>
+      <tr><td><code>matrix/tutoring</code></td><td>행동 유도</td></tr>
+      <tr><td><code>matrix/academy</code></td><td>디렉토리</td></tr>
+      <tr><td><code>matrix/contents</code></td><td>다크 디지털</td></tr>
+    </table>
+
+    <div class="hai-callout">
+      원칙: 테마 안 균일성 → SEO 자산. 테마 사이 차별성 → near-duplicate 방지.
+    </div>
+
+    <div class="hai-page-number">— 15 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p20: 9장. Prose + 파셜 + 루트 (3/3)                        -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>9장. Prose · 파셜 · 루트</h1>
+
+    <h2>3. Prose 템플릿</h2>
+
+    <p>
+      <code>body_template</code> 값으로 자동 매핑되는 prose 템플릿:
+    </p>
+
+    <table class="small-table">
+      <tr><th>body_template</th><th>템플릿</th></tr>
+      <tr><td><code>guide_*</code></td><td><code>_guide.html.twig</code> (변종별 내부 분기)</td></tr>
+      <tr><td><code>essay</code></td><td><code>_essay.html.twig</code></td></tr>
+      <tr><td><code>report</code></td><td><code>_report.html.twig</code></td></tr>
+      <tr><td><code>case_study</code></td><td><code>_case_study.html.twig</code></td></tr>
+    </table>
+
+    <h2>4. 파셜 라이브러리</h2>
+
+    <p>
+      재사용 블록: <code>breadcrumb</code>, <code>hero</code>, <code>feature_grid</code>,
+      <code>callouts</code>, <code>listing</code>, <code>theme_children</code>,
+      <code>faq</code>, <code>final_cta</code>, <code>jsonld</code>. 모든 파셜은
+      <code>is defined</code> 디폴트가 있어 인자 누락에 안전.
+    </p>
+
+    <div class="hai-annotation">
+      <div class="hai-annotation-label">호출 규칙</div>
+      <code>with {...} only</code>로 호출 권장 (외부 변수 누수 방지).
+      BodyTemplate 분기가 필요한 파셜(hero/final_cta)은
+      <code>body_template: template</code>을 명시 전달.
+    </div>
+
+    <h2>5. 루트 페이지</h2>
+
+    <p>
+      <code>templates/public/home.html.twig</code>는 별도 컨트롤러
+      (<code>PublicHomeController</code>)가 렌더하므로 ContentNode 시스템 밖.
+      그냥 편집하면 된다. 같은 파셜을 가져다 쓸 수 있다.
+    </p>
+
+    <div class="hai-page-number">— 16 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p21: 10장. CTA 시스템 — 핵심 모델 (1/3)                    -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>10장. CTA 시스템 — 핵심 모델</h1>
+
+    <p>
+      CTA(Call To Action)는 페이지마다 박힌 행동 유도 블록이다. 사이트 전반의
+      CTA를 <strong>YAML 설정 한 파일</strong>(<code>config/cta.yaml</code>)에서
+      결정하고, 페이지 위치(슬롯)와 콘텐츠 타입(BodyTemplate) 조합으로 분기한다.
+    </p>
+
+    <h2>5개 엔티티 외부</h2>
+
+    <p>
+      CTA는 Theme/Region/Author/ContentNode/DataPoint 어디에도 속하지 않는다.
+      브랜드 식별값과 사업 정책의 결합으로 보고 데이터 모델 밖에 배치됐다.
+      운영자는 CTA를 만지지 않으며, 폼 제출도 자체 DB에 저장하지 않는다 —
+      외부 채널로 forward.
+    </p>
+
+    <h2>핵심 모델: 슬롯 × BodyTemplate → CTA 객체</h2>
+
+    <table class="small-table">
+      <tr><th>개념</th><th>의미</th><th>위치</th></tr>
+      <tr><td>슬롯 (CtaSlot)</td><td>페이지 안 위치</td><td><code>navbar</code> / <code>hero</code> / <code>final</code></td></tr>
+      <tr><td>타입 (CtaType)</td><td>행동 종류</td><td><code>phone</code> / <code>form</code> / <code>external</code> / <code>email</code> / <code>messenger</code></td></tr>
+      <tr><td>CTA 객체</td><td>한 슬롯에 채워지는 단위</td><td>label, payload, hint, assurances</td></tr>
+    </table>
+
+    <h2>매핑 규칙</h2>
+
+    <ol>
+      <li>페이지 진입 → 슬롯 + 페이지의 BodyTemplate이 <code>CtaResolver</code>에 입력</li>
+      <li><code>slots.&lt;slot&gt;</code>의 룰들을 위에서 아래로 평가</li>
+      <li><code>match</code>는 fnmatch 패턴 — <code>'guide_*'</code>, <code>'essay'</code>, <code>'*'</code></li>
+      <li>첫 매칭의 <code>cta</code> 키로 <code>ctas.&lt;key&gt;</code> 조회</li>
+      <li>매칭 실패 시 <code>brand_phone</code> 안전 디폴트</li>
+    </ol>
+
+    <div class="hai-page-number">— 17 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p22: 10장. cta.yaml 매핑 + 슬롯 (2/3)                      -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>10장. <code>cta.yaml</code> 매핑</h1>
+
+<pre><code>parameters:
+  cta.config:
+    ctas:
+      brand_phone:
+        type: phone
+        label: '지금 상담받기'
+        payload:
+          phone: '%env(BRAND_PHONE)%'
+        hint: '%env(BRAND_PHONE_HOURS)%'
+
+      guide_consult_form:
+        type: form
+        label: '맞춤 추천 받기'
+        payload:
+          form: consult
+        hint: '평일 24시간 내 회신'
+
+    slots:
+      navbar:
+        - { match: '*', cta: brand_phone }
+
+      hero:
+        - { match: 'guide_*', cta: guide_consult_form }
+        - { match: '*',       cta: brand_phone }
+
+      final:
+        - { match: 'guide_*', cta: guide_consult_form }
+        - { match: '*',       cta: brand_phone }</code></pre>
+
+    <h2>슬롯 카탈로그</h2>
+
+    <table class="small-table">
+      <tr><th>슬롯</th><th>위치</th><th>BodyTemplate 컨텍스트</th></tr>
+      <tr><td><code>navbar</code></td><td>layout 상단 바</td><td>없음 (항상 글로벌 fallback)</td></tr>
+      <tr><td><code>hero</code></td><td>페이지 상단</td><td>호출자가 <code>body_template: template</code> 전달</td></tr>
+      <tr><td><code>final</code></td><td>페이지 하단</td><td>동일 (폼 임베드 가능)</td></tr>
+    </table>
+
+    <div class="hai-page-number">— 18 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p23: 10장. 폼 + Notifier (3/3)                             -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>10장. 폼 + Notifier</h1>
+
+    <p>
+      <code>type: form</code>인 CTA는 <code>payload.form</code> 키로 FormType을
+      식별한다. 현재 등록된 폼: <code>consult</code> →
+      <code>ConsultFormType</code> (name, phone, region, memo, agree + honeypot, CSRF).
+    </p>
+
+    <h2>제출 흐름</h2>
+
+<pre><code>사용자 폼 제출
+    ↓
+POST /cta/submit/{form}              ← CtaSubmitController
+    ↓
+honeypot + CSRF + validation
+    ↓
+CompositeCtaNotifier.send(form, data)  ← 텔레그램 + 디스코드 fan-out
+    ↓
+GET /cta/thank-you (X-Robots-Tag: noindex)</code></pre>
+
+    <h2>새 폼 추가하기</h2>
+
+    <ol>
+      <li><code>src/Form/Cta/&lt;Name&gt;FormType.php</code> 생성</li>
+      <li><code>config/cta.yaml</code>의 <code>ctas:</code>에 항목 추가</li>
+      <li><code>config/services.yaml</code>에 form 서비스 등록</li>
+      <li>Notifier가 새 폼을 처리하도록 분기 추가 (또는 generic으로 처리)</li>
+    </ol>
+
+    <h2>새 Notifier 추가</h2>
+
+    <p>
+      <code>CtaNotifierInterface</code>를 구현하고 <code>composite_cta_notifier</code>에
+      태깅. Slack, 이메일, CRM API 등 자유롭게 fan-out 가능.
+    </p>
+
+    <div class="hai-callout">
+      폼 데이터는 자체 DB에 저장하지 않는다. 정책이 바뀌면 Notifier 추가만
+      하면 되고, 데이터 모델은 변하지 않는다.
+    </div>
+
+    <div class="hai-page-number">— 19 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p24: 11장. 새 콘텐츠 타입 추가하기 — 7단계                  -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>11장. 새 콘텐츠 타입 추가하기 — 7단계</h1>
+
+    <p>
+      새 BodyTemplate 변종(예: <code>Interview</code>)을 추가하려면 <strong>7곳</strong>을
+      만진다. 순서대로:
+    </p>
+
+    <table class="small-table">
+      <tr><th>#</th><th>단계</th><th>파일</th></tr>
+      <tr><td>1</td><td>enum</td><td><code>src/Entity/Enum/BodyTemplate.php</code></td></tr>
+      <tr><td>2</td><td>마이그레이션 (게이트)</td><td><code>migrations/VersionXXXX.php</code></td></tr>
+      <tr><td>3</td><td>디스패처</td><td><code>templates/public/node.html.twig</code></td></tr>
+      <tr><td>4</td><td>템플릿</td><td><code>templates/public/_interview.html.twig</code></td></tr>
+      <tr><td>5</td><td>SCSS</td><td><code>assets/scss/brand/_interview.scss</code></td></tr>
+      <tr><td>6</td><td>폼 라벨</td><td><code>src/Form/ContentNodeType.php</code></td></tr>
+      <tr><td>7</td><td>시드 (선택)</td><td><code>src/Command/SeedDemoCommand.php</code></td></tr>
+    </table>
+
+    <h2>가벼운 대안: enum 안 만지기</h2>
+
+    <p>
+      새 콘텐츠 타입이 시각적으로 비슷하면 enum을 안 늘리고 자식 테마 + 기존
+      변종으로 해결할 수 있다. enum 추가가 정당한 경우는 셋 중 하나라도 참일
+      때: 발행 게이트 임계값이 다름, 시각 시그니처가 명확히 다름, 기존 변종으로
+      표현 불가능. 셋 다 거짓이면 기존 변종을 쓴다.
+    </p>
+
+    <div class="hai-annotation">
+      <div class="hai-annotation-label">순서 주의</div>
+      게이트 변경 시: 함수를 먼저 교체 → row 업데이트 나중. 옛 트리거가 새
+      값을 잘못 분류해 강등시키는 함정을 피한다.
+    </div>
+
+    <div class="hai-page-number">— 20 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p25: Part 4 Divider                                      -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-divider">
+    <h1>4부 입양·확장</h1>
+    <div class="hai-divider-subtitle">
+      테마·브랜드·로케일·플랫폼을 자기 도메인에 맞추기,<br>
+      그리고 운영자가 매일 보는 5개 뷰.
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p26: 12장. 테마와 콘텐츠 운영                              -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>12장. 테마와 콘텐츠 운영</h1>
+
+    <h2>새 테마 추가하기</h2>
+
+    <p>
+      대시보드 <code>/admin/themes/new</code>에서 추가. 자식 테마는 parent 드롭다운에서
+      부모 선택 → depth는 자동 계산. URL <code>/{parent}/{child}/</code>로 자동 생성.
+    </p>
+
+    <h2>사전 질문 3개</h2>
+
+    <p>새 테마 추가 전에 자문하라:</p>
+
+    <ul>
+      <li>자체 데이터를 쌓을 수 있는 영역인가?</li>
+      <li>기존 테마와 키워드 분리되는가?</li>
+      <li>최소 5개 노드를 발행할 수 있는가?</li>
+    </ul>
+
+    <p>
+      셋 다 ✓이면 진행. 그렇지 않으면 자식 테마로 충분한지 검토. 깊이 제약은
+      <code>Theme.depth ≤ 2</code> — 사일로 흩어짐 방지를 위한 의도된 제한이다.
+    </p>
+
+    <h2>운영 워크플로우 (CRUD)</h2>
+
+    <table class="small-table">
+      <tr><th>엔티티</th><th>URL prefix</th><th>비고</th></tr>
+      <tr><td>Theme</td><td><code>/admin/themes</code></td><td>parent 선택 → depth 자동</td></tr>
+      <tr><td>Region</td><td><code>/admin/regions</code></td><td>행정구역 트리</td></tr>
+      <tr><td>Author</td><td><code>/admin/authors</code></td><td>verified는 별도 verify 액션</td></tr>
+      <tr><td>ContentNode</td><td><code>/admin/nodes</code></td><td>BodyTemplate 드롭다운</td></tr>
+      <tr><td>DataPoint</td><td><code>/admin/nodes/{id}/datapoints</code></td><td>노드 안에서 추가</td></tr>
+    </table>
+
+    <h2>게이트 통과 못 할 때</h2>
+
+    <p>
+      에러 메시지가 정확한 작업 항목이다: <code>data_count &gt;= 5</code>, <code>non-empty intro_text</code>,
+      <code>verified author required</code>, <code>parent live check fail</code>,
+      <code>verified FAQ data points &gt;= 3</code>. 게이트는 우회 안 된다.
+    </p>
+
+    <div class="hai-page-number">— 21 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p27: 13장. 브랜드와 디자인 토큰                            -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>13장. 브랜드와 디자인 토큰</h1>
+
+    <h2>브랜드 식별값 (<code>.env</code>)</h2>
+
+    <table class="small-table">
+      <tr><th>변수</th><th>용도</th></tr>
+      <tr><td><code>BRAND_ADMIN_NAME</code></td><td>관리자 페이지 이름</td></tr>
+      <tr><td><code>BRAND_PUBLIC_NAME</code></td><td>공개 사이트 이름</td></tr>
+      <tr><td><code>BRAND_PHONE</code></td><td>메인 CTA 전화번호</td></tr>
+      <tr><td><code>BRAND_PHONE_HOURS</code></td><td>전화 운영시간</td></tr>
+      <tr><td><code>CTA_TELEGRAM_BOT_TOKEN</code></td><td>텔레그램 봇 토큰</td></tr>
+      <tr><td><code>CTA_TELEGRAM_CHAT_ID</code></td><td>알림 받을 chat_id</td></tr>
+      <tr><td><code>CTA_DISCORD_WEBHOOK_URL</code></td><td>디스코드 웹훅</td></tr>
+    </table>
+
+    <h2>디자인 토큰</h2>
+
+    <table class="small-table">
+      <tr><th>위치</th><th>대상</th></tr>
+      <tr><td><code>assets/scss/brand/_tokens.scss</code></td><td>공개 사이트 (브랜드 컬러, 간격, 타이포)</td></tr>
+      <tr><td><code>assets/scss/_tokens.scss</code></td><td>관리자 (별도)</td></tr>
+    </table>
+
+    <p>
+      공개 사이트 토큰은 <code>--b-</code> 프리픽스로 CSS 변수 출력
+      (예: <code>--b-cta</code>, <code>--b-bg-dark</code>, <code>--b-space-16</code>).
+      수정 후 <code>npm run build</code>로 재빌드.
+    </p>
+
+    <h2>SCSS 빌드</h2>
+
+<pre><code>npm run build       # 1회 빌드
+npm run watch       # 변경 감지 + 자동 빌드
+npm run build:prod  # minified</code></pre>
+
+    <p>
+      두 엔트리 포인트: <code>app.scss</code>(관리자) / <code>brand/app.scss</code>(공개).
+      새 컴포넌트는 <code>brand/_my-component.scss</code> 추가 후 <code>brand/app.scss</code>에
+      <code>@use 'my-component';</code> 추가.
+    </p>
+
+    <div class="hai-page-number">— 22 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p28: 14장. 로컬라이제이션 (1/2)                            -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>14장. 로컬라이제이션 (1)</h1>
+
+    <p>
+      이 시스템은 <strong>한국 행정구역</strong>을 기본 가정한다. 다른 국가로
+      입양하려면 두 축을 함께 손봐야 한다: <strong>Region 데이터</strong>와
+      <strong>BodyTemplate 매핑</strong>.
+    </p>
+
+    <h2>1. 행정구역 데이터 교체</h2>
+
+    <p>
+      <code>RegionFixtures</code>는 한국 행정구역(시도 17 / 시군구 ~228 / 동 ~3,500)을
+      시드한다. 다른 국가용으로 통째로 교체:
+    </p>
+
+<pre><code>// 예: 미국 (state / county 2단계)
+private const STATES = [
+    'california' => 'California',
+    'texas'      => 'Texas',
+];
+
+private const COUNTIES_BY_STATE = [
+    'california' => [
+        'los-angeles' => 'Los Angeles County',
+    ],
+];</code></pre>
+
+    <h2>깊이 단계가 다를 때 (옵션 A vs B)</h2>
+
+    <table class="small-table">
+      <tr><th>옵션</th><th>방식</th><th>장단</th></tr>
+      <tr>
+        <td>A</td>
+        <td>enum 이름 유지, <code>deriveTemplate()</code>의 매핑만 조정</td>
+        <td>가벼움 / 이름이 한국 어원이라 외국 개발자에게 어색</td>
+      </tr>
+      <tr>
+        <td>B</td>
+        <td>변종 이름까지 변경 (<code>Sido → StateLevel</code> 등)</td>
+        <td>깔끔 / 마이그레이션·시드·폼 라벨 모두 손봐야 함</td>
+      </tr>
+    </table>
+
+    <div class="hai-callout">
+      <strong>i18n(다국어)은 이 시스템의 범위 밖</strong>. 사이트는 단일 언어 +
+      단일 시장을 가정한다. 두 언어를 함께 운영하려면 별도 인스턴스 두 개를
+      띄우는 것이 권장이다.
+    </div>
+
+    <div class="hai-page-number">— 23 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p29: 14장. 로컬라이제이션 (2/2)                            -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>14장. 로컬라이제이션 (2)</h1>
+
+    <h2>2. 카피 / 톤 — 한국어 디폴트가 박힌 곳</h2>
+
+    <table class="small-table">
+      <tr><th>위치</th><th>변경 필요?</th></tr>
+      <tr><td><code>config/cta.yaml</code> (라벨/문구/assurances)</td><td><strong>번역 필요</strong></td></tr>
+      <tr><td><code>matrix/{theme}.html.twig</code></td><td><strong>번역 필요</strong></td></tr>
+      <tr><td><code>hubs/*.html.twig</code></td><td><strong>번역 필요</strong></td></tr>
+      <tr><td><code>SeedDemoCommand</code> 데모 텍스트</td><td>도메인 변경 시</td></tr>
+      <tr><td><code>.env</code> <code>BRAND_PHONE_HOURS</code></td><td>시간 표기</td></tr>
+    </table>
+
+    <h2>3. URL slug 정책</h2>
+
+    <p>
+      지역 slug는 영문 소문자 + 하이픈이 디폴트. <strong>권장</strong>: 로마자 slug
+      유지 (예: <code>tokyo</code>, <code>shibuya-ku</code>). slug → 현지어 이름 매핑은
+      <code>Region.name</code> 컬럼이 담당하므로 <em>URL은 영문, 표시는 현지어</em>가
+      가능하다.
+    </p>
+
+    <h2>4. 입양 체크리스트 (한국 → 다른 국가)</h2>
+
+    <ol>
+      <li>RegionFixtures 통째로 교체 (영문 slug + 현지어 name)</li>
+      <li>BodyTemplate 깊이 매핑 결정 (옵션 A or B)</li>
+      <li><code>cta.yaml</code> 라벨/문구 번역</li>
+      <li><code>matrix/*.html.twig</code> 카피 번역</li>
+      <li><code>hubs/*.html.twig</code> 오버라이드 번역</li>
+      <li><code>.env BRAND_*</code> 값 현지화</li>
+      <li>SeedDemoCommand 데모 데이터 도메인에 맞게</li>
+      <li>폰트 — 현지어 지원 여부 확인 (CJK·아랍어는 다른 폰트 필요)</li>
+    </ol>
+
+    <div class="hai-page-number">— 24 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p30: 15장. 플랫폼 — 보안 + 캐시 + 시드                     -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>15장. 플랫폼 — 보안·캐시·시드</h1>
+
+    <h2>보안</h2>
+
+    <table class="small-table">
+      <tr><th>설정</th><th>기본값</th></tr>
+      <tr><td>로그인 시도 제한</td><td>5회/분</td></tr>
+      <tr><td>Remember me 유효기간</td><td>30일</td></tr>
+      <tr><td>접근 제어</td><td><code>/admin</code> → ROLE_ADMIN</td></tr>
+      <tr><td>비밀번호 해셔</td><td>argon2id (Symfony 디폴트)</td></tr>
+      <tr><td>CSRF</td><td>Symfony Form 자동</td></tr>
+      <tr><td>Honeypot</td><td><code>hp</code> 필드 + display:none</td></tr>
+      <tr><td>thank-you</td><td><code>X-Robots-Tag: noindex</code></td></tr>
+      <tr><td>Rate limit</td><td><strong>TODO — 운영 전 추가</strong></td></tr>
+    </table>
+
+    <h2>캐시 — HTTP 헤더와 무효화</h2>
+
+<pre><code>$response-&gt;setMaxAge(300);          // 브라우저 5분
+$response-&gt;setSharedMaxAge(1800);   // CDN 30분
+$response-&gt;setLastModified(
+    $node-&gt;getLastReviewAt() ?? $node-&gt;getFirstPublishedAt()
+);</code></pre>
+
+    <p>
+      무효화 트리거는 <code>last_review_at</code> 변경:
+    </p>
+
+<pre><code>UPDATE content_node SET last_review_at = NOW()
+WHERE status = 'live';</code></pre>
+
+    <h2>시드 / 샘플 데이터</h2>
+
+    <p>
+      <code>app:seed:demo [--reset]</code>가 17개 데모 페이지를 생성한다 (1 루트 +
+      4 테마 허브 + 9 지역 매트릭스 + 2 가이드 + 2 에세이 + 1 리포트 + 1 사례).
+      도메인 변경 시 <code>buildIntro()</code>, <code>buildDataPoints()</code>,
+      <code>*_VARIANTS</code> 상수들을 손본다.
+    </p>
+
+    <div class="hai-page-number">— 25 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p31: 16장. 5개 뷰 (1/3)                                    -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>16장. 운영자가 보는 5개 뷰</h1>
+
+    <p>
+      사이트맵은 하나의 트리가 아니라 <strong>같은 데이터의 5개 뷰</strong>다. 각 뷰는
+      다른 결정에 쓰인다. 입양 개발자가 어드민이 무엇을 다루는지 알아야 페이지·CTA
+      결정을 잘 할 수 있다.
+    </p>
+
+    <h2>1. 발행 트리 뷰 (Public Tree)</h2>
+
+    <p>
+      사용자와 검색엔진이 보는 것. <code>sitemap.xml</code>과 사이트 내비게이션의 원천.
+      <code>status='live'</code>인 노드만 포함. 4단계 깊이가 최대치 (사이트 → 테마 →
+      시도 → 시군구 → 동).
+    </p>
+
+    <h2>2. 데이터 매트릭스 뷰 (Data Matrix)</h2>
+
+    <p>
+      운영자가 매일 보는 화면. 어느 칸을 채워야 하는지 한눈에 보인다.
+      ✓ <code>live</code> (data ≥ 5) / ◐ <code>noindex</code> (1~4) / ✗ <code>dead</code> (0).
+    </p>
+
+    <table class="small-table">
+      <tr><th></th><th>과외</th><th>학원</th><th>학습</th></tr>
+      <tr><td>강남구</td><td>✓ 9</td><td>✓ 12</td><td>✓ 15</td></tr>
+      <tr><td>서초구</td><td>✓ 7</td><td>✓ 5</td><td>✓ 8</td></tr>
+      <tr><td>송파구</td><td>✓ 6</td><td>◐ 4</td><td>◐ 2</td></tr>
+      <tr><td>군포시</td><td>✓ 8</td><td>◐ 3</td><td>◐ 1</td></tr>
+      <tr><td>금정구</td><td>◐ 2</td><td>✓ 5</td><td>✗ 0</td></tr>
+    </table>
+
+    <p>
+      가장 효율적인 작업 패턴: <strong>◐ → ✓</strong>. 게재 의도는 검증됐고
+      데이터만 부족한 칸 — 데이터 1~2개 추가로 발행 가능.
+    </p>
+
+    <div class="hai-page-number">— 26 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p32: 16장. 5개 뷰 (2/3)                                    -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>16장. KPI 히트맵 + 사일로 무결성</h1>
+
+    <h2>3. KPI 히트맵 뷰</h2>
+
+    <p>
+      Search Console 데이터를 노드 트리에 매핑. 분기 정리에 쓴다:
+      어릴지 / 통합할지 / 삭제할지 결정.
+    </p>
+
+    <table class="small-table">
+      <tr><th>URL</th><th>인덱스</th><th>노출</th><th>클릭</th><th>판단</th></tr>
+      <tr><td><code>/tutoring/</code></td><td>✓</td><td>8200</td><td>320</td><td>유지</td></tr>
+      <tr><td><code>/tutoring/seoul/</code></td><td>✓</td><td>3400</td><td>145</td><td>유지</td></tr>
+      <tr><td><code>/.../gangnam/</code></td><td>✓</td><td>1200</td><td>62</td><td>유지</td></tr>
+      <tr><td><code>/.../daechi/</code></td><td>✗</td><td>15</td><td>0</td><td>통합</td></tr>
+      <tr><td><code>/.../yeoksam/</code></td><td>✓</td><td>380</td><td>23</td><td>보강</td></tr>
+    </table>
+
+    <p>
+      데이터 소스는 Search Console API → <code>ContentNode.kpi_snapshot</code>
+      (JSONB) 캐시. 매일 04:00에 동기화 cron이 갱신한다.
+    </p>
+
+    <h2>4. 사일로 무결성 뷰 (Silo Integrity)</h2>
+
+    <p>
+      구조 점검용. 자동 검사기가 다음을 검출:
+    </p>
+
+    <ul>
+      <li>부모 없는 노드 (고아)</li>
+      <li>다른 테마로의 직접 링크 (사일로 침범)</li>
+      <li>끊긴 내부 링크</li>
+      <li>부모의 자식 목록에서 누락된 자식</li>
+      <li><code>depth</code>가 부모와 정합되지 않는 노드</li>
+    </ul>
+
+    <p>
+      매주 자동 실행, 위반 시 알림. <code>/admin/silo</code>에서 즉시 확인 가능.
+    </p>
+
+    <div class="hai-callout">
+      사일로 침범은 가장 흔한 사고다. 다른 테마 페이지로의 직접 링크는
+      반드시 부모 허브로 우회시켜야 한다.
+    </div>
+
+    <div class="hai-page-number">— 27 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p33: 16장. 5개 뷰 (3/3) + 일일 루틴                        -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>16장. 갱신 큐 + 일일 루틴</h1>
+
+    <h2>5. 갱신 큐 뷰 (Refresh Queue)</h2>
+
+    <p>
+      운영자의 매일 작업 목록. 자동 우선순위가 매겨진다.
+    </p>
+
+    <table class="small-table">
+      <tr><th>우선순위</th><th>트리거 조건</th></tr>
+      <tr><td>1</td><td>90일 미갱신 (<code>last_review_at</code> 기준)</td></tr>
+      <tr><td>2</td><td>새 verified DataPoint 있는데 페이지 미반영</td></tr>
+      <tr><td>3</td><td>Search Console 노출 +50% 급증</td></tr>
+      <tr><td>4</td><td>90일 트래픽 0인 live 노드</td></tr>
+    </table>
+
+    <h2>일일 루틴 (15~30분)</h2>
+
+    <ol>
+      <li><strong>갱신 큐 확인</strong> (5분) — 우선순위 1·2 처리</li>
+      <li><strong>매트릭스 빈칸 채우기</strong> (10~20분) — ◐ 칸 1개 이상 ✓로 승급 시도</li>
+      <li><strong>이전 추가된 DataPoint 검증</strong> — <code>verified=true</code> 토글</li>
+      <li><strong>SC 알림 점검</strong></li>
+      <li><strong>사일로 검사기 결과 확인</strong> — 위반 즉시 처리</li>
+    </ol>
+
+    <h2>분기 점검 (매 분기 마지막 주)</h2>
+
+    <ul>
+      <li>KPI 히트맵에서 트래픽 0 페이지 추출</li>
+      <li>카니발리제이션 검출기 결과 검토 → 통합 결정</li>
+      <li>90일 미갱신 일괄 검토</li>
+      <li>다음 분기 발행 캘린더 락</li>
+    </ul>
+
+    <div class="hai-page-number">— 28 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p34: Part 5 Divider                                      -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-divider">
+    <h1>5부 부록</h1>
+    <div class="hai-divider-subtitle">
+      결정 규칙 Q&amp;A, 한↔영↔코드↔DB 용어집,<br>
+      운영자 일일·분기 치트시트.
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p35: 부록 A. 결정 규칙 Q&A (1/2)                           -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>부록 A. 결정 규칙 Q&amp;A (1)</h1>
+
+    <p>
+      "X일 때 어떻게 해야?"의 빠른 인덱스. 각 답은 어디를 편집하면 되는지를 가리킨다.
+    </p>
+
+    <h2>페이지 / 외형</h2>
+
+    <table class="small-table">
+      <tr><th>질문</th><th>답</th></tr>
+      <tr>
+        <td>한 페이지만 다르게 보이게</td>
+        <td><code>templates/public/hubs/{path}.html.twig</code> (region NULL 한정)</td>
+      </tr>
+      <tr>
+        <td>한 테마의 모든 지역 페이지</td>
+        <td><code>templates/public/matrix/{theme}.html.twig</code></td>
+      </tr>
+      <tr>
+        <td>모든 매트릭스 페이지</td>
+        <td><code>_matrix.html.twig</code> 또는 <code>_partials/*</code></td>
+      </tr>
+      <tr>
+        <td>한 콘텐츠 타입 외형 (가이드 전체)</td>
+        <td><code>_guide.html.twig</code></td>
+      </tr>
+      <tr>
+        <td>지역 페이지를 다르게 만들 수 있나?</td>
+        <td><strong>불가</strong>. 균일성이 SEO 자산.</td>
+      </tr>
+    </table>
+
+    <h2>CTA</h2>
+
+    <table class="small-table">
+      <tr><th>질문</th><th>답</th></tr>
+      <tr>
+        <td>가이드 페이지에만 폼 CTA</td>
+        <td><code>cta.yaml</code>의 <code>slots.*</code>에 <code>guide_*</code> 매칭 추가</td>
+      </tr>
+      <tr>
+        <td>새 폼 타입 추가</td>
+        <td><code>FormType</code> + <code>cta.yaml</code> + Notifier 분기</td>
+      </tr>
+      <tr>
+        <td>새 알림 채널 (Slack 등)</td>
+        <td><code>CtaNotifierInterface</code> 구현 + composite에 태깅</td>
+      </tr>
+      <tr>
+        <td>hero와 final이 다른 CTA</td>
+        <td><code>slots.hero</code> / <code>slots.final</code> 따로 설정 (지원됨)</td>
+      </tr>
+    </table>
+
+    <div class="hai-page-number">— 29 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p36: 부록 A. 결정 규칙 Q&A (2/2)                           -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>부록 A. 결정 규칙 Q&amp;A (2)</h1>
+
+    <h2>콘텐츠 타입 / 게이트</h2>
+
+    <table class="small-table">
+      <tr><th>질문</th><th>답</th></tr>
+      <tr>
+        <td>새 콘텐츠 타입 추가</td>
+        <td>7곳 수정 (enum, migration, dispatcher, template, scss, form label, seed)</td>
+      </tr>
+      <tr>
+        <td>enum 추가가 정당한가?</td>
+        <td>게이트 임계값/시각 시그니처/사용처 중 하나라도 다르면 ✓</td>
+      </tr>
+      <tr>
+        <td>발행 요건 변경</td>
+        <td>새 마이그레이션으로 <code>fn_publish_gate</code> 교체</td>
+      </tr>
+      <tr>
+        <td>게이트 우회</td>
+        <td><strong>불가</strong>. DB 트리거가 막음.</td>
+      </tr>
+    </table>
+
+    <h2>입양 / 운영</h2>
+
+    <table class="small-table">
+      <tr><th>질문</th><th>답</th></tr>
+      <tr>
+        <td>다른 국가로 입양</td>
+        <td>14장 체크리스트 (RegionFixtures + 매핑 + 카피 + 폰트)</td>
+      </tr>
+      <tr>
+        <td>새 테마 추가가 정당한가?</td>
+        <td>자체 데이터 가능 + 키워드 분리 + 5+ 노드 발행 가능</td>
+      </tr>
+      <tr>
+        <td>두 페이지가 같은 키워드를 노린다</td>
+        <td>약한 쪽 데이터 머지 → status='dead' → 자동 301</td>
+      </tr>
+      <tr>
+        <td>90일 트래픽 0 페이지</td>
+        <td>보강 / 통합 / 삭제 — 방치는 옵션 아님</td>
+      </tr>
+      <tr>
+        <td>SCSS 변경이 안 보임</td>
+        <td><code>npm run build</code> + <code>last_review_at</code> 갱신</td>
+      </tr>
+      <tr>
+        <td>관리자 계정 생성</td>
+        <td><code>php bin/console app:admin:create &lt;email&gt; &lt;pw&gt;</code></td>
+      </tr>
+    </table>
+
+    <h2>보안</h2>
+
+    <table class="small-table">
+      <tr><th>질문</th><th>답</th></tr>
+      <tr><td>운영 전 필수 작업</td><td>Rate limit 활성화 + APP_SECRET 회전 + HTTPS</td></tr>
+      <tr><td>폼 데이터 어디에 저장?</td><td>저장 안 함. Notifier 통해 외부 채널로 forward.</td></tr>
+    </table>
+
+    <div class="hai-page-number">— 30 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p37: 부록 B. 용어집 (1/2)                                  -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>부록 B. 용어집 (1)</h1>
+
+    <h2>엔티티 (한↔영↔코드↔DB)</h2>
+
+    <table class="small-table">
+      <tr><th>한국어</th><th>영문</th><th>PHP 클래스</th><th>DB 테이블</th></tr>
+      <tr><td>테마</td><td>Theme</td><td><code>App\Entity\Theme</code></td><td><code>theme</code></td></tr>
+      <tr><td>지역</td><td>Region</td><td><code>App\Entity\Region</code></td><td><code>region</code></td></tr>
+      <tr><td>작성자</td><td>Author</td><td><code>App\Entity\Author</code></td><td><code>author</code></td></tr>
+      <tr><td>콘텐츠 노드</td><td>ContentNode</td><td><code>App\Entity\ContentNode</code></td><td><code>content_node</code></td></tr>
+      <tr><td>데이터 포인트</td><td>DataPoint</td><td><code>App\Entity\DataPoint</code></td><td><code>data_point</code></td></tr>
+      <tr><td>리다이렉트</td><td>Redirect</td><td><code>App\Entity\Redirect</code></td><td><code>redirect</code></td></tr>
+    </table>
+
+    <h2>상태 (ContentStatus)</h2>
+
+    <table class="small-table">
+      <tr><th>한국어</th><th>enum</th><th>DB 값</th><th>의미</th></tr>
+      <tr><td>초안</td><td><code>Draft</code></td><td><code>draft</code></td><td>작업 중, 비공개</td></tr>
+      <tr><td>발행</td><td><code>Live</code></td><td><code>live</code></td><td>공개, 인덱스 대상</td></tr>
+      <tr><td>비색인</td><td><code>Noindex</code></td><td><code>noindex</code></td><td>게이트 미달</td></tr>
+      <tr><td>폐기</td><td><code>Dead</code></td><td><code>dead</code></td><td>자동 301</td></tr>
+    </table>
+
+    <h2>DataPoint kind</h2>
+
+    <table class="small-table">
+      <tr><th>한국어</th><th>enum case</th><th>DB 값</th></tr>
+      <tr><td>정량</td><td><code>Quantitative</code></td><td><code>quantitative</code></td></tr>
+      <tr><td>정성</td><td><code>Qualitative</code></td><td><code>qualitative</code></td></tr>
+      <tr><td>비교</td><td><code>Comparison</code></td><td><code>comparison</code></td></tr>
+      <tr><td>사례</td><td><code>CaseStudy</code> ⚠</td><td><code>case</code></td></tr>
+      <tr><td>FAQ</td><td><code>Faq</code></td><td><code>faq</code></td></tr>
+    </table>
+
+    <p style="font-size: 9pt;">
+      ⚠ DB 값은 <code>'case'</code>이지만 PHP enum case 이름은 <code>CaseStudy</code>
+      (PHP의 <code>case</code> 예약어 회피).
+    </p>
+
+    <div class="hai-page-number">— 31 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p38: 부록 B. 용어집 (2/2)                                  -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>부록 B. 용어집 (2)</h1>
+
+    <h2>BodyTemplate (10종)</h2>
+
+    <table class="small-table">
+      <tr><th>한국어</th><th>enum</th><th>DB 값</th><th>게이트</th></tr>
+      <tr><td>허브</td><td><code>Hub</code></td><td><code>hub</code></td><td>data_count ≥ 5</td></tr>
+      <tr><td>시도</td><td><code>Sido</code></td><td><code>sido</code></td><td>data_count ≥ 5</td></tr>
+      <tr><td>시군구</td><td><code>Sigungu</code></td><td><code>sigungu</code></td><td>data_count ≥ 5</td></tr>
+      <tr><td>동</td><td><code>Dong</code></td><td><code>dong</code></td><td>data_count ≥ 5</td></tr>
+      <tr><td>가이드(심층)</td><td><code>GuideLongform</code></td><td><code>guide_longform</code></td><td>3000자+ AND FAQ 3+</td></tr>
+      <tr><td>가이드(비교)</td><td><code>GuideComparison</code></td><td><code>guide_comparison</code></td><td>위와 동일</td></tr>
+      <tr><td>가이드(FAQ)</td><td><code>GuideFaq</code></td><td><code>guide_faq</code></td><td>위와 동일</td></tr>
+      <tr><td>에세이</td><td><code>Essay</code></td><td><code>essay</code></td><td>3000자+</td></tr>
+      <tr><td>리포트</td><td><code>Report</code></td><td><code>report</code></td><td>5000자+</td></tr>
+      <tr><td>사례 연구</td><td><code>CaseStudy</code></td><td><code>case_study</code></td><td>1500자+</td></tr>
+    </table>
+
+    <h2>자주 헷갈리는 용어</h2>
+
+    <table class="small-table">
+      <tr><th>A vs B</th><th>차이</th></tr>
+      <tr>
+        <td><code>BodyTemplate.CaseStudy</code> vs <code>DataPointKind.CaseStudy</code></td>
+        <td>전자는 페이지 타입, 후자는 데이터 종류. 다른 개념.</td>
+      </tr>
+      <tr>
+        <td><code>noindex</code> vs <code>dead</code></td>
+        <td>noindex는 일시 강등(회복 가능). dead는 영구 폐기(Redirect 자동).</td>
+      </tr>
+      <tr>
+        <td>카니발리제이션 vs 사일로 침범</td>
+        <td>전자는 키워드 충돌. 후자는 구조 충돌(다른 테마로 직접 링크).</td>
+      </tr>
+      <tr>
+        <td><code>data_count</code> vs verified DataPoint 수</td>
+        <td>동일. <code>verified=true</code>만 카운트하는 자동 컬럼.</td>
+      </tr>
+    </table>
+
+    <div class="hai-page-number">— 32 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p39: 부록 C. 운영자 치트시트                                -->
+  <!-- ======================================================== -->
+  <section class="hai-page">
+    <h1>부록 C. 운영자 치트시트</h1>
+
+    <h2>일일 (15~30분)</h2>
+
+    <ul>
+      <li><strong>갱신 큐</strong> 확인 → <code>/admin/queue</code> → 우선순위 1·2 처리</li>
+      <li><strong>매트릭스</strong> 빈칸 채우기 → <code>/admin/matrix</code> → ◐ 1+를 ✓로</li>
+      <li><strong>이전 추가 DataPoint 검증</strong> → <code>verified=true</code> 토글</li>
+      <li><strong>SC 알림</strong> 점검</li>
+      <li><strong>사일로 검사기 결과</strong> → <code>/admin/silo</code> → 위반 즉시 처리</li>
+    </ul>
+
+    <h2>주간 (1시간)</h2>
+
+    <ul>
+      <li><code>draft → live</code> 후보 검토</li>
+      <li>사일로 검사 결과 처리</li>
+      <li>Search Console 알림 정리</li>
+    </ul>
+
+    <h2>분기 (반나절, 매 분기 마지막 주)</h2>
+
+    <ul>
+      <li>KPI 히트맵에서 트래픽 0 페이지 추출 → 보강/통합/삭제 결정</li>
+      <li>카니발리제이션 검출기 결과 검토 → 통합 결정</li>
+      <li>90일 미갱신 일괄 검토</li>
+      <li>새 테마/지역 후보 검토 (자동 데이터 추가)</li>
+      <li>다음 분기 발행 캘린더 락 (lock)</li>
+      <li>분기 동안 변경된 status 이력 리뷰</li>
+    </ul>
+
+    <h2>발행 전 페이지 체크 (요약)</h2>
+
+    <ul>
+      <li>verified DataPoint ≥ 5 (정량 1+, 정성 3+, 비교 1+)</li>
+      <li><code>intro_text</code> 작성 (2~3문장)</li>
+      <li><code>author.verified_at</code> NOT NULL</li>
+      <li><code>parent.status = 'live'</code></li>
+      <li>인접 지역 링크 ≥ 3 (사일로 안)</li>
+      <li>다른 테마로의 직접 링크 0</li>
+      <li>모바일 LCP &lt; 2.5초</li>
+    </ul>
+
+    <div class="hai-page-number">— 33 —</div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- p40: 끝맺음                                                -->
+  <!-- ======================================================== -->
+  <section class="hai-page hai-cover">
+    <div class="hai-cover-volume">맺음말</div>
+    <h1>끝</h1>
+    <div class="hai-cover-subtitle">
+      이 책의 모든 결정 규칙은 코드와 트리거에 살아 있다.<br>
+      문서가 코드와 어긋나면 코드가 진실이다.<br><br>
+      docs/ai · docs/contribution · docs/dev<br>
+      OPERATIONS.md
+    </div>
+    <div class="hai-cover-author">seo-symfony · 2026</div>
+  </section>
+
+</body>
+</html>
