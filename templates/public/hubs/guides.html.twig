@@ -27,12 +27,7 @@
                 {% for guide in theme_children %}
                     <li>
                         <a class="hub-library__card" href="{{ urls.build(guide) }}">
-                            <span class="hub-library__card-tag">
-                                {%- if guide.bodyTemplate.value == 'guide_longform' %}심층 가이드
-                                {%- elseif guide.bodyTemplate.value == 'guide_comparison' %}비교 분석
-                                {%- elseif guide.bodyTemplate.value == 'guide_faq' %}질문 모음
-                                {%- else %}가이드{% endif -%}
-                            </span>
+                            <span class="hub-library__card-tag">가이드</span>
                             <h2 class="hub-library__card-title">{{ guide.theme.name }}</h2>
                             {% if guide.introText %}
                                 <p class="hub-library__card-lede">{{ guide.introText|striptags|slice(0, 160) }}…</p>

@@ -47,10 +47,10 @@ final class SeedDemoCommand
     /** 매트릭스(지역별) 시드 대상에서 제외 — 비-지역 콘텐츠 테마(가이드/리포트/사례). */
     private const MATRIX_EXCLUDED_SLUGS = ['guides', 'reports', 'cases'];
 
-    /** 가이드 변종 — how-to 형식. (faq 변종은 enum에는 남아 있되 데모에선 제외 — 별도 페이지로 만들기엔 약함.) */
+    /** 가이드 데모 — how-to 형식. 슬러그가 본문/데이터 갈래의 키. */
     private const GUIDE_VARIANTS = [
-        ['slug' => 'how-to-choose-tutor', 'name' => '과외 강사 선택법', 'template' => BodyTemplate::GuideLongform],
-        ['slug' => 'tutoring-vs-academy', 'name' => '과외 vs 학원 비교', 'template' => BodyTemplate::GuideComparison],
+        ['slug' => 'how-to-choose-tutor', 'name' => '과외 강사 선택법'],
+        ['slug' => 'tutoring-vs-academy', 'name' => '과외 vs 학원 비교'],
     ];
 
     /** 권위 콘텐츠 — 자체 데이터 리포트. /reports/ 아래 자식 테마. */
@@ -905,27 +905,27 @@ final class SeedDemoCommand
                 continue;
             }
 
-            $this->createGuideNode($childTheme, $author, $variant['template']);
+            $this->createGuideNode($childTheme, $author);
             $created++;
         }
 
         return $created;
     }
 
-    private function createGuideNode(Theme $theme, Author $author, BodyTemplate $template): void
+    private function createGuideNode(Theme $theme, Author $author): void
     {
         $node = (new ContentNode())
             ->setTheme($theme)
             ->setRegion(null)
             ->setAuthor($author)
             ->setStatus(ContentStatus::Draft)
-            ->setIntroText($this->buildGuideIntro($template))
-            ->setBodyTemplate($template)
+            ->setIntroText($this->buildGuideIntro($theme))
+            ->setBodyTemplate(BodyTemplate::Guide)
             ->setBodyMarkdown($this->buildGuideMarkdown());
 
         $this->em->persist($node);
 
-        foreach ($this->buildGuideDataPoints($template) as $dpData) {
+        foreach ($this->buildGuideDataPoints($theme) as $dpData) {
             $dp = (new DataPoint())
                 ->setNode($node)
                 ->setKind($dpData['kind'])
@@ -942,12 +942,11 @@ final class SeedDemoCommand
         $this->em->flush();
     }
 
-    private function buildGuideIntro(BodyTemplate $template): string
+    private function buildGuideIntro(Theme $theme): string
     {
-        return match ($template) {
-            BodyTemplate::GuideLongform => '강사 선택은 과외 성공의 80%를 결정합니다. 학력·경력·수업 스타일 세 축을 어떻게 비교하고, 첫 수업에서 무엇을 확인해야 하는지 단계별로 정리했습니다.',
-            BodyTemplate::GuideComparison => '과외와 학원 중 어디가 우리 아이에게 맞을까. 비용·진도·집중도·맞춤성 네 축을 데이터로 비교해, 학년과 성향별로 어떤 선택이 합리적인지 정리했습니다.',
-            BodyTemplate::GuideFaq => '과외 시작 전 가장 자주 받는 질문 모음. 비용 정산, 강사 교체, 환불 정책, 첫 수업 진행 방식까지 운영팀이 직접 답변합니다.',
+        return match ($theme->getSlug()) {
+            'how-to-choose-tutor' => '강사 선택은 과외 성공의 80%를 결정합니다. 학력·경력·수업 스타일 세 축을 어떻게 비교하고, 첫 수업에서 무엇을 확인해야 하는지 단계별로 정리했습니다.',
+            'tutoring-vs-academy' => '과외와 학원 중 어디가 우리 아이에게 맞을까. 비용·진도·집중도·맞춤성 네 축을 데이터로 비교해, 학년과 성향별로 어떤 선택이 합리적인지 정리했습니다.',
             default => '',
         };
     }
@@ -1068,9 +1067,9 @@ final class SeedDemoCommand
     /**
      * @return list<array{kind: DataPointKind, title: string, value: mixed}>
      */
-    private function buildGuideDataPoints(BodyTemplate $template): array
+    private function buildGuideDataPoints(Theme $theme): array
     {
-        // 가이드 게이트는 verified FAQ ≥ 3을 요구. 4건을 기본 + 변종별 보조 DataPoint.
+        // 가이드 게이트는 verified FAQ ≥ 3을 요구. 4건을 기본 + 슬러그별 보조 DataPoint.
         $faq = [
             [
                 'kind' => DataPointKind::Faq,
@@ -1094,8 +1093,8 @@ final class SeedDemoCommand
             ],
         ];
 
-        $extras = match ($template) {
-            BodyTemplate::GuideComparison => [
+        $extras = match ($theme->getSlug()) {
+            'tutoring-vs-academy' => [
                 [
                     'kind' => DataPointKind::Comparison,
                     'title' => '과외 vs 학원 — 평균 시간당 단가',
@@ -1112,7 +1111,7 @@ final class SeedDemoCommand
                     'value' => '학원은 또래 경쟁, 과외는 1:1 관계. 외향형은 학원, 내향형이거나 학습 자존감이 낮은 학생은 과외가 효과적.',
                 ],
             ],
-            BodyTemplate::GuideLongform => [
+            'how-to-choose-tutor' => [
                 [
                     'kind' => DataPointKind::Quantitative,
                     'title' => '첫 매칭 후 만족도',

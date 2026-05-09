@@ -41,9 +41,9 @@ parameters:
         - { match: '*', cta: brand_phone }
 
       hero:
-        - { match: 'guide_*', cta: guide_consult_form }
-        - { match: '*',       cta: brand_phone }
+        - { match: 'guide', cta: guide_consult_form }
+        - { match: '*',     cta: brand_phone }
 
       final:
-        - { match: 'guide_*', cta: guide_consult_form }
-        - { match: '*',       cta: brand_phone }
+        - { match: 'guide', cta: guide_consult_form }
+        - { match: '*',     cta: brand_phone }

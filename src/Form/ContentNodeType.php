@@ -65,26 +65,21 @@ class ContentNodeType extends AbstractType
                 'label' => '본문 템플릿',
                 'class' => BodyTemplate::class,
                 'choice_label' => fn (BodyTemplate $t) => match ($t) {
-                    BodyTemplate::Hub => '허브 (hub) — 매트릭스 자동',
-                    BodyTemplate::Sido => '시도 (sido) — 매트릭스 자동',
-                    BodyTemplate::Sigungu => '시군구 (sigungu) — 매트릭스 자동',
-                    BodyTemplate::Dong => '동 (dong) — 매트릭스 자동',
-                    BodyTemplate::GuideLongform => '가이드 — 심층 (guide_longform)',
-                    BodyTemplate::GuideComparison => '가이드 — 비교 (guide_comparison)',
-                    BodyTemplate::GuideFaq => '가이드 — FAQ (guide_faq)',
+                    BodyTemplate::Matrix => '매트릭스 (matrix) — 지역 구조화 데이터',
+                    BodyTemplate::Guide => '가이드 (guide) — focus 별도 지정',
                     BodyTemplate::Essay => '에세이 (essay)',
                     BodyTemplate::Report => '데이터 리포트 (report)',
                     BodyTemplate::CaseStudy => '사례 연구 (case_study)',
                 },
                 'required' => false,
-                'placeholder' => '— 좌표로 자동 결정 (지역 깊이 기반) —',
-                'help' => 'guide_*/essay/report/case_study를 선택하면 본문은 Markdown으로 렌더링됩니다. 발행 시 변종마다 다른 게이트 적용 (가이드는 FAQ 3개+, 리포트는 5,000자+ 등).',
+                'placeholder' => '— 비워두면 매트릭스 (지역 매트릭스 자동) —',
+                'help' => 'guide/essay/report/case_study를 선택하면 본문은 Markdown으로 렌더링됩니다. 발행 시 패밀리마다 다른 게이트 적용 (가이드는 FAQ 3개+, 리포트는 5,000자+ 등).',
             ])
             ->add('bodyMarkdown', TextareaType::class, [
                 'label' => '본문 (Markdown)',
                 'required' => false,
                 'attr' => ['rows' => 20, 'style' => 'font-family: ui-monospace, monospace;'],
-                'help' => '가이드 템플릿 전용. 발행 시 가시 텍스트 3,000자 이상 + 검증된 FAQ DataPoint 3개 이상 필요. 매트릭스 템플릿(hub/sido/sigungu/dong)에서는 무시됩니다.',
+                'help' => '가이드/에세이/리포트/사례 연구 전용. 발행 시 가시 텍스트 길이 게이트 + (가이드는) 검증된 FAQ DataPoint 3개 이상 필요. 매트릭스에서는 무시됩니다.',
             ])
             ->add('lastReviewAt', DateTimeType::class, [
                 'label' => '마지막 검토',

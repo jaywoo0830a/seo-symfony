@@ -236,22 +236,7 @@ final class PublicNodeController extends AbstractController
 
     private function deriveTemplate(ContentNode $node): BodyTemplate
     {
-        // Operator override wins — guides need explicit selection since they have no
-        // region depth signal and matrix derivation would always pick Hub for them.
-        $explicit = $node->getBodyTemplate();
-        if ($explicit !== null) {
-            return $explicit;
-        }
-
-        $regionDepth = $node->getRegion()?->getDepth();
-
-        return match ($regionDepth) {
-            null, 0 => BodyTemplate::Hub,
-            1 => BodyTemplate::Sido,
-            2 => BodyTemplate::Sigungu,
-            3 => BodyTemplate::Dong,
-            default => BodyTemplate::Hub,
-        };
+        return $node->getBodyTemplate() ?? BodyTemplate::Matrix;
     }
 
     /**

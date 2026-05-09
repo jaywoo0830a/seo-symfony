@@ -48,15 +48,7 @@ final class ContentNodeShowController extends AbstractController
 
     private function deriveTemplate(ContentNode $node): BodyTemplate
     {
-        $regionDepth = $node->getRegion()?->getDepth();
-
-        return match ($regionDepth) {
-            null, 0 => BodyTemplate::Hub,
-            1 => BodyTemplate::Sido,
-            2 => BodyTemplate::Sigungu,
-            3 => BodyTemplate::Dong,
-            default => BodyTemplate::Hub,
-        };
+        return $node->getBodyTemplate() ?? BodyTemplate::Matrix;
     }
 
     /**
