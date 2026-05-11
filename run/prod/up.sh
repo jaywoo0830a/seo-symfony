@@ -60,3 +60,29 @@ else
          (DNS for ${DOMAIN} must resolve to this host; ports 80/443 must be public.)
 EOF
 fi
+
+# ─── 첫 배포 안내 ────────────────────────────────────────────────────────────
+# Phase 0 시드(theme/region/author)는 migration 이 자동 처리. 어드민 계정 생성과
+# Author 정보 교체만 수동. admin_user 테이블이 비어 있을 때만 안내 출력.
+ADMIN_COUNT="$(docker compose exec -T -e PGPASSWORD="$POSTGRES_PASSWORD" database \
+    psql -U "${POSTGRES_USER:-app}" -d "${POSTGRES_DB:-app}" -tAc \
+    "SELECT COUNT(*) FROM admin_user" 2>/dev/null || echo "0")"
+
+if [[ "${ADMIN_COUNT//[[:space:]]/}" == "0" ]]; then
+    cat <<'EOF'
+
+──────────────────────────────────────────────────────────────────────────
+  첫 배포 — 다음 두 단계를 실행하세요:
+
+  1) 운영 어드민 계정 생성 (이메일 + 강력한 비밀번호)
+     bash run/prod/console.sh app:admin:create me@example.com 'StrongPassword'
+
+  2) Author placeholder 본인 정보로 교체 + verify (브라우저)
+     /admin/authors/1/edit   →  본인 실명·경력·bio 입력
+     /admin/authors/1/verify
+
+  Phase 0 시드(theme 4 + region 49 + author placeholder)는 이미 migration
+  으로 자동 적용됨. fixtures:load 는 더 이상 필요 없음.
+──────────────────────────────────────────────────────────────────────────
+EOF
+fi

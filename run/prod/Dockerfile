@@ -6,8 +6,10 @@
 FROM node:24-alpine AS node
 
 WORKDIR /build
-COPY package.json ./
-RUN npm install --no-audit --no-fund --omit=dev
+# sass 는 devDependencies — 빌드 도구라 build stage 에서 필요.
+# multi-stage 이므로 node_modules 는 final image 에 포함 안 됨 (assets/styles 만 COPY).
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY assets/scss ./assets/scss
 RUN npm run build:prod
 
@@ -61,18 +63,27 @@ COPY templates ./templates
 COPY translations ./translations
 COPY assets ./assets
 COPY importmap.php ./
+# Symfony Dotenv 가 부팅 시 .env 를 요구. .env 자체는 committed placeholder
+# (실값은 compose.yaml 의 environment: 블록에서 주입). 누락 시 dotenv 가 throw.
+COPY .env ./
 
 # CSS produced in the node stage.
 COPY --from=node /build/assets/styles ./assets/styles
 
-# Symfony auto-scripts (cache + assets) require source to be present.
+# 1) 빌드 산출물 디렉토리를 *미리 www-data 소유*로 생성.
+#    (이전엔 cache:warmup 이 root 로 cache/prod/* 생성 후 chown 했는데, 일부 환경
+#    에서 chown -R 이 서브디렉토리에 적용 안 됨. 처음부터 www-data 권한이 안전.)
+RUN mkdir -p var/cache/prod/http_cache var/cache/prod/pools var/log var/sessions public/assets \
+ && chown -R www-data:www-data /var/www/html
+
+# 2) Symfony auto-scripts — *www-data 로 실행*해야 cache 산출물도 www-data 소유.
+# 순서 주의: importmap:install (vendor JS 다운로드) → asset-map:compile (manifest 생성).
+USER www-data
 RUN composer dump-autoload --classmap-authoritative --no-dev \
  && php bin/console cache:clear --no-warmup \
  && php bin/console cache:warmup \
- && php bin/console asset-map:compile \
  && php bin/console importmap:install \
- && mkdir -p var/cache var/log var/sessions \
- && chown -R www-data:www-data var public/assets
+ && php bin/console asset-map:compile
 
 
 # =============================================================================
