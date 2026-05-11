@@ -1,0 +1,44 @@
+{% extends 'dashboard/layout.html.twig' %}
+
+{% block title %}디자인 프리뷰 · {{ parent() }}{% endblock %}
+
+{% block content %}
+    <section class="card">
+        <header class="card__head">
+            <h1 class="card__title">디자인 프리뷰</h1>
+            <p class="card__lede">
+                DB 무관·시드 무관·publish gate 무관. 메모리 객체로 fake context를 만들어 페이지 템플릿을 직접 렌더합니다.
+                SCSS/Twig 변경 후 즉시 시각 확인 가능. 검색엔진은 <code>X-Robots-Tag: noindex</code>로 차단됩니다.
+            </p>
+        </header>
+
+        <h2>홈</h2>
+        <ul>
+            <li><a href="{{ path('admin_preview_home') }}" target="_blank" rel="noopener">/ — home.html.twig</a></li>
+        </ul>
+
+        <h2>매트릭스 셸 (matrix/tutoring.html.twig)</h2>
+        <ul>
+            <li><a href="{{ path('admin_preview_matrix', { depth: 0 }) }}" target="_blank" rel="noopener">depth 0 — 테마 허브 (region=NULL)</a></li>
+            <li><a href="{{ path('admin_preview_matrix', { depth: 1 }) }}" target="_blank" rel="noopener">depth 1 — 시도 (서울)</a></li>
+            <li><a href="{{ path('admin_preview_matrix', { depth: 2 }) }}" target="_blank" rel="noopener">depth 2 — 시군구 (강남구)</a></li>
+            <li><a href="{{ path('admin_preview_matrix', { depth: 3 }) }}" target="_blank" rel="noopener">depth 3 — 동 (대치동)</a></li>
+        </ul>
+
+        <h2>Prose 템플릿</h2>
+        <ul>
+            <li><a href="{{ path('admin_preview_prose', { template: 'guide' }) }}" target="_blank" rel="noopener">_guide.html.twig</a></li>
+            <li><a href="{{ path('admin_preview_prose', { template: 'essay' }) }}" target="_blank" rel="noopener">_essay.html.twig</a></li>
+            <li><a href="{{ path('admin_preview_prose', { template: 'report' }) }}" target="_blank" rel="noopener">_report.html.twig</a></li>
+            <li><a href="{{ path('admin_preview_prose', { template: 'case' }) }}" target="_blank" rel="noopener">_case_study.html.twig</a></li>
+        </ul>
+
+        <h2 class="muted">참고</h2>
+        <ul class="muted">
+            <li>이 라우트는 <strong>디자인 검증 전용</strong>. 진짜 콘텐츠는 admin/nodes 에서 작성.</li>
+            <li>프리뷰는 PublicNodeController::buildContext와 <em>별도 유지</em>. 실 데이터 컨텍스트와 약간 다를 수 있음.</li>
+            <li>SCSS 빌드: <code>docker compose exec node sh -c "cd /app && npm run build"</code></li>
+            <li>Twig 캐시: <code>bash run/dev/console.sh cache:clear --no-warmup</code></li>
+        </ul>
+    </section>
+{% endblock %}
