@@ -6,5 +6,8 @@
         "build": "sass assets/scss/app.scss:assets/styles/app.css assets/scss/brand/app.scss:assets/styles/brand.css --no-source-map --style=expanded",
         "watch": "sass --watch assets/scss/app.scss:assets/styles/app.css assets/scss/brand/app.scss:assets/styles/brand.css --no-source-map --style=expanded",
         "build:prod": "sass assets/scss/app.scss:assets/styles/app.css assets/scss/brand/app.scss:assets/styles/brand.css --no-source-map --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.81.0"
     }
 }
