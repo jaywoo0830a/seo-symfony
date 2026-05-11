@@ -34,12 +34,12 @@
 
 ## 원본 전략 문서
 
-이 문서들의 *근거*는 다음 5개 외부 문서에서 나옵니다:
+이 문서들의 *근거*는 [docs/strategy/](../strategy/)에 보관된 5개 원본 기획 문서에서 나옵니다:
 
-1. `seo-12month-strategy-final.md` — 전체 전략
-2. `sitemap-backend-operations-report.md` — 백엔드 운영 구조
-3. `erd-map.md` — ERD 지도
-4. `page-structure-report.md` — 페이지 구조와 엔티티 매핑
-5. `sitemap.md` — 사이트맵의 5개 뷰
+1. [seo-12month-strategy-final.md](../strategy/seo-12month-strategy-final.md) — 전체 전략
+2. [sitemap-backend-operations-report.md](../strategy/sitemap-backend-operations-report.md) — 백엔드 운영 구조
+3. [erd-map.md](../strategy/erd-map.md) — ERD 지도
+4. [page-structure-report.md](../strategy/page-structure-report.md) — 페이지 구조와 엔티티 매핑
+5. [sitemap.md](../strategy/sitemap.md) — 사이트맵의 5개 뷰
 
-이 문서들은 *코드베이스 외부*의 기획 문서이므로 본 저장소에 포함되지 않을 수 있습니다. 본 dev/ 디렉토리는 그 결정들을 *코드와 함께* 보존하기 위한 응축본입니다.
+본 dev/ 디렉토리는 그 결정들을 *코드와 함께* 보존하기 위한 응축본입니다.
