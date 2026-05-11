@@ -12,7 +12,9 @@ services:
       - "${HTTPS_PORT:-443}:443"
     environment:
       DOMAIN: ${DOMAIN:?DOMAIN must be set in run/prod/.env (use a real hostname or "localhost")}
-      ACME_EMAIL: ${ACME_EMAIL:-}
+      # 빈 값이면 Caddy 가 placeholder fallback 못 함 → caddyfile parse error.
+      # 미설정/빈 값 모두 admin@localhost 로 default. Let's Encrypt 가 만료 알림은 못 보냄.
+      ACME_EMAIL: ${ACME_EMAIL:-admin@localhost}
     depends_on:
       php:
         condition: service_healthy
