@@ -1,11 +1,15 @@
 {# 디스패처 — 모든 ContentNode가 거치는 진입점. 외형 자체는 여기서 결정하지 않음.
 
    렌더 우선순위:
-     1. template_override  → 운영자가 만든 슬러그별 오버라이드 (hubs/{path}.html.twig)
-     2. is_guide          → prose 가이드 템플릿 (_guide.html.twig)
-     3. 기본              → 매트릭스 본체 (_matrix.html.twig)
+     1. template_override → 운영자가 만든 슬러그별 오버라이드 (hubs/{path}.html.twig)
+     2. is_guide          → _guide.html.twig
+     3. is_essay          → _essay.html.twig
+     4. is_report         → _report.html.twig
+     5. is_case_study     → _case_study.html.twig
+     6. (그 외)           → matrix_template = matrix/{root-theme}.html.twig 또는 _matrix.html.twig
 
-   매트릭스 외형을 바꾸고 싶으면 _matrix.html.twig 또는 _partials/* 를 편집하세요.
+   매트릭스 외형을 바꾸고 싶으면 _matrix.html.twig 또는 _partials/hierarchy/* 를 편집하세요.
+   계층(부모/자식/형제) 관련 도구는 Twig 글로벌 `nav`와 _partials/hierarchy/* 파셜.
 #}
 {% extends 'public/layout.html.twig' %}
 

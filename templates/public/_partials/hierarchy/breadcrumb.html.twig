@@ -1,0 +1,28 @@
+{#
+  Breadcrumb — 노드 좌표의 전체 조상 체인 (label/url 평면 리스트).
+
+  인자:
+    crumbs   list<{label, url, current}>   BreadcrumbBuilder의 출력.
+                                            컨트롤러가 미리 빌드해서 넘기는 게 표준.
+
+  옵션:
+    separator string   기본 '›'
+
+  with … only로 호출하므로 부모 컨텍스트에 의존하지 않음.
+  ContentNode 객체가 필요하면 ancestor_chain 파셜을 쓰세요.
+#}
+{% set crumbs = crumbs is defined ? crumbs : [] %}
+{% set separator = separator is defined ? separator : '›' %}
+
+{% if crumbs is not empty %}
+    <nav class="crumbs" aria-label="Breadcrumb">
+        {% for crumb in crumbs %}
+            {% if crumb.current %}
+                <span class="crumbs__current" aria-current="page">{{ crumb.label }}</span>
+            {% else %}
+                <a class="crumbs__link" href="{{ crumb.url }}">{{ crumb.label }}</a>
+                <span class="crumbs__sep" aria-hidden="true">{{ separator }}</span>
+            {% endif %}
+        {% endfor %}
+    </nav>
+{% endif %}

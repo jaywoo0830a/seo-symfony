@@ -1,0 +1,43 @@
+{#
+  DescendantsTree — 자식 + 손자 (depth 2까지).
+
+  Twig는 동적 재귀가 불편하므로 *2단까지*만 표현. 더 깊은 트리는 어드민
+  목록형 UI에서 다루는 게 자연스러움 (어드민 MatrixController 참고).
+
+  인자:
+    node ContentNode   루트 노드.
+
+  옵션:
+    axis 'region'|'theme'   기본 'region'.
+
+  Twig 글로벌 nav, urls를 사용합니다.
+#}
+{% set node = node is defined ? node : null %}
+{% set axis = axis is defined ? axis : 'region' %}
+
+{% if node %}
+    {% set children = nav.children(node, axis) %}
+    {% if children is not empty %}
+        <ul class="subtree subtree--{{ axis }}">
+            {% for child in children %}
+                <li class="subtree__item">
+                    <a class="subtree__link" href="{{ urls.build(child) }}">
+                        {{- axis == 'theme' ? child.theme.name : child.region.name -}}
+                    </a>
+                    {% set grand = nav.children(child, axis) %}
+                    {% if grand is not empty %}
+                        <ul class="subtree__sub">
+                            {% for g in grand %}
+                                <li class="subtree__sub-item">
+                                    <a class="subtree__sub-link" href="{{ urls.build(g) }}">
+                                        {{- axis == 'theme' ? g.theme.name : g.region.name -}}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}

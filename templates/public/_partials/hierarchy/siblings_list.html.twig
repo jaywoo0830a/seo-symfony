@@ -1,0 +1,39 @@
+{#
+  SiblingsList — 형제 노드 리스트 (자기 자신 제외).
+
+  인자:
+    node          ContentNode   기준 노드.
+
+  옵션:
+    axis          'region'|'theme'   기본 'region'.
+                                      region: 같은 부모 region의 형제들 (다른 동네)
+                                      theme : 같은 theme.parent의 형제들 (다른 가이드 등)
+    heading       string|null        섹션 헤딩. null이면 헤딩 미출력.
+    empty_message string|null        형제 없을 때 보여줄 텍스트. null이면 출력 안 함.
+
+  Twig 글로벌 nav, urls를 사용합니다.
+#}
+{% set node = node is defined ? node : null %}
+{% set axis = axis is defined ? axis : 'region' %}
+{% set heading = heading is defined ? heading : null %}
+{% set empty_message = empty_message is defined ? empty_message : null %}
+
+{% if node %}
+    {% set items = nav.siblings(node, axis) %}
+    {% if items is not empty %}
+        <section class="siblings siblings--{{ axis }}">
+            {% if heading %}<h2 class="siblings__heading">{{ heading }}</h2>{% endif %}
+            <ul class="siblings__list">
+                {% for sibling in items %}
+                    <li class="siblings__item">
+                        <a class="siblings__link" href="{{ urls.build(sibling) }}">
+                            {{- axis == 'theme' ? sibling.theme.name : sibling.region.name -}}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% elseif empty_message %}
+        <p class="siblings__empty">{{ empty_message }}</p>
+    {% endif %}
+{% endif %}

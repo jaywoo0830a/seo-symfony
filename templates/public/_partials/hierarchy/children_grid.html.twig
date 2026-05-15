@@ -1,0 +1,35 @@
+{#
+  ChildrenGrid — 자식 노드 그리드/리스트.
+
+  인자:
+    node    ContentNode   부모 노드.
+
+  옵션:
+    axis    'region'|'theme'   기본 'theme'.
+                                theme : 자식 테마들의 노드 (예: /guides/ → 각 가이드)
+                                region: 자식 지역들의 노드 (예: /tutoring/ → 시도들)
+    heading string|null        섹션 헤딩. null이면 헤딩 미출력.
+
+  Twig 글로벌 nav, urls를 사용합니다.
+#}
+{% set node = node is defined ? node : null %}
+{% set axis = axis is defined ? axis : 'theme' %}
+{% set heading = heading is defined ? heading : null %}
+
+{% if node %}
+    {% set items = nav.children(node, axis) %}
+    {% if items is not empty %}
+        <section class="children-grid children-grid--{{ axis }}">
+            {% if heading %}<h2 class="children-grid__heading">{{ heading }}</h2>{% endif %}
+            <ul class="children-grid__list">
+                {% for child in items %}
+                    <li class="children-grid__item">
+                        <a class="children-grid__link" href="{{ urls.build(child) }}">
+                            {{- axis == 'theme' ? child.theme.name : child.region.name -}}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+{% endif %}

@@ -90,19 +90,16 @@ WHEN 'interview' THEN
 
 ### 5.4 템플릿
 
-`templates/public/_interview.html.twig` 신규. 컨텍스트 그대로 받음 (`node`, `byKind`, `body_html`, `theme_siblings` 등).
+`templates/public/_interview.html.twig` 신규. 컨텍스트 그대로 받음 (`node`, `byKind`, `body_html`, `crumbs` 등). 형제·자식 등 계층 표현은 Twig 글로벌 `nav`와 [_partials/hierarchy/*](../../templates/public/_partials/hierarchy/) 파셜로.
 
-> **CTA 통합**: 새 prose 템플릿이 final CTA를 표시한다면 BodyTemplate 분기를 위해 `body_template: template`을 전달:
-> ```twig
-> {% include 'public/_partials/final_cta.html.twig' with {
->     title: '...',
->     body_template: template,
-> } only %}
-> ```
-> 또는 prose 템플릿 안에서 직접 dispatcher 파셜 호출:
+> **CTA 통합**: prose 템플릿이 final CTA를 표시한다면 `cta('final', template)`로 dispatcher 파셜 호출:
 > ```twig
 > {% set _cta = cta('final', template) %}
-> {% include 'public/_partials/cta/_block_body.html.twig' with { cta: _cta } only %}
+> {% if _cta %}
+>     <section class="cta-block">
+>         {% include 'public/_partials/cta/_block_body.html.twig' with { cta: _cta } only %}
+>     </section>
+> {% endif %}
 > ```
 > 자세한 동작은 [03-cta-system.md](03-cta-system.md).
 

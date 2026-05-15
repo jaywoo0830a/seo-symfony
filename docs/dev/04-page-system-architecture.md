@@ -138,17 +138,25 @@ if ($node->getRegion() !== null) {
 
 ## 5. 파셜 라이브러리
 
-[templates/public/_partials/](../../templates/public/_partials/)는 9개 재사용 블록:
+[templates/public/_partials/](../../templates/public/_partials/)는 두 카테고리:
 
 ```
-breadcrumb · hero · feature_grid · callouts · listing
-theme_children · faq · final_cta · jsonld
+_partials/
+├── jsonld.html.twig                          # JSON-LD 스크립트 (Article + BreadcrumbList)
+├── cta/_block_body.html.twig                 # CTA 5종 (phone/form/external/email/messenger) 디스패처
+└── hierarchy/                                # 계층 표현 카탈로그 (아래 §5.3)
+    ├── breadcrumb.html.twig
+    ├── ancestor_chain.html.twig
+    ├── siblings_list.html.twig
+    ├── children_grid.html.twig
+    ├── descendants_tree.html.twig
+    └── path_summary.html.twig
 ```
 
 ### 5.1 왜 파셜인가
 
 매트릭스 셸과 페이지 오버라이드가 *같은 시각 컴포넌트*를 쓸 수 있어야 일관성이 유지됩니다. 파셜이 없으면:
-- 같은 hero 마크업이 5곳에 복사됨
+- 같은 빵부스러기 마크업이 5개 prose 템플릿에 복사됨
 - 한 곳 수정하면 다른 4곳 까먹음
 - SCSS 클래스 이름 불일치
 
@@ -157,11 +165,29 @@ theme_children · faq · final_cta · jsonld
 모든 파셜은 인자가 *누락되어도 안전*하게 디폴트 처리:
 
 ```twig
-{% set eyebrow = eyebrow is defined ? eyebrow : '' %}
-{% set items = items is defined ? items : [] %}
+{% set node = node is defined ? node : null %}
+{% set axis = axis is defined ? axis : 'region' %}
 ```
 
 이 패턴이 없으면 `with {} only` 호출 시 *strict_variables 모드에서 500 에러*. 한 곳에서 빠뜨려도 페이지가 안 죽습니다.
+
+### 5.3 계층 파셜 (_partials/hierarchy/*)
+
+[NodeNavigator](../../src/Service/NodeNavigator.php) (Twig 글로벌 `nav`)을 소비하는 6종 파셜. 컨트롤러가 미리 계산해 넘기지 않아도 *템플릿이 직접 질의*. 새 계층 질의가 필요하면 Navigator에 메서드 1개만 추가 → controller·context 안 건드림.
+
+| 파셜 | 인자 | 용도 |
+|---|---|---|
+| `breadcrumb.html.twig` | `crumbs` | label/url 평면 리스트 (BreadcrumbBuilder 출력 소비) |
+| `ancestor_chain.html.twig` | `node` | ContentNode 객체 체인 — author/dataCount 등 데이터 활용 가능 |
+| `siblings_list.html.twig` | `node`, `axis` | 형제 (region 또는 theme 축) |
+| `children_grid.html.twig` | `node`, `axis` | 자식 (region 또는 theme 축) |
+| `descendants_tree.html.twig` | `node`, `axis` | 자식 + 손자 (depth 2) |
+| `path_summary.html.twig` | `node` | "과외 › 서울 › 강남구" 인라인 한 줄 |
+
+설계 결정:
+- **계층 질의는 controller가 아니라 Twig에서** — buildContext가 5~6개 변수를 미리 계산해 넘기던 방식은 *6번째 시점*이 필요할 때마다 controller 수정을 강요. Navigator는 lazy 호출이라 안 쓰면 0 쿼리, 쓰면 그때 1쿼리 (요청 스코프 메모이즈).
+- **`with … only` 강제** — 파셜은 명시적 인자 계약. `nav`/`urls`는 글로벌이라 인자로 안 넘겨도 접근 가능.
+- **depth 2까지만** — Twig 동적 재귀가 불편해 의도적으로 얕음. 더 깊은 트리는 어드민 목록 UI(MatrixController)에서 다룸.
 
 ## 6. 오버라이드 파일의 디렉토리 구조
 
@@ -219,33 +245,52 @@ hero → body → 보조 수치 → 비교 콜아웃 → FAQ → 형제 가이�
 
 ## 8. 컨텍스트 변수 — 모든 템플릿이 받는 것
 
-[PublicNodeController::buildContext()](../../src/Controller/Public/PublicNodeController.php)가 주입하는 컨텍스트는 **모든 템플릿이 동일하게** 받습니다:
+두 갈래로 분리됩니다.
+
+### 8.1 페이지 단위 컨텍스트 (buildContext)
+
+[PublicNodeController::buildContext()](../../src/Controller/Public/PublicNodeController.php)가 주입하는 *페이지마다 달라지는* 값:
 
 ```php
 [
     'node', 'url', 'h1', 'template',
-    'body_html',      // markdown→HTML (prose 변종만)
+    'body_html',                            // markdown→HTML (prose 변종만)
     'template_override', 'matrix_template',
-    'byKind',         // DataPoint 종류별 그룹
-    'parent', 'siblings', 'children',
-    'theme_children', 'theme_siblings',
-    'urls', 'crumbs',
+    'byKind',                                // DataPoint 종류별 그룹
+    'crumbs',                                // BreadcrumbBuilder 출력
     'json_ld', 'breadcrumbs_jsonld',
 ]
 ```
 
-### 8.1 왜 모든 템플릿이 같은 컨텍스트를 받나
+### 8.2 Twig 글로벌 (config/packages/twig.yaml)
 
-대안 A: 템플릿마다 다른 컨텍스트 빌더
-- 단점: 6개 빌더, 각자 미묘하게 다른 데이터 구조 → 버그
+페이지 *무관한* 헬퍼는 글로벌로:
 
-대안 B (선택): 단일 컨텍스트, 템플릿이 *필요한 것만 사용*
-- 장점: 컨텍스트가 일관됨, 새 템플릿 만들 때 무엇을 받을지 예측 가능
-- 단점: 일부 템플릿이 안 쓰는 데이터도 계산 (성능 영향 미미)
+| 글로벌 | 서비스 | 용도 |
+|---|---|---|
+| `nav` | [NodeNavigator](../../src/Service/NodeNavigator.php) | parent/children/siblings/ancestors/themeChain/regionChain |
+| `urls` | [UrlBuilder](../../src/Service/UrlBuilder.php) | URL 생성 |
 
-### 8.2 어떻게 새 컨텍스트 변수를 추가하나
+글로벌의 장점:
+- `with … only` 인클루드(`_partials/hierarchy/*`)에서도 접근 가능 — *인자로 일일이 넘기지 않아도 됨*
+- buildContext가 *5개 hierarchy 변수를 미리 precompute*하던 부담 제거 (lazy)
 
-`buildContext()`에 키 추가하면 모든 템플릿이 받음. 하위 호환 (기존 템플릿은 새 키 무시).
+### 8.3 왜 hierarchy를 컨텍스트가 아니라 글로벌로 옮겼나
+
+이전엔 buildContext가 `parent`, `siblings`, `children`, `theme_children`, `theme_siblings` 5개를 미리 계산해 모든 페이지에 주입했습니다. 문제:
+
+1. **6번째 시점**(예: uncles, cousins, countChildren)이 필요하면 controller 수정 강요 → Twig만으로 새 계층 표현 추가 불가
+2. **안 쓰는 페이지도 5개 쿼리 발생** — essay/report 같은 prose는 형제 정도만 쓰는데도 region children/parent 등을 다 계산
+3. **`siblings`와 `theme_siblings` 두 이름의 의미 모호** — 둘 다 "형제"인데 축이 다름. Navigator는 `axis` 인자로 명시.
+
+Navigator + Twig 글로벌로 옮긴 결과:
+- 새 계층 시점 = Navigator 메서드 1개 추가 (controller·context 무관)
+- 쓰는 만큼만 쿼리 (요청 스코프 메모이즈로 중복 방지)
+- 축이 명시적 (`nav.siblings(node, 'theme')`)
+
+### 8.4 어떻게 새 컨텍스트 변수를 추가하나
+
+페이지마다 다른 값이라면 `buildContext()`에 키 추가. 페이지 무관한 헬퍼라면 [twig.yaml](../../config/packages/twig.yaml) `globals:`에 등록.
 
 ## 9. 자동 도출 — 디스패처가 하는 일
 

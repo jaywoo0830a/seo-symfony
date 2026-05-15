@@ -1,18 +1,7 @@
 {# Guide — BodyTemplate::Guide. 미니멀 prose 레이아웃. #}
 
 <main class="page page--narrow">
-    {% if crumbs is not empty %}
-        <nav class="crumbs" aria-label="Breadcrumb">
-            {% for crumb in crumbs %}
-                {% if crumb.current %}
-                    <span class="crumbs__current" aria-current="page">{{ crumb.label }}</span>
-                {% else %}
-                    <a class="crumbs__link" href="{{ crumb.url }}">{{ crumb.label }}</a>
-                    <span class="crumbs__sep" aria-hidden="true">›</span>
-                {% endif %}
-            {% endfor %}
-        </nav>
-    {% endif %}
+    {% include 'public/_partials/hierarchy/breadcrumb.html.twig' with { crumbs: crumbs } only %}
 
     <article class="article">
         <header class="article__header">
@@ -39,6 +28,12 @@
                 {% endfor %}
             </section>
         {% endif %}
+
+        {% include 'public/_partials/hierarchy/siblings_list.html.twig' with {
+            node: node,
+            axis: 'theme',
+            heading: '다른 가이드',
+        } only %}
 
         {% set _cta = cta('final', template) %}
         {% if _cta %}

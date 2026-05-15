@@ -175,7 +175,7 @@ region_path(r) = r의 시도부터 r까지 slug를 "/"로 연결 (전국 노드�
 
 ## 7. 컨텍스트 변수
 
-모든 템플릿이 받는 변수 (PublicNodeController::buildContext):
+### 7.1 페이지 단위 컨텍스트 (PublicNodeController::buildContext)
 
 | 변수 | 타입 | 설명 |
 |---|---|---|
@@ -187,17 +187,50 @@ region_path(r) = r의 시도부터 r까지 slug를 "/"로 연결 (전국 노드�
 | `template_override` | string\|null | 매칭된 오버라이드 파일 경로 |
 | `matrix_template` | string | 매트릭스 셸 경로 |
 | `byKind` | array | DataPoint 종류별 그룹 (verified만) |
-| `parent` | ContentNode | 지역 트리 부모 |
-| `siblings` | list | 같은 region.parent 자식들 |
-| `children` | list | region.parent=현재 노드인 자식들 |
-| `theme_children` | list | 테마 자식들의 노드 |
-| `theme_siblings` | list | 테마 형제들의 노드 |
-| `urls` | UrlBuilder | URL 생성 헬퍼 |
-| `crumbs` | list | 빵부스러기 |
+| `crumbs` | list | 빵부스러기 (label/url/current) |
 | `json_ld` | string | Article JSON-LD |
 | `breadcrumbs_jsonld` | string | BreadcrumbList JSON-LD |
 
 오버라이드 파일도 이 컨텍스트를 그대로 받음.
+
+### 7.2 Twig 글로벌 (config/packages/twig.yaml)
+
+`with … only` 인클루드에서도 접근 가능. 모든 템플릿/파셜이 자유롭게 호출.
+
+| 글로벌 | 클래스 | 용도 |
+|---|---|---|
+| `nav` | `NodeNavigator` | 계층 질의 (parent/children/siblings/ancestors/uncles/themeChain/regionChain) |
+| `urls` | `UrlBuilder` | `urls.build(node)`, `urls.buildPath(theme, region)` |
+
+### 7.3 NodeNavigator API
+
+```twig
+{{ nav.parent(node) }}                     {# ContentNode|null — region 우선, region=NULL이면 theme #}
+{{ nav.children(node) }}                   {# region 축 #}
+{{ nav.children(node, 'theme') }}          {# theme 축 — 자식 테마들의 노드 #}
+{{ nav.siblings(node) }}                   {# region 축, 자기 제외, live만 #}
+{{ nav.siblings(node, 'theme') }}          {# theme 축 — 같은 theme.parent의 형제들 #}
+{{ nav.ancestors(node) }}                  {# list<ContentNode> — 루트→부모, 자기 제외 #}
+{{ nav.uncles(node) }}                     {# 부모의 region 형제 #}
+{{ nav.countChildren(node) }}              {# live만 카운트 #}
+{{ nav.themeChain(node) }}                 {# list<Theme> — root→leaf, DB 쿼리 없음 #}
+{{ nav.regionChain(node) }}                {# list<Region> — 시도→leaf, depth 0 스킵 #}
+```
+
+요청 스코프 메모이즈 — 같은 메서드 반복 호출은 1회만 DB.
+
+### 7.4 _partials/hierarchy/* 파셜
+
+| 파셜 | 인자 | 옵션 |
+|---|---|---|
+| `breadcrumb.html.twig` | `crumbs` | `separator` |
+| `ancestor_chain.html.twig` | `node` | `separator` |
+| `siblings_list.html.twig` | `node` | `axis`, `heading`, `empty_message` |
+| `children_grid.html.twig` | `node` | `axis`, `heading` |
+| `descendants_tree.html.twig` | `node` | `axis` (depth 2까지) |
+| `path_summary.html.twig` | `node` | `separator`, `include_self` |
+
+모두 `with … only`로 호출 (인자 누락 시 방어적 디폴트). `nav`/`urls`는 글로벌이라 컨텍스트와 무관하게 접근.
 
 ## 8. sitemap.xml 생성
 

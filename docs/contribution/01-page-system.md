@@ -38,7 +38,9 @@ URL이 들어오면 다음 중 하나로 분류됩니다:
 
 ## 3. 템플릿 컨텍스트
 
-`PublicNodeController::buildContext()`가 모든 템플릿에 주입하는 변수:
+두 종류로 분리됩니다.
+
+### 3.1 페이지 단위 컨텍스트 — `PublicNodeController::buildContext()`
 
 | 변수 | 타입 | 설명 |
 |---|---|---|
@@ -50,13 +52,30 @@ URL이 들어오면 다음 중 하나로 분류됩니다:
 | `template_override` | string\|null | 매칭된 오버라이드 파일 경로 |
 | `matrix_template` | string | 매트릭스 셸 경로 (테마 또는 fallback) |
 | `byKind` | array | DataPoint를 kind별로 그룹화 (verified만) |
-| `parent`, `siblings`, `children` | ContentNode\|list | 지역 트리 탐색 |
-| `theme_children`, `theme_siblings` | list | 테마 트리 탐색 |
-| `urls` | [UrlBuilder](../../src/Service/UrlBuilder.php) | URL 생성 헬퍼 |
-| `crumbs` | list | 빵 부스러기 |
+| `crumbs` | list | 빵부스러기 (label/url/current) |
 | `json_ld`, `breadcrumbs_jsonld` | string | Schema.org JSON-LD |
 
 오버라이드 파일도 이 컨텍스트를 그대로 받습니다. 추가 변수가 필요하면 `buildContext()`를 확장하세요.
+
+### 3.2 Twig 글로벌 — `config/packages/twig.yaml`
+
+페이지 *무관한* 헬퍼는 글로벌로 노출돼 `with … only` 인클루드에서도 접근 가능:
+
+| 글로벌 | 클래스 | 용도 |
+|---|---|---|
+| `nav` | [NodeNavigator](../../src/Service/NodeNavigator.php) | 계층 질의 (parent/children/siblings/ancestors/themeChain/regionChain) |
+| `urls` | [UrlBuilder](../../src/Service/UrlBuilder.php) | URL 생성 헬퍼 |
+
+```twig
+{# 부모, 형제, 자식 모두 글로벌로 1줄 호출 #}
+{{ nav.parent(node) }}
+{{ nav.siblings(node) }}             {# region 축 (기본) #}
+{{ nav.siblings(node, 'theme') }}    {# 테마 형제들 #}
+{{ nav.children(node, 'theme') }}    {# 자식 테마들 #}
+{{ nav.ancestors(node) }}            {# 루트→부모 ContentNode 리스트 #}
+```
+
+전체 API는 [docs/ai/03-page-derivation.md §7.3](../ai/03-page-derivation.md#73-nodenavigator-api). 계층 표현 파셜은 [02-template-overrides.md §4](02-template-overrides.md#4-파셜-라이브러리)에 카탈로그.
 
 ## 4. URL 도출 (역방향)
 

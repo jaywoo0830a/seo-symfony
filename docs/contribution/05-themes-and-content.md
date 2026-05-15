@@ -28,7 +28,17 @@ URL: `/{parent-slug}/{child-slug}/`로 자동 생성됩니다.
 
 ### 1.4 테마 자식 페이지 자동 노출
 
-`/parent/`에서 자식 카드를 보여주려면 [_partials/theme_children.html.twig](../../templates/public/_partials/theme_children.html.twig)를 매트릭스 셸이나 오버라이드에 포함. 이미 [matrix/contents.html.twig](../../templates/public/matrix/contents.html.twig)와 [hubs/guides.html.twig](../../templates/public/hubs/guides.html.twig)에 들어가 있습니다.
+`/parent/`에서 자식 카드를 보여주려면 [_partials/hierarchy/children_grid.html.twig](../../templates/public/_partials/hierarchy/children_grid.html.twig)를 매트릭스 셸이나 오버라이드에 포함하세요:
+
+```twig
+{% include 'public/_partials/hierarchy/children_grid.html.twig' with {
+    node: node,
+    axis: 'theme',
+    heading: '하위 페이지',
+} only %}
+```
+
+내부적으로 `nav.children(node, 'theme')`을 호출 — 같은 region 좌표에서 직접 자식 테마들의 노드를 live만 추려서 표시합니다. 기본 [_matrix.html.twig](../../templates/public/_matrix.html.twig)에 이미 들어가 있습니다.
 
 ### 1.5 깊이 제약
 

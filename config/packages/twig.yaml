@@ -1,5 +1,14 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        # 노드 계층 질의 헬퍼 — 템플릿에서 nav.parent(node), nav.children(node, 'theme'),
+        # nav.siblings(node), nav.ancestors(node), nav.themeChain(node) 등을 호출.
+        # 자세히는 src/Service/NodeNavigator.php 참고.
+        nav: '@App\Service\NodeNavigator'
+
+        # URL 생성 헬퍼 — urls.build(node) 또는 urls.buildPath(theme, region).
+        # 글로벌이라 with ... only 인클루드에서도 접근 가능 → _partials/hierarchy/*에서 사용.
+        urls: '@App\Service\UrlBuilder'
 
 when@test:
     twig:

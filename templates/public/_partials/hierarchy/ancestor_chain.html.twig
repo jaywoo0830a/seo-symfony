@@ -1,0 +1,33 @@
+{#
+  AncestorChain — 조상 ContentNode 인라인 표기.
+
+  Breadcrumb과의 차이: ContentNode 객체 리스트라서 ancestor.dataCount,
+  ancestor.author 같은 *데이터*를 활용할 수 있음. URL/label만 필요하면
+  breadcrumb 파셜을 쓰세요.
+
+  인자:
+    node      ContentNode   조상을 구할 노드.
+
+  옵션:
+    separator string   기본 '›'
+
+  Twig 글로벌 nav, urls를 사용합니다 (with … only에서도 접근 가능).
+#}
+{% set node = node is defined ? node : null %}
+{% set separator = separator is defined ? separator : '›' %}
+
+{% if node %}
+    {% set chain = nav.ancestors(node) %}
+    {% if chain is not empty %}
+        <nav class="ancestor-chain" aria-label="Ancestors">
+            {% for ancestor in chain %}
+                <a class="ancestor-chain__link" href="{{ urls.build(ancestor) }}">
+                    {{- ancestor.region ? ancestor.region.name : ancestor.theme.name -}}
+                </a>
+                {% if not loop.last %}
+                    <span class="ancestor-chain__sep" aria-hidden="true">{{ separator }}</span>
+                {% endif %}
+            {% endfor %}
+        </nav>
+    {% endif %}
+{% endif %}

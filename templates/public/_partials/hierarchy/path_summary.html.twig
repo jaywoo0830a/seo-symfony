@@ -1,0 +1,34 @@
+{#
+  PathSummary — 좌표 한 줄 요약 ("과외 › 서울 › 강남구" 같은 인라인).
+
+  카드/검색결과/사이드바 등 *공간이 좁은 곳에서 노드의 위치*를 보여줄 때.
+  완전한 빵부스러기 네비게이션이 필요하면 breadcrumb 파셜.
+
+  인자:
+    node          ContentNode   대상 노드.
+
+  옵션:
+    separator     string   기본 ' › '
+    include_self  bool     기본 true. false면 마지막 segment 제외.
+
+  Twig 글로벌 nav를 사용합니다 (DB 쿼리 없음 — 엔티티 트리 walk).
+#}
+{% set node = node is defined ? node : null %}
+{% set separator = separator is defined ? separator : ' › ' %}
+{% set include_self = include_self is defined ? include_self : true %}
+
+{% if node %}
+    {% set segments = [] %}
+    {% for t in nav.themeChain(node) %}
+        {% set segments = segments|merge([t.name]) %}
+    {% endfor %}
+    {% for r in nav.regionChain(node) %}
+        {% set segments = segments|merge([r.name]) %}
+    {% endfor %}
+    {% if not include_self and segments|length > 0 %}
+        {% set segments = segments|slice(0, segments|length - 1) %}
+    {% endif %}
+    {% if segments is not empty %}
+        <span class="path-summary">{{ segments|join(separator) }}</span>
+    {% endif %}
+{% endif %}

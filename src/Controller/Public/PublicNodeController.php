@@ -8,7 +8,6 @@ use App\Entity\ContentNode;
 use App\Entity\Enum\BodyTemplate;
 use App\Entity\Enum\ContentStatus;
 use App\Entity\Enum\DataPointKind;
-use App\Repository\ContentNodeRepository;
 use App\Repository\RedirectRepository;
 use App\Service\BreadcrumbBuilder;
 use App\Service\PathResolver;
@@ -33,7 +32,6 @@ final class PublicNodeController extends AbstractController
         string $path,
         Request $request,
         PathResolver $resolver,
-        ContentNodeRepository $nodes,
         RedirectRepository $redirects,
         UrlBuilder $urls,
         BreadcrumbBuilder $breadcrumbs,
@@ -76,7 +74,7 @@ final class PublicNodeController extends AbstractController
 
         return $this->render(
             'public/node.html.twig',
-            $this->buildContext($node, $nodes, $urls, $breadcrumbs, $twig, $request->getSchemeAndHttpHost()),
+            $this->buildContext($node, $urls, $breadcrumbs, $twig, $request->getSchemeAndHttpHost()),
             $response,
         );
     }
@@ -86,7 +84,6 @@ final class PublicNodeController extends AbstractController
      */
     private function buildContext(
         ContentNode $node,
-        ContentNodeRepository $nodes,
         UrlBuilder $urls,
         BreadcrumbBuilder $breadcrumbs,
         Environment $twig,
@@ -106,6 +103,8 @@ final class PublicNodeController extends AbstractController
         $crumbs = $breadcrumbs->build($node);
         $template = $this->deriveTemplate($node);
 
+        // 계층 질의(parent/children/siblings/...)는 Twig 글로벌 `nav`로 노출 — config/packages/twig.yaml.
+        // `urls`도 글로벌이라 with … only 인클루드에서도 접근 가능. _partials/hierarchy/* 참고.
         return [
             'node' => $node,
             'url' => $urls->build($node),
@@ -115,12 +114,6 @@ final class PublicNodeController extends AbstractController
             'template_override' => $this->findTemplateOverride($node, $twig),
             'matrix_template' => $this->findMatrixTemplate($node, $twig),
             'byKind' => $byKind,
-            'parent' => $nodes->findParentOf($node),
-            'siblings' => $this->findSiblings($node, $nodes),
-            'children' => $nodes->findChildrenOf($node),
-            'theme_children' => $nodes->findThemeChildrenOf($node),
-            'theme_siblings' => $nodes->findThemeSiblingsOf($node),
-            'urls' => $urls,
             'crumbs' => $crumbs,
             'json_ld' => $this->buildJsonLd($node, $h1),
             'breadcrumbs_jsonld' => $breadcrumbs->buildJsonLd($crumbs, $absoluteBaseUrl),
@@ -237,24 +230,5 @@ final class PublicNodeController extends AbstractController
     private function deriveTemplate(ContentNode $node): BodyTemplate
     {
         return $node->getBodyTemplate() ?? BodyTemplate::Matrix;
-    }
-
-    /**
-     * Finds live siblings (same theme, same region.parent) excluding self.
-     *
-     * @return list<ContentNode>
-     */
-    private function findSiblings(ContentNode $node, ContentNodeRepository $nodes): array
-    {
-        $parent = $nodes->findParentOf($node);
-        if ($parent === null) {
-            return [];
-        }
-
-        return array_values(array_filter(
-            $nodes->findChildrenOf($parent),
-            fn (ContentNode $sibling) => $sibling->getId() !== $node->getId()
-                && $sibling->getStatus() === ContentStatus::Live,
-        ));
     }
 }

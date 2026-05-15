@@ -1,19 +1,10 @@
 {# 제네릭 매트릭스 fallback — matrix/{theme-slug}.html.twig 가 없을 때.
-   *블랭크 스타터*용 최소 마크업. 도메인에 맞춰 자유롭게 덮어쓰세요. #}
+   *블랭크 스타터*용 최소 마크업. 도메인에 맞춰 자유롭게 덮어쓰세요.
+
+   계층 표현은 _partials/hierarchy/* 파셜을 조합. nav/urls는 Twig 글로벌. #}
 
 <main class="page page--narrow">
-    {% if crumbs is not empty %}
-        <nav class="crumbs" aria-label="Breadcrumb">
-            {% for crumb in crumbs %}
-                {% if crumb.current %}
-                    <span class="crumbs__current" aria-current="page">{{ crumb.label }}</span>
-                {% else %}
-                    <a class="crumbs__link" href="{{ crumb.url }}">{{ crumb.label }}</a>
-                    <span class="crumbs__sep" aria-hidden="true">›</span>
-                {% endif %}
-            {% endfor %}
-        </nav>
-    {% endif %}
+    {% include 'public/_partials/hierarchy/breadcrumb.html.twig' with { crumbs: crumbs } only %}
 
     <h1>{{ keyword }}</h1>
     {% if node.introText %}<p class="lede">{{ node.introText }}</p>{% endif %}
@@ -34,18 +25,11 @@
         {% endif %}
     {% endfor %}
 
-    {% if theme_children is not empty %}
-        <section>
-            <h2>{{ theme_label }} 하위 페이지</h2>
-            <ul class="link-list">
-                {% for child in theme_children %}
-                    <li class="link-list__item">
-                        <a class="link-list__link" href="{{ urls.build(child) }}">{{ child.theme.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </section>
-    {% endif %}
+    {% include 'public/_partials/hierarchy/children_grid.html.twig' with {
+        node: node,
+        axis: 'theme',
+        heading: theme_label ~ ' 하위 페이지',
+    } only %}
 
     {% set _final_cta = cta('final', template) %}
     {% if _final_cta %}

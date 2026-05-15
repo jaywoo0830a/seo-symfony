@@ -136,8 +136,10 @@ LLM이 받을 흔한 질문에 대한 *직접적 답변 룰*. 자연어 설명�
 |---|---|---|
 | 한 페이지만 다르게 | hubs/{path}.html.twig | 1개 URL |
 | 한 테마의 모든 지역 페이지 | matrix/{slug}.html.twig | 한 테마의 N개 |
-| 모든 매트릭스 페이지 | _matrix.html.twig 또는 _partials/* | 전체 매트릭스 |
+| 모든 매트릭스 페이지 | _matrix.html.twig | 전체 매트릭스 |
 | 한 콘텐츠 타입 (가이드 전체) | _guide.html.twig | 모든 가이드 |
+| 계층 표현 (빵부스러기/형제/자식) | _partials/hierarchy/* | 모든 페이지 |
+| 새 계층 질의 추가 (예: cousins) | src/Service/NodeNavigator.php에 메서드 1개 | 모든 페이지 |
 | 새 콘텐츠 타입 추가 | 위 7단계 | 신규 |
 | 발행 요건 변경 | 새 마이그레이션으로 fn_publish_gate | 전체 |
 | 분기 로직만 | node.html.twig (거의 안 건드림) | dispatcher |

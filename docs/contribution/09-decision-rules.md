@@ -22,7 +22,8 @@ templates/public/matrix/{theme-slug}.html.twig 만들기.
 ### Q: 모든 매트릭스 페이지 외형을 바꾸고 싶다.
 
 ```
-templates/public/_matrix.html.twig 편집 (또는 _partials/* 직접 수정).
+templates/public/_matrix.html.twig 편집.
+빵부스러기/형제/자식만 손보려면 templates/public/_partials/hierarchy/* 편집.
 ```
 
 ### Q: 한 콘텐츠 타입(예: 모든 가이드)의 외형을 바꾸고 싶다.
@@ -30,6 +31,23 @@ templates/public/_matrix.html.twig 편집 (또는 _partials/* 직접 수정).
 ```
 templates/public/_guide.html.twig 편집.
 → 02-template-overrides.md §3
+```
+
+### Q: 계층(부모/자식/형제/조상)을 페이지에 추가하고 싶다.
+
+```
+계층 파셜 6종 중에서 골라 include — _partials/hierarchy/breadcrumb,
+ancestor_chain, siblings_list, children_grid, descendants_tree, path_summary.
+Twig 글로벌 nav/urls는 with … only에서도 접근.
+→ 02-template-overrides.md §4.1
+```
+
+### Q: 새 계층 질의(예: cousins, 손자 카운트)가 필요하다.
+
+```
+src/Service/NodeNavigator.php에 메서드 1개 추가.
+모든 템플릿이 nav.새메서드(node)로 즉시 호출 가능.
+controller·buildContext 수정 불필요.
 ```
 
 ## 2. CTA
@@ -183,7 +201,7 @@ RegionFixtures 통째로 교체 + BodyTemplate 깊이 매핑 검토.
 ### 도메인 모델
 
 - [src/Entity/](../../src/Entity/) — 5개 엔티티 (Theme, Region, Author, ContentNode, DataPoint) + Redirect
-- [src/Entity/Enum/BodyTemplate.php](../../src/Entity/Enum/BodyTemplate.php) — 콘텐츠 타입 10개
+- [src/Entity/Enum/BodyTemplate.php](../../src/Entity/Enum/BodyTemplate.php) — 콘텐츠 타입 5종 (Matrix/Guide/Essay/Report/CaseStudy)
 - [src/Entity/Enum/ContentStatus.php](../../src/Entity/Enum/ContentStatus.php) — 4상태 (draft/live/noindex/dead)
 - [src/Entity/Enum/DataPointKind.php](../../src/Entity/Enum/DataPointKind.php) — 5종
 
@@ -199,8 +217,9 @@ RegionFixtures 통째로 교체 + BodyTemplate 깊이 매핑 검토.
 ### 서비스
 
 - [src/Service/PathResolver.php](../../src/Service/PathResolver.php) — URL → ContentNode
-- [src/Service/UrlBuilder.php](../../src/Service/UrlBuilder.php) — ContentNode → URL
-- [src/Service/BreadcrumbBuilder.php](../../src/Service/BreadcrumbBuilder.php) — 빵 부스러기
+- [src/Service/UrlBuilder.php](../../src/Service/UrlBuilder.php) — ContentNode → URL (Twig 글로벌 `urls`)
+- [src/Service/BreadcrumbBuilder.php](../../src/Service/BreadcrumbBuilder.php) — 빵 부스러기 + JSON-LD
+- [src/Service/NodeNavigator.php](../../src/Service/NodeNavigator.php) — 계층 질의 (Twig 글로벌 `nav`)
 - [src/Twig/PublicNavExtension.php](../../src/Twig/PublicNavExtension.php) — 브랜드 식별값 Twig 함수
 
 ### 템플릿 (공개)
@@ -213,9 +232,11 @@ RegionFixtures 통째로 교체 + BodyTemplate 깊이 매핑 검토.
 - [templates/public/_essay.html.twig](../../templates/public/_essay.html.twig) — 에세이 prose
 - [templates/public/_report.html.twig](../../templates/public/_report.html.twig) — 데이터 리포트
 - [templates/public/_case_study.html.twig](../../templates/public/_case_study.html.twig) — 사례 연구
-- [templates/public/_partials/](../../templates/public/_partials/) — 9개 재사용 블록 + cta/ 디스패처
-- [templates/public/matrix/](../../templates/public/matrix/) — 테마별 매트릭스 셸
-- [templates/public/hubs/](../../templates/public/hubs/) — 페이지 단위 오버라이드
+- [templates/public/_partials/hierarchy/](../../templates/public/_partials/hierarchy/) — 6종 계층 파셜 (breadcrumb·ancestor_chain·siblings_list·children_grid·descendants_tree·path_summary)
+- [templates/public/_partials/cta/](../../templates/public/_partials/cta/) — CTA 디스패처 파셜
+- [templates/public/_partials/jsonld.html.twig](../../templates/public/_partials/jsonld.html.twig) — JSON-LD 스크립트
+- [templates/public/matrix/](../../templates/public/matrix/) — 테마별 매트릭스 셸 (스타터엔 비어 있음)
+- [templates/public/hubs/](../../templates/public/hubs/) — 페이지 단위 오버라이드 (스타터엔 비어 있음)
 - [templates/public/cta/thank_you.html.twig](../../templates/public/cta/thank_you.html.twig) — CTA 제출 후
 
 ### 시드 / 마이그레이션
@@ -235,4 +256,5 @@ RegionFixtures 통째로 교체 + BodyTemplate 깊이 매핑 검토.
 - [.env](../../.env) — `BRAND_*`, `CTA_TELEGRAM_*`, `CTA_DISCORD_*`
 - [config/services.yaml](../../config/services.yaml) — 서비스 정의 + bind
 - [config/cta.yaml](../../config/cta.yaml) — CTA 매핑
+- [config/packages/twig.yaml](../../config/packages/twig.yaml) — Twig 글로벌 (`nav`, `urls`)
 - [config/packages/security.yaml](../../config/packages/security.yaml) — 인증/접근 제어

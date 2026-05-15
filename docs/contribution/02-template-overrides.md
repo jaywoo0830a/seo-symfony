@@ -26,20 +26,28 @@
 **예시**:
 ```twig
 {# templates/public/hubs/my-special-page.html.twig #}
-{% include 'public/_partials/breadcrumb.html.twig' %}
+{% include 'public/_partials/hierarchy/breadcrumb.html.twig' with { crumbs: crumbs } only %}
 
 <section class="hub-splash">
     <h1>{{ h1 }}</h1>
     {% if body_html %}{{ body_html|raw }}{% endif %}
 </section>
 
-{% include 'public/_partials/final_cta.html.twig' with {
-    title: '여기서 결정하세요',
-    body_template: template,
+{% include 'public/_partials/hierarchy/children_grid.html.twig' with {
+    node: node,
+    axis: 'theme',
+    heading: '하위 페이지',
 } only %}
+
+{% set _cta = cta('final', template) %}
+{% if _cta %}
+    <section class="cta-block">
+        {% include 'public/_partials/cta/_block_body.html.twig' with { cta: _cta } only %}
+    </section>
+{% endif %}
 ```
 
-> **CTA 변경 노트**: `final_cta`/`hero` 파셜이 `body_template` 인자를 받게 됐습니다. 페이지의 BodyTemplate에 따라 CTA가 분기되도록 하려면 `body_template: template`을 전달하세요. 빠뜨리면 글로벌 fallback(`brand_phone`)이 적용됩니다. 자세한 동작은 [03-cta-system.md](03-cta-system.md).
+> **CTA 노트**: `cta('final', template)` Twig 함수가 BodyTemplate에 따라 CTA를 결정합니다. 빠뜨리면 글로벌 fallback(`brand_phone`)이 적용됩니다. 자세한 동작은 [03-cta-system.md](03-cta-system.md).
 
 작동 원리는 [PublicNodeController::findTemplateOverride()](../../src/Controller/Public/PublicNodeController.php) 참고.
 
@@ -49,12 +57,7 @@
 
 매트릭스 페이지(지역 페이지 + 오버라이드 없는 허브)의 셸. 같은 *루트 테마* 내 모든 매트릭스 페이지가 이걸 공유합니다.
 
-**현재 보유**:
-- [matrix/tutoring.html.twig](../../templates/public/matrix/tutoring.html.twig) — 과외 (행동 유도 톤)
-- [matrix/academy.html.twig](../../templates/public/matrix/academy.html.twig) — 학원 (디렉토리 톤)
-- [matrix/contents.html.twig](../../templates/public/matrix/contents.html.twig) — 학습 콘텐츠 (다크 디지털 톤)
-
-**없으면** [_matrix.html.twig](../../templates/public/_matrix.html.twig) (제네릭 fallback)로 자동 폴백.
+**현재 보유**: 스타터에는 비어 있음 (`templates/public/matrix/` 디렉토리 자체가 없음). [_matrix.html.twig](../../templates/public/_matrix.html.twig)가 모든 매트릭스 페이지의 제네릭 셸. 본인 도메인의 톤을 만들고 싶으면 `templates/public/matrix/{root-theme-slug}.html.twig`를 추가하세요.
 
 **원칙**:
 - *테마 안*: 모든 지역 페이지가 같은 셸 (균일성 → SEO 자산)
@@ -79,36 +82,57 @@
 
 **경로**: `templates/public/_partials/`
 
-재사용 블록. 매트릭스 셸과 오버라이드에서 자유롭게 조합:
+### 4.1 계층 파셜 — `_partials/hierarchy/*` (가장 자주 씀)
 
-| 파셜 | 인자 (모두 선택) | 비고 |
+빵부스러기/형제/자식 표현. [NodeNavigator](../../src/Service/NodeNavigator.php) (Twig 글로벌 `nav`)을 소비. 컨트롤러가 미리 5개 변수를 계산해 주입하던 방식 대신, 템플릿이 *필요한 시점*만 lazy로 부름.
+
+| 파셜 | 인자 | 옵션 |
 |---|---|---|
-| [breadcrumb](../../templates/public/_partials/breadcrumb.html.twig) | `crumbs` | |
-| [hero](../../templates/public/_partials/hero.html.twig) | `eyebrow`, `title_main`, `title_highlight`, `title_tail`, `lede`, `cta_label`, `assurance`, `stats`, **`body_template`** | hero CTA가 body_template 기준 분기 |
-| [feature_grid](../../templates/public/_partials/feature_grid.html.twig) | `eyebrow`, `title`, `lede`, `features` | |
-| [callouts](../../templates/public/_partials/callouts.html.twig) | `items` (DataPoint), `eyebrow`, `title` | |
-| [listing](../../templates/public/_partials/listing.html.twig) | `items`, `eyebrow`, `title` | |
-| [theme_children](../../templates/public/_partials/theme_children.html.twig) | `items`, `urls`, `eyebrow`, `title` | |
-| [faq](../../templates/public/_partials/faq.html.twig) | `items`, `eyebrow`, `title`, `alt` | |
-| [final_cta](../../templates/public/_partials/final_cta.html.twig) | `eyebrow`, `title`, `lede`, **`body_template`** | final CTA가 body_template 기준 분기 |
-| [jsonld](../../templates/public/_partials/jsonld.html.twig) | `article`, `breadcrumbs` | |
+| [breadcrumb](../../templates/public/_partials/hierarchy/breadcrumb.html.twig) | `crumbs` | `separator` |
+| [ancestor_chain](../../templates/public/_partials/hierarchy/ancestor_chain.html.twig) | `node` | `separator` |
+| [siblings_list](../../templates/public/_partials/hierarchy/siblings_list.html.twig) | `node` | `axis` (region\|theme), `heading`, `empty_message` |
+| [children_grid](../../templates/public/_partials/hierarchy/children_grid.html.twig) | `node` | `axis` (region\|theme), `heading` |
+| [descendants_tree](../../templates/public/_partials/hierarchy/descendants_tree.html.twig) | `node` | `axis` (region\|theme) — depth 2까지 |
+| [path_summary](../../templates/public/_partials/hierarchy/path_summary.html.twig) | `node` | `separator`, `include_self` |
 
-### CTA 디스패처 파셜 (신규)
+호출 예:
+```twig
+{% include 'public/_partials/hierarchy/breadcrumb.html.twig' with { crumbs: crumbs } only %}
 
-`templates/public/_partials/cta/` 아래에 CTA 렌더 전용 파셜이 추가됐습니다 — 직접 호출할 일은 거의 없고, hero/final_cta가 내부적으로 사용합니다:
+{% include 'public/_partials/hierarchy/siblings_list.html.twig' with {
+    node: node,
+    axis: 'theme',
+    heading: '다른 가이드',
+} only %}
+
+{% include 'public/_partials/hierarchy/children_grid.html.twig' with {
+    node: node,
+    axis: 'theme',
+    heading: '하위 페이지',
+} only %}
+```
+
+새 계층 시점이 필요하면 (`uncles`, `cousins`, 깊이별 자식 등) [NodeNavigator](../../src/Service/NodeNavigator.php)에 메서드 1개 추가 → 모든 템플릿이 `nav.새메서드(node)`로 즉시 호출 가능. controller·context 안 건드림.
+
+### 4.2 CTA 파셜 — `_partials/cta/*`
 
 | 파셜 | 용도 |
 |---|---|
-| [_button.html.twig](../../templates/public/_partials/cta/_button.html.twig) | 단일 버튼 (hero, navbar, footer) |
-| [_block_body.html.twig](../../templates/public/_partials/cta/_block_body.html.twig) | 블록 본문 (final_cta 안쪽) |
+| [_block_body.html.twig](../../templates/public/_partials/cta/_block_body.html.twig) | CTA 블록 본문 (5타입 분기) |
 
-각 파셜이 5가지 CTA 타입(`phone`/`form`/`external`/`email`/`messenger`)을 분기 처리. 자세한 구조는 [03-cta-system.md](03-cta-system.md).
+5가지 CTA 타입(`phone`/`form`/`external`/`email`/`messenger`)을 분기 처리. 자세한 구조는 [03-cta-system.md](03-cta-system.md).
 
-### 호출 규칙
+### 4.3 SEO 파셜
+
+| 파셜 | 용도 |
+|---|---|
+| [jsonld](../../templates/public/_partials/jsonld.html.twig) | Article + BreadcrumbList JSON-LD 스크립트 (디스패처 `node.html.twig`가 사용) |
+
+### 4.4 호출 규칙
 
 - 모든 파셜은 `is defined` 디폴트가 있어 인자 누락에 안전
-- `with {...} only`로 호출 권장 (외부 변수 누수 방지)
-- BodyTemplate 분기가 필요한 파셜(hero/final_cta)은 `body_template: template`을 명시 전달
+- `with {...} only`로 호출 (외부 변수 누수 방지)
+- `nav`와 `urls`는 Twig 글로벌 — `only`에서도 접근 가능, 인자로 안 넘겨도 됨
 
 ## 5. 루트 페이지
 
@@ -124,8 +148,10 @@
 |---|---|---|
 | 한 페이지만 다르게 | `hubs/{path}.html.twig` | 1개 URL |
 | 한 테마의 모든 지역 페이지 | `matrix/{slug}.html.twig` | 한 테마의 N개 |
-| 모든 매트릭스 페이지 | `_matrix.html.twig` 또는 `_partials/*` | 전체 매트릭스 |
+| 모든 매트릭스 페이지 | `_matrix.html.twig` | 전체 매트릭스 |
 | 한 콘텐츠 타입 (가이드 전체) | `_guide.html.twig` | 모든 가이드 |
+| 계층 표현 (빵부스러기/형제/자식) | `_partials/hierarchy/*` | 사용하는 모든 페이지 |
+| 새 계층 질의 추가 (cousins 등) | `src/Service/NodeNavigator.php`에 메서드 1개 | 모든 페이지 |
 | CTA만 (전체) | `config/cta.yaml` | 전체 (Twig 변경 X) |
 | CTA만 (가이드만) | `config/cta.yaml`의 `slots.{slot}` 룰 | 가이드 페이지만 |
 | 새 콘텐츠 타입 추가 | [04 §확장 패턴](04-content-types.md#새-콘텐츠-타입-추가하기) | 신규 |
