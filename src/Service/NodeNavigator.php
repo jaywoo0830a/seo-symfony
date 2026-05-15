@@ -52,6 +52,9 @@ final class NodeNavigator
      *   region != NULL  →  같은 테마 + region.parent (depth=0은 NULL로 collapse)
      *   region == NULL  →  theme.parent의 허브 (region=NULL)
      *   루트            →  null
+     *
+     * 식별자가 없는(미flush/detached/orphan FK) 엔티티가 부모로 흘러들어오면
+     * Doctrine 바인딩이 실패하므로 안전하게 null 반환.
      */
     public function parent(ContentNode $node): ?ContentNode
     {
@@ -63,7 +66,7 @@ final class NodeNavigator
         $region = $node->getRegion();
         if ($region === null) {
             $themeParent = $node->getTheme()->getParent();
-            if ($themeParent === null) {
+            if (!$this->isBindable($themeParent)) {
                 return $this->parentCache[$key] = null;
             }
             return $this->parentCache[$key] = $this->nodes->findByCoordinates($themeParent, null);
@@ -72,6 +75,9 @@ final class NodeNavigator
         $parentRegion = $region->getParent();
         if ($parentRegion !== null && $parentRegion->getDepth() === 0) {
             $parentRegion = null;
+        }
+        if ($parentRegion !== null && !$this->isBindable($parentRegion)) {
+            return $this->parentCache[$key] = null;
         }
 
         return $this->parentCache[$key] = $this->nodes->findByCoordinates($node->getTheme(), $parentRegion);
@@ -90,6 +96,12 @@ final class NodeNavigator
         $key = $this->cacheKey($node, $axis);
         if (\array_key_exists($key, $this->childrenCache)) {
             return $this->childrenCache[$key];
+        }
+
+        // 두 repository 메서드 모두 $node->getTheme() 또는 $node->getRegion()를 바인딩.
+        // 식별자 없는 엔티티는 [] fallback.
+        if (!$this->isBindable($node->getTheme()) || !$this->isBindable($node->getRegion())) {
+            return $this->childrenCache[$key] = [];
         }
 
         return $this->childrenCache[$key] = match ($axis) {
@@ -115,6 +127,12 @@ final class NodeNavigator
         }
 
         if ($axis === self::AXIS_THEME) {
+            // findThemeSiblingsOf가 theme.parent와 node.theme를 모두 쿼리 파라미터로 바인딩.
+            // 식별자 없는 엔티티가 흘러들어오면 Doctrine 오류 → 안전하게 [] 반환.
+            $themeParent = $node->getTheme()->getParent();
+            if (!$this->isBindable($node->getTheme()) || !$this->isBindable($themeParent)) {
+                return $this->siblingsCache[$key] = [];
+            }
             return $this->siblingsCache[$key] = $this->nodes->findThemeSiblingsOf($node);
         }
 
@@ -213,5 +231,17 @@ final class NodeNavigator
     private function cacheKey(ContentNode $node, string $axis): string
     {
         return $node->getId() . ':' . $axis;
+    }
+
+    /**
+     * Doctrine 바인딩 가능 여부. null은 OK (정상적 좌표값),
+     * 엔티티는 식별자가 있어야 함 (detached/orphan 방어).
+     */
+    private function isBindable(?object $entity): bool
+    {
+        if ($entity === null) {
+            return true;
+        }
+        return method_exists($entity, 'getId') && $entity->getId() !== null;
     }
 }
