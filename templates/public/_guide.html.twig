@@ -18,13 +18,10 @@
         {% if body_html %}<div class="article__body">{{ body_html|raw }}</div>{% endif %}
 
         {% if byKind.faq is not empty %}
-            <section>
-                <h2>자주 묻는 질문</h2>
+            <section class="dp-section dp-section--faq">
+                <h2 class="dp-section__heading">{{ datapoint_kind_label('faq') }}</h2>
                 {% for dp in byKind.faq %}
-                    <details>
-                        <summary>{{ dp.title }}</summary>
-                        <div>{% include 'public/_value.html.twig' with { value: dp.value } only %}</div>
-                    </details>
+                    {% include 'public/_partials/datapoint/_dispatcher.html.twig' with { dp: dp } only %}
                 {% endfor %}
             </section>
         {% endif %}

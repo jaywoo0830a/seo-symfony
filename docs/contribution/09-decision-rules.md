@@ -50,6 +50,27 @@ src/Service/NodeNavigator.php에 메서드 1개 추가.
 controller·buildContext 수정 불필요.
 ```
 
+### Q: DataPoint를 페이지에 렌더하고 싶다.
+
+```
+{% include 'public/_partials/datapoint/_dispatcher.html.twig' with { dp: dp } only %}
+
+디스패처가 dp.kind.value로 5종 파셜(quantitative/qualitative/comparison/case/faq)에
+동적 분기. 각 파셜은 docs/ai/02-entities.md §5.3의 권장 schema를 가정하되
+방어적 fallback. 섹션 헤딩에는 {{ datapoint_kind_label(kind) }}.
+→ docs/contribution/02-template-overrides.md §4.2
+```
+
+### Q: 새 DataPointKind를 추가하고 싶다.
+
+```
+1. src/Entity/Enum/DataPointKind.php — case 추가 + label() match 분기
+2. templates/public/_partials/datapoint/{새kind}.html.twig 신규
+3. (선택) docs/ai/02-entities.md §5.3에 권장 schema 명시
+
+디스패처(_dispatcher.html.twig)는 동적 include라 수정 불필요.
+```
+
 ## 2. CTA
 
 ### Q: 가이드 페이지에만 폼 CTA를 띄우고 싶다.
@@ -221,6 +242,7 @@ RegionFixtures 통째로 교체 + BodyTemplate 깊이 매핑 검토.
 - [src/Service/BreadcrumbBuilder.php](../../src/Service/BreadcrumbBuilder.php) — 빵 부스러기 + JSON-LD
 - [src/Service/NodeNavigator.php](../../src/Service/NodeNavigator.php) — 계층 질의 (Twig 글로벌 `nav`)
 - [src/Twig/PublicNavExtension.php](../../src/Twig/PublicNavExtension.php) — 브랜드 식별값 Twig 함수
+- [src/Twig/DataPointExtension.php](../../src/Twig/DataPointExtension.php) — `datapoint_kind_label()` Twig 함수
 
 ### 템플릿 (공개)
 
@@ -233,6 +255,7 @@ RegionFixtures 통째로 교체 + BodyTemplate 깊이 매핑 검토.
 - [templates/public/_report.html.twig](../../templates/public/_report.html.twig) — 데이터 리포트
 - [templates/public/_case_study.html.twig](../../templates/public/_case_study.html.twig) — 사례 연구
 - [templates/public/_partials/hierarchy/](../../templates/public/_partials/hierarchy/) — 6종 계층 파셜 (breadcrumb·ancestor_chain·siblings_list·children_grid·descendants_tree·path_summary)
+- [templates/public/_partials/datapoint/](../../templates/public/_partials/datapoint/) — DataPoint kind별 렌더 (_dispatcher + 5종 kind)
 - [templates/public/_partials/cta/](../../templates/public/_partials/cta/) — CTA 디스패처 파셜
 - [templates/public/_partials/jsonld.html.twig](../../templates/public/_partials/jsonld.html.twig) — JSON-LD 스크립트
 - [templates/public/matrix/](../../templates/public/matrix/) — 테마별 매트릭스 셸 (스타터엔 비어 있음)

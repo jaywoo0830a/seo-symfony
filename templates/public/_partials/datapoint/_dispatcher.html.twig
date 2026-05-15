@@ -1,0 +1,17 @@
+{#
+  DataPoint dispatcher — dp.kind에 따라 5종 kind별 파셜로 분기.
+
+  인자:
+    dp  DataPoint   렌더할 데이터 포인트.
+
+  파일명 규약: dp.kind.value (quantitative/qualitative/comparison/case/faq)와
+  파셜 파일명이 동일. 새 kind를 추가하면 enum case + 같은 이름 파셜만 추가.
+
+  각 파셜은 권장 schema (docs/ai/02-entities.md §5.3)를 가정하되,
+  다른 형식이 들어와도 방어적으로 처리.
+#}
+{% set dp = dp is defined ? dp : null %}
+
+{% if dp %}
+    {% include 'public/_partials/datapoint/' ~ dp.kind.value ~ '.html.twig' with { dp: dp } only %}
+{% endif %}

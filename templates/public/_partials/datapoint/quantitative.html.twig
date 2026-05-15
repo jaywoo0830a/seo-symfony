@@ -1,0 +1,30 @@
+{#
+  Quantitative — 수치 한 조각.
+
+  권장 schema:  {figure: string, label?: string}
+  예:           {figure: "142명", label: "검증 완료"}
+
+  대체 입력:
+    - 스칼라 (string|number) → figure로 표시
+    - 일치하지 않는 객체    → figure 키 시도, 없으면 첫 값
+
+  인자: dp DataPoint
+#}
+{% set dp = dp is defined ? dp : null %}
+
+{% if dp %}
+    {% set value = dp.value %}
+    {% if value is iterable %}
+        {% set figure = value.figure|default(value|first|default('')) %}
+        {% set label = value.label|default('') %}
+    {% else %}
+        {% set figure = value %}
+        {% set label = '' %}
+    {% endif %}
+
+    <article class="dp dp--quantitative">
+        <h3 class="dp__title">{{ dp.title }}</h3>
+        {% if figure is not empty %}<p class="dp__figure">{{ figure }}</p>{% endif %}
+        {% if label is not empty %}<p class="dp__label">{{ label }}</p>{% endif %}
+    </article>
+{% endif %}

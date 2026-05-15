@@ -1,0 +1,41 @@
+{#
+  Qualitative — 정성 데이터 (목록·분포).
+
+  권장 schema:  string[]
+  예:           ["초등학교", "학원가", "도서관", "문화센터"]
+
+  대체 입력:
+    - 객체(연관 배열) → <dl> 키-값 표시
+    - 스칼라          → 단일 항목 줄
+
+  인자: dp DataPoint
+#}
+{% set dp = dp is defined ? dp : null %}
+
+{% if dp %}
+    {% set value = dp.value %}
+
+    <article class="dp dp--qualitative">
+        <h3 class="dp__title">{{ dp.title }}</h3>
+        {% if value is iterable %}
+            {% if value|length == 0 %}
+                <p class="dp__empty">—</p>
+            {% elseif value|keys|first is same as(0) %}
+                <ul class="dp__list">
+                    {% for item in value %}
+                        <li>{{ item is iterable ? item|join(', ') : item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <dl class="dp__pairs">
+                    {% for k, v in value %}
+                        <dt>{{ k }}</dt>
+                        <dd>{{ v is iterable ? v|join(', ') : v }}</dd>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        {% else %}
+            <p class="dp__body">{{ value }}</p>
+        {% endif %}
+    </article>
+{% endif %}

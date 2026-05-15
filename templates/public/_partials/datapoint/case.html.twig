@@ -1,0 +1,33 @@
+{#
+  Case — 익명화 인용·후기.
+
+  권장 schema:  {quote: string, attribution?: string}
+                또는 단순 string (= quote)
+  예:           {quote: "딸 학습 태도가 달라졌어요", attribution: "강남구 학부모"}
+
+  대체 입력: 다른 객체 → quote 키 시도, 없으면 첫 값.
+
+  인자: dp DataPoint
+#}
+{% set dp = dp is defined ? dp : null %}
+
+{% if dp %}
+    {% set value = dp.value %}
+    {% if value is iterable %}
+        {% set quote = value.quote|default(value|first|default('')) %}
+        {% set attribution = value.attribution|default('') %}
+    {% else %}
+        {% set quote = value %}
+        {% set attribution = '' %}
+    {% endif %}
+
+    <article class="dp dp--case">
+        <h3 class="dp__title">{{ dp.title }}</h3>
+        {% if quote is not empty %}
+            <blockquote class="dp__quote">{{ quote }}</blockquote>
+        {% endif %}
+        {% if attribution is not empty %}
+            <p class="dp__attribution">— {{ attribution }}</p>
+        {% endif %}
+    </article>
+{% endif %}

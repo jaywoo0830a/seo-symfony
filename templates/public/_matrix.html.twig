@@ -11,16 +11,11 @@
 
     {% for kind, points in byKind %}
         {% if points is not empty %}
-            <section>
-                <h2>{{ kind }}</h2>
-                <ul class="data-list">
-                    {% for dp in points %}
-                        <li class="data-list__item">
-                            <span class="data-list__key">{{ dp.title }}</span>
-                            {% include 'public/_value.html.twig' with { value: dp.value } only %}
-                        </li>
-                    {% endfor %}
-                </ul>
+            <section class="dp-section dp-section--{{ kind }}">
+                <h2 class="dp-section__heading">{{ datapoint_kind_label(kind) }}</h2>
+                {% for dp in points %}
+                    {% include 'public/_partials/datapoint/_dispatcher.html.twig' with { dp: dp } only %}
+                {% endfor %}
             </section>
         {% endif %}
     {% endfor %}

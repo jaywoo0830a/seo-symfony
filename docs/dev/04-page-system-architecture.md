@@ -138,19 +138,26 @@ if ($node->getRegion() !== null) {
 
 ## 5. 파셜 라이브러리
 
-[templates/public/_partials/](../../templates/public/_partials/)는 두 카테고리:
+[templates/public/_partials/](../../templates/public/_partials/)는 세 카테고리:
 
 ```
 _partials/
 ├── jsonld.html.twig                          # JSON-LD 스크립트 (Article + BreadcrumbList)
 ├── cta/_block_body.html.twig                 # CTA 5종 (phone/form/external/email/messenger) 디스패처
-└── hierarchy/                                # 계층 표현 카탈로그 (아래 §5.3)
-    ├── breadcrumb.html.twig
-    ├── ancestor_chain.html.twig
-    ├── siblings_list.html.twig
-    ├── children_grid.html.twig
-    ├── descendants_tree.html.twig
-    └── path_summary.html.twig
+├── hierarchy/                                # 계층 표현 카탈로그 (아래 §5.3)
+│   ├── breadcrumb.html.twig
+│   ├── ancestor_chain.html.twig
+│   ├── siblings_list.html.twig
+│   ├── children_grid.html.twig
+│   ├── descendants_tree.html.twig
+│   └── path_summary.html.twig
+└── datapoint/                                # DataPoint kind별 렌더 (아래 §5.4)
+    ├── _dispatcher.html.twig                 # dp.kind.value → kind 파셜 분기
+    ├── quantitative.html.twig
+    ├── qualitative.html.twig
+    ├── comparison.html.twig
+    ├── case.html.twig
+    └── faq.html.twig
 ```
 
 ### 5.1 왜 파셜인가
@@ -188,6 +195,28 @@ _partials/
 - **계층 질의는 controller가 아니라 Twig에서** — buildContext가 5~6개 변수를 미리 계산해 넘기던 방식은 *6번째 시점*이 필요할 때마다 controller 수정을 강요. Navigator는 lazy 호출이라 안 쓰면 0 쿼리, 쓰면 그때 1쿼리 (요청 스코프 메모이즈).
 - **`with … only` 강제** — 파셜은 명시적 인자 계약. `nav`/`urls`는 글로벌이라 인자로 안 넘겨도 접근 가능.
 - **depth 2까지만** — Twig 동적 재귀가 불편해 의도적으로 얕음. 더 깊은 트리는 어드민 목록 UI(MatrixController)에서 다룸.
+
+### 5.4 DataPoint 파셜 (_partials/datapoint/*)
+
+DataPoint.value는 JSONB 자유형이지만, kind마다 *시각 의도*가 다릅니다 (수치는 큰 figure, 정성은 불릿, 비교는 인라인 prose, 사례는 인용 박스, FAQ는 Q/A). 단일 generic 렌더로 통합하면 kind 별 의미가 사라져 결국 *JSON 키가 그대로 사용자에게 노출*되는 문제가 발생.
+
+해법: kind별 파셜 + 디스패처. 동적 include로 분기 — *enum 추가하면 같은 이름 파셜만 더하면 됨*. 디스패처 수정 불필요.
+
+| 파셜 | dp.kind.value | 권장 schema | 시각 시그니처 |
+|---|---|---|---|
+| `_dispatcher.html.twig` | (모든 kind 분기) | — | dynamic include |
+| `quantitative.html.twig` | `quantitative` | `{figure, label?}` | h3 + 큰 숫자 + 보조 |
+| `qualitative.html.twig` | `qualitative` | `string[]` | h3 + `<ul>` |
+| `comparison.html.twig` | `comparison` | `{baseline?, body}` 또는 string | h3 + 인라인 |
+| `case.html.twig` | `case` | `{quote, attribution?}` 또는 string | h3 + `<blockquote>` |
+| `faq.html.twig` | `faq` | string (답변; title=질문) | h3 + 답변 |
+
+상세 schema는 [docs/ai/02-entities.md §5.3](../ai/02-entities.md#53-kind별-권장-value-schema).
+
+설계 결정:
+- **schema는 *권장*, 강제 아님** — JSONB 유연성을 살리되 파셜이 방어적으로 fallback. iterable이 아니면 scalar 처리, 권장 키 없으면 첫 값 시도.
+- **kind 라벨은 enum 메서드** — `DataPointKind::label()`이 공개용 한국어 반환 ("수치 데이터", "정성 데이터" 등). Twig는 `{{ datapoint_kind_label(kind) }}` 또는 `{{ kind.label }}`.
+- **디스패처 동적 include** — `'public/_partials/datapoint/' ~ dp.kind.value ~ '.html.twig'`. enum value와 파일명을 같은 이름 규약으로 묶음. 새 kind 추가 시 디스패처 안 건드림.
 
 ## 6. 오버라이드 파일의 디렉토리 구조
 

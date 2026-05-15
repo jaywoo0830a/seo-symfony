@@ -36,15 +36,19 @@
 
 ## 4. DataPoint kind (DataPointKind enum)
 
-| 한국어 | 영문 | enum case | DB 값 | 의미 |
+| 한국어 라벨 | enum case | DB 값 | 의미 | 권장 schema |
 |---|---|---|---|---|
-| 정량 | Quantitative | `DataPointKind::Quantitative` | `'quantitative'` | 숫자·통계 |
-| 정성 | Qualitative | `DataPointKind::Qualitative` | `'qualitative'` | 목록·분포 |
-| 비교 | Comparison | `DataPointKind::Comparison` | `'comparison'` | 인접 지역 차이 |
-| 사례 | CaseStudy ⚠ | `DataPointKind::CaseStudy` | `'case'` | 매칭 사례, 후기 (PHP 키워드 회피) |
-| FAQ | Faq | `DataPointKind::Faq` | `'faq'` | 질문-답변 |
+| 수치 데이터 | `DataPointKind::Quantitative` | `'quantitative'` | 숫자·통계 | `{figure, label?}` |
+| 정성 데이터 | `DataPointKind::Qualitative` | `'qualitative'` | 목록·분포 | `string[]` |
+| 인접 비교 | `DataPointKind::Comparison` | `'comparison'` | 인접 지역 차이 | `{baseline?, body}` 또는 string |
+| 사례·후기 | `DataPointKind::CaseStudy` ⚠ | `'case'` | 매칭 사례, 후기 | `{quote, attribution?}` 또는 string |
+| 자주 묻는 질문 | `DataPointKind::Faq` | `'faq'` | 질문-답변 | string (답변; title이 질문) |
 
 ⚠ DB 값은 `'case'`이지만 PHP enum case 이름은 `CaseStudy` (PHP의 `case` 예약어 회피).
+
+한국어 라벨은 `DataPointKind::label()`에서 반환. Twig는 `{{ datapoint_kind_label(kind) }}` 또는 enum 객체일 때 `{{ kind.label }}`.
+
+권장 schema 상세: [02-entities.md §5.3](02-entities.md#53-kind별-권장-value-schema). 렌더 파셜: [_partials/datapoint/*](../../templates/public/_partials/datapoint/).
 
 ## 5. 페이지 유형
 

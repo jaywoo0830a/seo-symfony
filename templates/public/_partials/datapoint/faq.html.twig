@@ -1,0 +1,27 @@
+{#
+  FAQ — 질문·답변 한 쌍.
+
+  권장 schema:  string (= 답변 본문)
+                또는 {answer: string}
+  예:           "네, 방문·화상 모두 지원합니다."
+
+  dp.title 이 질문, dp.value 가 답변. 디스클로저(<details>)는 사용처에서
+  필요할 때 감싸세요 — 이 파셜은 플랫 Q/A 한 쌍을 반환.
+
+  인자: dp DataPoint
+#}
+{% set dp = dp is defined ? dp : null %}
+
+{% if dp %}
+    {% set value = dp.value %}
+    {% if value is iterable %}
+        {% set answer = value.answer|default(value|first|default('')) %}
+    {% else %}
+        {% set answer = value %}
+    {% endif %}
+
+    <article class="dp dp--faq">
+        <h3 class="dp__title">{{ dp.title }}</h3>
+        {% if answer is not empty %}<div class="dp__answer">{{ answer }}</div>{% endif %}
+    </article>
+{% endif %}

@@ -1,0 +1,32 @@
+{#
+  Comparison — 인접 지역과의 차이.
+
+  권장 schema:  {baseline?: string, body: string}
+                또는 단순 string (= body)
+  예:           {baseline: "인접 지역 대비", body: "전국 평균은 약 6% 차이"}
+                "전국 평균은 약 6% 차이"
+
+  대체 입력: 다른 객체 → body 키 시도, 없으면 첫 값.
+
+  인자: dp DataPoint
+#}
+{% set dp = dp is defined ? dp : null %}
+
+{% if dp %}
+    {% set value = dp.value %}
+    {% if value is iterable %}
+        {% set baseline = value.baseline|default('') %}
+        {% set body = value.body|default(value|first|default('')) %}
+    {% else %}
+        {% set baseline = '' %}
+        {% set body = value %}
+    {% endif %}
+
+    <article class="dp dp--comparison">
+        <h3 class="dp__title">{{ dp.title }}</h3>
+        <p class="dp__body">
+            {% if baseline is not empty %}<span class="dp__baseline">{{ baseline }}</span> {% endif -%}
+            {{ body }}
+        </p>
+    </article>
+{% endif %}

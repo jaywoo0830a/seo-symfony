@@ -209,6 +209,29 @@ ContentNode 한 좌표를 *그 좌표답게* 만드는 고유 데이터 한 조�
 | `case` (DataPointKind::CaseStudy) | 매칭 사례, 후기 | 동의받은 실명/익명 사례 |
 | `faq` | 지역/테마 특화 Q&A | 분야별 질문 |
 
+### 5.3 kind별 권장 value schema
+
+`DataPoint.value`는 JSONB 자유형이지만, 공개 페이지 렌더 파셜([_partials/datapoint/*](../../templates/public/_partials/datapoint/))이 다음 schema를 기대합니다. 스키마에서 벗어나도 파셜이 방어적으로 fallback하지만, *일관된 입력* = *일관된 렌더*.
+
+| kind | 권장 schema | 예 | 렌더 |
+|---|---|---|---|
+| `quantitative` | `{figure: string, label?: string}` | `{"figure": "142명", "label": "검증 완료"}` | figure를 큰 숫자, label은 보조 |
+| `qualitative` | `string[]` | `["초등학교", "학원가", "도서관"]` | `<ul>` 불릿 |
+| `comparison` | `{baseline?: string, body: string}` 또는 단순 string | `{"baseline": "인접 지역 대비", "body": "약 6% 차이"}` | baseline은 인라인 prefix, body가 본문 |
+| `case` | `{quote: string, attribution?: string}` 또는 단순 string | `{"quote": "...", "attribution": "강남구 학부모"}` | `<blockquote>` + 출처 |
+| `faq` | 단순 string (답변 본문). title이 질문 | `"네, 방문·화상 모두 지원합니다."` | Q/A 한 쌍 |
+
+스키마 외 fallback 룰:
+- iterable인데 권장 키가 없으면: 첫 값을 본문으로 시도
+- iterable이 아니면 (scalar): 본문으로 직접 사용
+- 빈 값: 해당 섹션 자동 생략
+
+### 5.4 라벨
+
+`DataPointKind::label()` 메서드가 공개용 한국어 라벨 반환 (수치 데이터, 정성 데이터, 인접 비교, 사례·후기, 자주 묻는 질문). 어드민 폼 라벨은 더 길고 안내문 붙음 — [DataPointType::buildForm](../../src/Form/DataPointType.php)에서 inline match로 별도 정의.
+
+Twig에서: `{{ datapoint_kind_label('quantitative') }}` 또는 enum 객체일 때 `{{ kind.label }}`.
+
 ### 5.3 제약
 
 | 제약 | 강제 |
@@ -232,6 +255,8 @@ data_count = COUNT(DataPoint WHERE verified=true AND node_id=N)
 - 엔티티: [src/Entity/DataPoint.php](../../src/Entity/DataPoint.php)
 - enum: [src/Entity/Enum/DataPointKind.php](../../src/Entity/Enum/DataPointKind.php)
 - 폼: [src/Form/DataPointType.php](../../src/Form/DataPointType.php)
+- 공개 렌더 파셜: [templates/public/_partials/datapoint/](../../templates/public/_partials/datapoint/) (_dispatcher + 5종 kind)
+- 라벨 Twig 함수: [src/Twig/DataPointExtension.php](../../src/Twig/DataPointExtension.php)
 
 ## 6. Redirect — 무덤 관리
 

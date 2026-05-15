@@ -114,7 +114,36 @@
 
 새 계층 시점이 필요하면 (`uncles`, `cousins`, 깊이별 자식 등) [NodeNavigator](../../src/Service/NodeNavigator.php)에 메서드 1개 추가 → 모든 템플릿이 `nav.새메서드(node)`로 즉시 호출 가능. controller·context 안 건드림.
 
-### 4.2 CTA 파셜 — `_partials/cta/*`
+### 4.2 DataPoint 파셜 — `_partials/datapoint/*`
+
+DataPoint kind별 렌더. value JSONB의 *시각 의도가 kind마다 다르므로* (수치는 큰 figure, 정성은 불릿, FAQ는 Q/A 등) 한 파셜이 모두 처리하지 않고 분기.
+
+| 파셜 | 권장 value schema |
+|---|---|
+| [_dispatcher.html.twig](../../templates/public/_partials/datapoint/_dispatcher.html.twig) | `dp.kind.value`로 동적 include |
+| [quantitative.html.twig](../../templates/public/_partials/datapoint/quantitative.html.twig) | `{figure, label?}` |
+| [qualitative.html.twig](../../templates/public/_partials/datapoint/qualitative.html.twig) | `string[]` |
+| [comparison.html.twig](../../templates/public/_partials/datapoint/comparison.html.twig) | `{baseline?, body}` 또는 string |
+| [case.html.twig](../../templates/public/_partials/datapoint/case.html.twig) | `{quote, attribution?}` 또는 string |
+| [faq.html.twig](../../templates/public/_partials/datapoint/faq.html.twig) | string (답변; title이 질문) |
+
+호출 예 (kind에 무관하게 항상 디스패처):
+```twig
+{% for dp in byKind.quantitative %}
+    {% include 'public/_partials/datapoint/_dispatcher.html.twig' with { dp: dp } only %}
+{% endfor %}
+```
+
+섹션 헤딩에는 [DataPointKind::label()](../../src/Entity/Enum/DataPointKind.php) 사용:
+```twig
+<h2>{{ datapoint_kind_label(kind) }}</h2>   {# 'quantitative' → '수치 데이터' #}
+```
+
+- schema는 *권장* — 다른 형식 들어와도 파셜이 방어적으로 fallback
+- 새 kind 추가 시: enum case + 동명 파셜 추가 → 디스패처 수정 불필요
+- 상세 schema는 [docs/ai/02-entities.md §5.3](../ai/02-entities.md#53-kind별-권장-value-schema)
+
+### 4.3 CTA 파셜 — `_partials/cta/*`
 
 | 파셜 | 용도 |
 |---|---|
@@ -122,15 +151,15 @@
 
 5가지 CTA 타입(`phone`/`form`/`external`/`email`/`messenger`)을 분기 처리. 자세한 구조는 [03-cta-system.md](03-cta-system.md).
 
-### 4.3 SEO 파셜
+### 4.4 SEO 파셜
 
 | 파셜 | 용도 |
 |---|---|
 | [jsonld](../../templates/public/_partials/jsonld.html.twig) | Article + BreadcrumbList JSON-LD 스크립트 (디스패처 `node.html.twig`가 사용) |
 
-### 4.4 호출 규칙
+### 4.5 호출 규칙
 
-- 모든 파셜은 `is defined` 디폴트가 있어 인자 누락에 안전
+- 모든 파셜은 `is defined` 또는 `|default` 디폴트가 있어 인자 누락에 안전
 - `with {...} only`로 호출 (외부 변수 누수 방지)
 - `nav`와 `urls`는 Twig 글로벌 — `only`에서도 접근 가능, 인자로 안 넘겨도 됨
 
