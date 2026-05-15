@@ -10,11 +10,13 @@ use App\Entity\Region;
 /**
  * 노드 좌표로부터 빵부스러기 경로를 도출한다.
  *
- *   /                                         → [전국]
- *   /tutoring/                                → [전국, 과외]
- *   /tutoring/seoul/                          → [전국, 과외, 서울특별시]
- *   /tutoring/seoul/gangnam-gu/               → [전국, 과외, 서울특별시, 강남구]
+ *   /                                                    → [전국]
+ *   /tutoring/                                           → [전국, 과외]
+ *   /tutoring/seoul/                                     → [전국, 과외, 서울특별시]
+ *   /tutoring/seoul/gangnam-gu/                          → [전국, 과외, 서울특별시, 강남구]
+ *   /elementary-tutoring/essays/policy-28/               → [전국, 초등 과외, 에세이, …]
  *
+ * 테마는 root→leaf 체인을 모두 펼치고, 지역은 시도부터 leaf까지.
  * 시각용 배열과 Schema.org BreadcrumbList JSON-LD를 모두 생성.
  */
 final class BreadcrumbBuilder
@@ -32,16 +34,27 @@ final class BreadcrumbBuilder
 
         $crumbs = [
             ['label' => '전국', 'url' => '/', 'current' => false],
-            ['label' => $theme->getName(), 'url' => $this->urls->buildPath($theme, null), 'current' => false],
         ];
 
-        // 지역 체인을 root→leaf 순으로 (country root는 스킵: depth >= 1만)
-        $chain = [];
-        for ($r = $node->getRegion(); $r !== null && $r->getDepth() >= 1; $r = $r->getParent()) {
-            array_unshift($chain, $r);
+        // 테마 체인을 root→leaf 순으로 (각 단계가 자체 hub URL을 가짐)
+        $themeChain = [];
+        for ($t = $theme; $t !== null; $t = $t->getParent()) {
+            array_unshift($themeChain, $t);
+        }
+        foreach ($themeChain as $t) {
+            $crumbs[] = [
+                'label' => $t->getName(),
+                'url' => $this->urls->buildPath($t, null),
+                'current' => false,
+            ];
         }
 
-        foreach ($chain as $region) {
+        // 지역 체인을 root→leaf 순으로 (country root는 스킵: depth >= 1만)
+        $regionChain = [];
+        for ($r = $node->getRegion(); $r !== null && $r->getDepth() >= 1; $r = $r->getParent()) {
+            array_unshift($regionChain, $r);
+        }
+        foreach ($regionChain as $region) {
             $crumbs[] = [
                 'label' => $region->getName(),
                 'url' => $this->urls->buildPath($theme, $region),
