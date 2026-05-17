@@ -12,6 +12,7 @@ use App\Entity\Enum\ContentStatus;
 use App\Entity\Enum\DataPointKind;
 use App\Entity\Region;
 use App\Entity\Theme;
+use App\Service\PreviewNavigator;
 use App\Service\UrlBuilder;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,12 @@ use Twig\Environment;
  *
  * 페이지 템플릿(matrix shell, prose 4종, home 등)을 *메모리 객체*로 만든
  * fake context로 즉시 렌더. ContentNode 영속화 X — 트리거 비발동.
+ *
+ * 페이지 템플릿이 Twig 글로벌 `nav.children(...)` / `nav.siblings(...)` 등을
+ * 호출하므로, 매 요청마다 `PreviewNavigator` stub을 nav 글로벌로 override
+ * (renderPreview 헬퍼)해서 컨텍스트의 fake children/siblings/ancestors가
+ * 그대로 흐르게 한다. 진짜 NodeNavigator는 ContentNodeRepository에 의존
+ * → 메모리 객체(ID 없음)를 받으면 빈 배열 반환 → 프리뷰가 비어보이는 문제 회피.
  *
  * 보안:
  *   - /admin/* 는 security.yaml access_control 로 ROLE_ADMIN 필수
@@ -52,15 +59,15 @@ final class PreviewController extends AbstractController
     #[Route('/home', name: 'home', methods: ['GET'])]
     public function home(): Response
     {
-        return $this->noindex($this->render('public/home.html.twig', [
+        return $this->renderPreview('public/home.html.twig', [
             'themes' => $this->fakeRootThemes(),
-        ]));
+        ]);
     }
 
     #[Route('/matrix/{depth}', name: 'matrix', requirements: ['depth' => '[0-3]'], methods: ['GET'])]
     public function matrix(int $depth): Response
     {
-        return $this->noindex($this->render('public/node.html.twig', $this->buildMatrixContext($depth)));
+        return $this->renderPreview('public/node.html.twig', $this->buildMatrixContext($depth));
     }
 
     #[Route('/{template}', name: 'prose', requirements: ['template' => 'guide|essay|report|case'], methods: ['GET'])]
@@ -72,10 +79,40 @@ final class PreviewController extends AbstractController
             'report' => BodyTemplate::Report,
             'case'   => BodyTemplate::CaseStudy,
         };
-        return $this->noindex($this->render('public/node.html.twig', $this->buildProseContext($bt)));
+        return $this->renderPreview('public/node.html.twig', $this->buildProseContext($bt));
     }
 
-    // ─── helpers ──────────────────────────────────────────────────────
+    // ─── core helpers ─────────────────────────────────────────────────
+
+    /**
+     * 컨텍스트의 fake 계층 변수(`children`, `theme_children`, `siblings`,
+     * `theme_siblings`, `ancestors`, `parent`)를 PreviewNavigator로 감싸
+     * Twig 글로벌 `nav` 를 임시 override한 뒤 렌더.
+     *
+     * 페이지가 `nav.children(node, 'theme')` 같은 호출로 옮겨갔어도
+     * fake 데이터가 그대로 흘러간다.
+     *
+     * @param array<string, mixed> $context
+     */
+    private function renderPreview(string $template, array $context = []): Response
+    {
+        $previewNav = new PreviewNavigator(
+            childrenByAxis: [
+                'region' => $context['children'] ?? [],
+                'theme'  => $context['theme_children'] ?? [],
+            ],
+            siblingsByAxis: [
+                'region' => $context['siblings'] ?? [],
+                'theme'  => $context['theme_siblings'] ?? [],
+            ],
+            ancestors: $context['ancestors'] ?? [],
+            parent: $context['parent'] ?? null,
+        );
+
+        $this->twig->addGlobal('nav', $previewNav);
+
+        return $this->noindex($this->render($template, $context));
+    }
 
     private function noindex(Response $r): Response
     {
